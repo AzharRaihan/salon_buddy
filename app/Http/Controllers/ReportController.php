@@ -1,0 +1,1275 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Item;
+use App\Models\Sale;
+use App\Models\User;
+use App\Models\Branch;
+use App\Models\Damage;
+use App\Models\Salary;
+use App\Models\Expense;
+use App\Models\Category;
+use App\Models\Purchase;
+use App\Models\Supplier;
+use App\Models\Attendance;
+use App\Models\ItemDetail;
+use App\Models\DamageDetail;
+use App\Models\SaleDetail;
+use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
+use App\Models\PaymentMethod;
+use App\Models\PurchaseDetail;
+use App\Models\CustomerReceive;
+use App\Models\ExpenseCategory;
+use App\Models\SupplierPayment;
+use Illuminate\Support\Facades\Auth;
+
+class ReportController extends Controller
+{
+    use ApiResponse;
+
+    /**
+     * Get expense report with filters
+     */
+    public function expenseReport(Request $request)
+    {
+        $query = Expense::with(['branch:id,branch_name', 'category:id,name', 'paymentMethod:id,name', 'employee:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id);
+
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Category filter  
+        if ($request->has('category_id') && !empty($request->category_id)) {
+            $query->where('category_id', $request->category_id);
+        }
+
+
+
+        // Employee filter
+        if ($request->has('employee_id') && !empty($request->employee_id)) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Search by reference number
+        if ($request->has('reference_no') && !empty($request->reference_no)) {
+            $query->where('reference_no', 'like', '%' . $request->reference_no . '%');
+        }
+
+        // General search (for compatibility with existing search patterns)
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->where('reference_no', 'like', '%' . $request->q . '%')
+                  ->orWhere('note', 'like', '%' . $request->q . '%')
+                  ->orWhere('amount', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('date', 'desc');
+        }
+
+        $expenses = $query->get();
+
+        // Calculate summary statistics
+        $summary = $this->calculateExpenseSummary($query);
+
+        return $this->successResponse([
+            'expenses' => $expenses,
+            'total' => $expenses->count(),
+            'summary' => $summary,
+        ]);
+    }
+
+    /**
+     * Calculate expense summary statistics
+     */
+    private function calculateExpenseSummary($query)
+    {
+        $totalExpenses = $query->count();
+        $totalAmount = $query->sum('amount');
+        $avgAmount = $query->avg('amount');
+
+
+        return [
+            'totalExpenses' => $totalExpenses,
+            'totalAmount' => $totalAmount,
+            'avgAmount' => $avgAmount,
+        ];
+    }
+
+    /**
+     * Get filter options for expense report
+     */
+    public function expenseReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get expense categories
+        $categories = ExpenseCategory::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name')
+            ->get();
+
+        // Get payment methods
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name')
+            ->get();
+
+        // Get employees (users with role employee or admin)
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'categories' => $categories,
+            'paymentMethods' => $paymentMethods,
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get attendance report with filters
+     */
+    public function attendanceReport(Request $request)
+    {
+        // Validate required fields
+        $request->validate([
+            'employee_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $query = Attendance::with(['user'])
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id)
+            ->where('user_id', $request->employee_id); // Always filter by employee
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('date', 'desc');
+        }
+
+        // Pagination
+        $perPage = $request->itemsPerPage ?? 10;
+        $attendances = $query->paginate($perPage);
+
+        // Calculate summary statistics
+        $summary = $this->calculateAttendanceSummary($query);
+
+        return $this->successResponse([
+            'attendances' => $attendances->items(),
+            'total' => $attendances->total(),
+            'summary' => $summary,
+        ]);
+    }
+
+    /**
+     * Get filter options for attendance report
+     */
+    public function attendanceReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get employees (users)
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Calculate attendance summary statistics
+     */
+    private function calculateAttendanceSummary($query)
+    {
+        $totalRecords = $query->count();
+        $totalWorkDays = $query->whereNotNull('in_time')->count();
+        $totalAbsentDays = $query->whereNull('in_time')->count();
+        $totalLateDays = $query->whereNotNull('in_time')
+            ->where('in_time', '>', '09:00:00')
+            ->count();
+        
+        // Calculate average working hours
+        $totalHours = $query->whereNotNull('total_time')
+            ->get()
+            ->sum(function($attendance) {
+                return $this->timeToHours($attendance->total_time);
+            });
+        
+        $avgWorkingHours = $totalWorkDays > 0 ? round($totalHours / $totalWorkDays, 2) : 0;
+
+        return [
+            'totalRecords' => $totalRecords,
+            'totalWorkDays' => $totalWorkDays,
+            'totalAbsentDays' => $totalAbsentDays,
+            'totalLateDays' => $totalLateDays,
+            'avgWorkingHours' => $avgWorkingHours,
+        ];
+    }
+
+    /**
+     * Convert time string to hours
+     */
+    private function timeToHours($timeString)
+    {
+        if (empty($timeString)) return 0;
+        
+        $parts = explode(':', $timeString);
+        if (count($parts) >= 2) {
+            return (int)$parts[0] + ((int)$parts[1] / 60);
+        }
+        
+        return 0;
+    }
+
+    /**
+     * Get purchase report with filters
+     */
+    public function purchaseReport(Request $request)
+    {
+        $query = Purchase::with(['supplier:id,name,phone', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id);
+
+
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Supplier filter
+        if ($request->has('supplier_id') && !empty($request->supplier_id)) {
+            $query->where('supplier_id', $request->supplier_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Search by reference number
+        if ($request->has('reference_no') && !empty($request->reference_no)) {
+            $query->where('reference_no', 'like', '%' . $request->reference_no . '%');
+        }
+
+        // General search (for compatibility with existing search patterns)
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->where('reference_no', 'like', '%' . $request->q . '%')
+                  ->orWhere('supplier_invoice_no', 'like', '%' . $request->q . '%')
+                  ->orWhere('note', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('date', 'desc');
+        }
+
+
+        $purchases = $query->get();
+
+        // Calculate summary statistics
+        $summary = $this->calculatePurchaseSummary($query);
+
+        return $this->successResponse([
+            'purchases' => $purchases,
+            'total' => $purchases->count(),
+            'summary' => $summary,
+        ]);
+    }
+
+    /**
+     * Get filter options for purchase report
+     */
+    public function purchaseReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get suppliers
+        $suppliers = \App\Models\Supplier::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'suppliers' => $suppliers,
+        ]);
+    }
+    /**
+     * Get damage report with filters
+     */
+    public function damageReport(Request $request)
+    {
+        $query = Damage::with(['employee:id,name', 'damageDetails.item:id,name,type'])
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id);
+
+        // Filter by product type (only Product type items)
+        $query->whereHas('damageDetails.item', function($q) {
+            $q->where('type', 'Product');
+        });
+
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Supplier filter
+        if ($request->has('employee_id') && !empty($request->employee_id)) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Search by reference number
+        if ($request->has('reference_no') && !empty($request->reference_no)) {
+            $query->where('reference_no', 'like', '%' . $request->reference_no . '%');
+        }
+
+        // General search (for compatibility with existing search patterns)
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->where('reference_no', 'like', '%' . $request->q . '%')
+                  ->orWhere('note', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('date', 'desc');
+        }
+
+        // Pagination
+        $perPage = $request->itemsPerPage ?? 10;
+        $damages = $query->paginate($perPage);
+
+        // Calculate summary statistics
+        $summary = $this->calculateDamageSummary($query);
+
+        return $this->successResponse([
+            'damages' => $damages->items(),
+            'total' => $damages->total(),
+            'summary' => $summary,
+        ]);
+    }
+
+    /**
+     * Get filter options for purchase report
+     */
+    public function damageReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get employees
+        $employees = \App\Models\User::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get filter options for sale report
+     */
+    public function saleReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get customers
+        $customers = \App\Models\Customer::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'customers' => $customers,
+        ]);
+    }
+
+    
+
+    /**
+     * Calculate purchase summary statistics
+     */
+    private function calculatePurchaseSummary($query)
+    {
+        $totalPurchases = $query->count();
+        $totalAmount = $query->sum('grand_total');
+        $totalPaid = $query->sum('paid_amount');
+        $totalDue = $query->sum('due_amount');
+
+        return [
+            'totalPurchases' => $totalPurchases,
+            'totalAmount' => $totalAmount,
+            'totalPaid' => $totalPaid,
+            'totalDue' => $totalDue,
+        ];
+    }
+    /**
+     * Calculate purchase summary statistics
+     */
+    private function calculateDamageSummary($query)
+    {
+        $totalDamages = $query->count();
+        $totalAmount = $query->sum('total_loss');
+
+        return [
+            'totalDamages' => $totalDamages,
+            'totalAmount' => $totalAmount,
+        ];
+    }
+
+    /**
+     * Get sales report with filters
+     */
+    public function salesReport(Request $request)
+    {
+
+        $query = Sale::with(['customer:id,name', 'paymentMethod:id,name', 'branch:id,branch_name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id);
+
+        // Customer filter
+        if ($request->has('customer_id') && !empty($request->customer_id)) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('order_date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('order_date', '<=', $request->date_to);
+        }
+
+        // Search by reference number
+        if ($request->has('reference_no') && !empty($request->reference_no)) {
+            $query->where('reference_no', 'like', '%' . $request->reference_no . '%');
+        }
+
+        // General search (for compatibility with existing search patterns)
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->where('reference_no', 'like', '%' . $request->q . '%')
+                  ->orWhere('order_status', 'like', '%' . $request->q . '%')
+                  ->orWhere('order_from', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('order_date', 'desc');
+        }
+
+        $sales = $query->get();
+
+        // Calculate summary statistics
+        $summary = $this->calculateSalesSummary($query);
+
+        return $this->successResponse([
+            'sales' => $sales,
+            'total' => $sales->count(),
+            'summary' => $summary,
+        ]);
+    }
+
+    /**
+     * Get filter options for sales report
+     */
+    public function salesReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get customers
+        $customers = \App\Models\Customer::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'customers' => $customers,
+        ]);
+    }
+
+    /**
+     * Calculate sales summary statistics
+     */
+    private function calculateSalesSummary($query)
+    {
+        $totalSales = $query->count();
+        $totalRevenue = $query->sum('total_payable');
+        $totalPaid = $query->sum('total_paid');
+        $totalDue = $query->sum('total_due');
+        $totalTax = $query->sum('total_tax');
+
+        return [
+            'totalSales' => $totalSales,
+            'totalRevenue' => $totalRevenue,
+            'totalPaid' => $totalPaid,
+            'totalDue' => $totalDue,
+            'totalTax' => $totalTax,
+        ];
+    }
+
+    /**
+     * Get employee commission report with filters
+     */
+    public function employeeCommissionReport(Request $request)
+    {
+        $query = \App\Models\SaleDetail::with(['sale', 'item', 'employee'])
+            ->whereHas('sale', function($q) {
+                $q->where('del_status', 'Live')
+                  ->where('company_id', Auth::user()->company_id);
+            })
+            ->whereNotNull('employee_id'); // Only include records with assigned employees
+
+        // Branch filter - filter by employee's branch
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->whereHas('employee', function($q) use ($request) {
+                $q->where('branch_id', 'like', '%' . $request->branch_id . '%');
+            });
+        }
+
+        // Employee filter
+        if ($request->has('employee_id') && !empty($request->employee_id)) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereHas('sale', function($q) use ($request) {
+                $q->whereDate('order_date', '>=', $request->date_from);
+            });
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereHas('sale', function($q) use ($request) {
+                $q->whereDate('order_date', '<=', $request->date_to);
+            });
+        }
+
+        // Search by reference number
+        if ($request->has('reference_no') && !empty($request->reference_no)) {
+            $query->whereHas('sale', function($q) use ($request) {
+                $q->where('reference_no', 'like', '%' . $request->reference_no . '%');
+            });
+        }
+
+        // General search (for compatibility with existing search patterns)
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->whereHas('sale', function($saleQuery) use ($request) {
+                    $saleQuery->where('reference_no', 'like', '%' . $request->q . '%');
+                })
+                ->orWhereHas('item', function($itemQuery) use ($request) {
+                    $itemQuery->where('name', 'like', '%' . $request->q . '%');
+                })
+                ->orWhereHas('employee', function($empQuery) use ($request) {
+                    $empQuery->where('name', 'like', '%' . $request->q . '%');
+                });
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            
+            // Handle sorting for related fields
+            if ($request->sortBy === 'order_date') {
+                $query->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+                      ->orderBy('sales.order_date', $direction)
+                      ->select('sale_details.*');
+            } elseif ($request->sortBy === 'reference_no') {
+                $query->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+                      ->orderBy('sales.reference_no', $direction)
+                      ->select('sale_details.*');
+            } elseif ($request->sortBy === 'order_status') {
+                $query->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+                      ->orderBy('sales.order_status', $direction)
+                      ->select('sale_details.*');
+            } else {
+                $query->orderBy($request->sortBy, $direction);
+            }
+        } else {
+            $query->join('sales', 'sale_details.sale_id', '=', 'sales.id')
+                  ->orderBy('sales.order_date', 'desc')
+                  ->select('sale_details.*');
+        }
+
+        // Pagination
+        $perPage = $request->itemsPerPage ?? 10;
+        $commissionDetails = $query->paginate($perPage);
+
+        // Transform data to include calculated commission
+        $transformedData = $commissionDetails->getCollection()->map(function($detail) {
+            $commissionRate = $detail->employee->commission ?? 0;
+            $commissionAmount = ($detail->subtotal * $commissionRate) / 100;
+            
+            return [
+                'id' => $detail->id,
+                'order_date' => $detail->sale->order_date,
+                'reference_no' => $detail->sale->reference_no,
+                'employee' => [
+                    'id' => $detail->employee->id,
+                    'name' => $detail->employee->name,
+                ],
+                'item' => [
+                    'id' => $detail->item->id,
+                    'name' => $detail->item->name,
+                ],
+                'subtotal' => $detail->subtotal,
+                'commission_rate' => $commissionRate,
+                'commission_amount' => $commissionAmount,
+                'order_status' => $detail->sale->order_status,
+            ];
+        });
+
+        // Calculate summary statistics
+        $summary = $this->calculateCommissionSummary($query);
+
+        return $this->successResponse([
+            'commissions' => $transformedData,
+            'total' => $commissionDetails->total(),
+            'summary' => $summary,
+        ]);
+    }
+
+    /**
+     * Calculate commission summary statistics
+     */
+    private function calculateCommissionSummary($query)
+    {
+        $totalOrders = $query->count();
+        $totalSubtotal = $query->sum('subtotal');
+        
+        // Calculate total commission amount
+        $totalCommissionAmount = $query->get()->sum(function($detail) {
+            $commissionRate = $detail->employee->commission ?? 0;
+            return ($detail->subtotal * $commissionRate) / 100;
+        });
+        
+        // Calculate average commission rate
+        $avgCommissionRate = $query->get()->avg(function($detail) {
+            return $detail->employee->commission ?? 0;
+        });
+
+        return [
+            'totalOrders' => $totalOrders,
+            'totalSubtotal' => $totalSubtotal,
+            'totalCommissionAmount' => $totalCommissionAmount,
+            'avgCommissionRate' => round($avgCommissionRate, 2),
+        ];
+    }
+
+    /**
+     * Get filter options for employee commission report
+     */
+    public function employeeCommissionReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+        // Get employees (users with commission)
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->whereNotNull('commission')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+    
+
+    /**
+     * Get profit loss report with filters
+     */
+    public function profitLossReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        
+        // Base query for sales
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+
+        // Base query for expenses
+        $expensesQuery = Expense::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+
+        // Base query for salaries
+        $salariesQuery = Salary::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $salesQuery->where('branch_id', $request->branch_id);
+            $expensesQuery->where('branch_id', $request->branch_id);
+            $salariesQuery->where('branch_id', $request->branch_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $salesQuery->whereDate('order_date', '>=', $request->date_from);
+            $expensesQuery->whereDate('date', '>=', $request->date_from);
+            $salariesQuery->whereDate('generated_date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $salesQuery->whereDate('order_date', '<=', $request->date_to);
+            $expensesQuery->whereDate('date', '<=', $request->date_to);
+            $salariesQuery->whereDate('generated_date', '<=', $request->date_to);
+        }
+
+        // Calculate totals
+        $totalSales = $salesQuery->sum('grandtotal_with_tax_discount') ?? 0;
+        $totalTax = $salesQuery->sum('total_tax') ?? 0;
+        $totalDiscount = $salesQuery->sum('discount') ?? 0;
+        $totalExpenses = $expensesQuery->sum('amount') ?? 0;
+        $totalSalaries = $salariesQuery->sum('total_amount') ?? 0;
+
+        // Calculate cost of sale based on costing method
+        $costOfSale = $this->calculateCostOfSale($request, $companyId);
+
+
+        // GorssProfit
+        $grossProfit = $totalSales - ($costOfSale + $totalTax + $totalDiscount);
+
+        // Calculate Net Profit: (10) - (11+12)
+        $netProfit = $grossProfit - ($totalSalaries + $totalExpenses);
+
+        return $this->successResponse([
+            'total_sales' => $totalSales,
+            'total_cost_of_sale' => $costOfSale,
+            'tax' => $totalTax,
+            'discount' => $totalDiscount,
+            'gross_profit' => $grossProfit,
+            'total_salaries' => $totalSalaries,
+            'expense' => $totalExpenses,
+            'net_profit' => $netProfit,
+        ]);
+    }
+
+    /**
+     * Get filter options for profit loss report
+     */
+    public function profitLossReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
+     * Calculate cost of sale based on costing method
+     */
+    private function calculateCostOfSale($request, $companyId)
+    {
+        $costingMethod = $request->get('costing_method', 'last_purchase');
+        $branchId = $request->get('branch_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        // Get sales with details for the period
+        $salesQuery = Sale::with([
+            'saleDetails.item' => function ($query) {
+                $query->select(
+                    'id',
+                    'name',
+                    'type',
+                    'last_purchase_price',
+                    'last_three_purchase_avg',
+                    'company_id',
+                    'del_status'
+                );
+            }
+        ])
+        ->where('del_status', 'Live')
+        ->where('company_id', $companyId);
+
+
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $salesQuery->whereDate('order_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $salesQuery->whereDate('order_date', '<=', $dateTo);
+        }
+
+        $sales = $salesQuery->get();
+
+
+        $totalCostOfSale = 0;
+
+        foreach ($sales as $sale) {
+            foreach ($sale->saleDetails as $detail) {
+                if ($detail->item && $detail->item->type === 'Product') {
+                    if ($costingMethod === 'avg_purchase') {
+                        $unitCost =$detail->item->last_three_purchase_avg ?? 0;
+                    }else {
+                        $unitCost = $detail->item->last_purchase_price ?? 0;
+                    }
+                    $totalCostOfSale += $unitCost * $detail->quantity;
+                }
+            }
+        }
+
+        return $totalCostOfSale;
+    }
+
+   
+
+    /**
+     * Get daily summary report with filters
+     */
+    public function dailySummaryReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $date = $request->get('date', date('Y-m-d'));
+        $branchId = $request->get('branch_id');
+
+        // Get today's sales
+        $salesQuery = Sale::with(['customer:id,name,phone'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('order_date', $date);
+
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+
+        $sales = $salesQuery->get()->map(function($sale) {
+            return [
+                'id' => $sale->id,
+                'invoice_no' => $sale->reference_no,
+                'date' => $sale->order_date,
+                'customer_name' => ($sale->customer->phone ? $sale->customer->name . ' (' . $sale->customer->phone . ')' : $sale->customer->name) ?? 'Walk-in Customer',
+                'total_payable' => (float)$sale->total_payable,
+                'total_paid' => (float)$sale->total_paid,
+                'total_due' => (float)$sale->total_due
+            ];
+        });
+
+        // Get today's purchases
+        $purchasesQuery = Purchase::with(['supplier:id,name,phone'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', $date);
+
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+
+        $purchases = $purchasesQuery->get()->map(function($purchase) {
+            return [
+                'id' => $purchase->id,
+                'invoice_no' => $purchase->reference_no,
+                'date' => $purchase->date,
+                'supplier_name' => $purchase->supplier->phone ? $purchase->supplier->name . ' (' . $purchase->supplier->phone . ')' : $purchase->supplier->name ?? 'N/A',
+                'grand_total' => (float)$purchase->grand_total,
+                'paid_amount' => (float)$purchase->paid_amount,
+                'due_amount' => (float)$purchase->due_amount,
+            ];
+        });
+
+        // Get supplier due payments
+        $supplierDueQuery = SupplierPayment::with(['supplier:id,name,phone'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', $date);
+
+        if ($branchId) {
+            $supplierDueQuery->where('branch_id', $branchId);
+        }
+
+        $supplierDuePayments = $supplierDueQuery->get()->map(function($payment) {
+            return [
+                'id' => $payment->id,
+                'supplier_name' => $payment->supplier->phone ? $payment->supplier->name . ' (' . $payment->supplier->phone . ')' : $payment->supplier->name ?? 'N/A',
+                'date' => $payment->date,
+                'amount' => (float)$payment->amount,
+                'note' => $payment->note,
+            ];
+        });
+
+        // Get customer due receives
+        $customerDueQuery = CustomerReceive::with(['customer:id,name,phone'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', $date);
+
+        if ($branchId) {
+            $customerDueQuery->where('branch_id', $branchId);
+        }
+
+        $customerDueReceives = $customerDueQuery->get()->map(function($receive) {
+            return [
+                'id' => $receive->id,
+                'customer_name' => $receive->customer->phone ? $receive->customer->name . ' (' . $receive->customer->phone . ')' : $receive->customer->name ?? 'N/A',
+                'date' => $receive->date,
+                'amount' => (float)$receive->amount,
+                'note' => $receive->note,
+            ];
+        });
+
+        return $this->successResponse([
+            'sales' => $sales,
+            'purchases' => $purchases,
+            'supplier_due_payments' => $supplierDuePayments,
+            'customer_due_receives' => $customerDueReceives,
+        ]);
+    }
+
+    /**
+     * Get filter options for daily summary report
+     */
+    public function dailySummaryReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+        ]);
+    }
+
+
+    /**
+     * Get stock report with filters
+     */
+    public function stockReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+    
+        $query = Item::with([
+            'category:id,name',
+            'unit:id,name'
+        ])->where('type', 'Product')
+        ->where('company_id', Auth::user()->company_id)
+        ->where('del_status', 'Live')
+        ->where('status', 'Enable')
+        ->select('id', 'name', 'code', 'type', 'purchase_price', 'last_purchase_price', 'last_three_purchase_avg', 'category_id', 'unit_id');
+        
+
+        // Search functionality
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->q . '%')
+                ->orWhere('code', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('name', 'asc');
+        }
+
+        if ($request->has('item_id') && !empty($request->item_id)) {
+            $query->where('id', $request->item_id);
+        }
+        if ($request->has('supplier_id') && !empty($request->supplier_id)) {
+            $query->where('supplier_id', $request->supplier_id);
+        }
+        if ($request->has('category_id') && !empty($request->category_id)) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Get all items without pagination for stock report
+        $items = $query->get();
+
+
+        // Calculate stock for each item
+        foreach ($items as $item) {
+            $item->stock = $this->calculateItemStock($item->id);
+        }
+
+
+        return $this->successResponse([
+            'items' => $items,
+            'total' => $items->count(),
+        ]);
+    }
+
+    /**
+     * Get filter options for stock report
+     */
+    public function stockReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+
+        // Get suppliers
+        $suppliers = Supplier::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name', 'phone')
+            ->get();
+
+        // Get items
+        $items = Item::where('del_status', 'Live')
+            ->where('type', 'Product')
+            ->where('company_id', $companyId)
+            ->where('status', 'Enable')
+            ->select('id', 'name', 'code')
+            ->get();
+
+        // Get categories
+        $categories = Category::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('type', 'Product')
+            ->where('status', 'Enabled')
+            ->select('id', 'name')
+            ->get();
+
+        return $this->successResponse([
+            'suppliers' => $suppliers,
+            'items' => $items,
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * Calculate stock for a specific item
+     */
+    public function calculateItemStock($itemId)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // 1. Calculate total purchases
+        $totalPurchases = PurchaseDetail::join('purchases', 'purchase_details.purchase_id', '=', 'purchases.id')
+            ->where('purchase_details.item_id', $itemId)
+            ->where('purchases.company_id', $companyId)
+            ->where('purchases.del_status', 'Live')
+            ->where('purchase_details.del_status', 'Live')
+            ->sum('purchase_details.quantity');
+
+        // 2. Calculate total direct sales
+        $totalDirectSales = SaleDetail::join('sales', 'sale_details.sale_id', '=', 'sales.id')
+            ->where('sale_details.item_id', $itemId)
+            ->where('sales.company_id', $companyId)
+            ->where('sales.del_status', 'Live')
+            ->where('sale_details.del_status', 'Live')
+            ->sum('sale_details.quantity');
+
+        // 3. Calculate total sales through packages
+        $totalPackageSales = $this->calculatePackageSales($itemId, $companyId);
+
+        // 4. Calculate total product usages
+        $totalProductUsages = \App\Models\ProductUsages::where('item_id', $itemId)
+            ->where('company_id', $companyId)
+            ->where('del_status', 'Live')
+            ->sum('quantity');
+
+        // 5. Calculate total damage stock
+        $totalDamageStock = DamageDetail::join('damages', 'damage_details.damage_id', '=', 'damages.id')
+            ->where('damage_details.item_id', $itemId)
+            ->where('damages.company_id', $companyId)
+            ->where('damages.del_status', 'Live')
+            ->where('damage_details.del_status', 'Live')
+            ->sum('damage_details.quantity');
+
+        // Stock formula: Purchase + (- Sale) + (- Package Products sold) + (- Product Usages)
+        $stock = $totalPurchases - $totalDirectSales - $totalPackageSales - $totalProductUsages - $totalDamageStock;
+
+        return $stock;
+    }
+
+    /**
+     * Calculate sales through packages for a specific item
+     */
+    public function calculatePackageSales($itemId, $companyId)
+    {
+        // Get all packages that contain this item
+        $packagesWithItem = ItemDetail::join('items as package', 'item_details.item_relation_id', '=', 'package.id')
+            ->where('item_details.item_id', $itemId)
+            ->where('package.type', 'Package')
+            ->where('package.company_id', $companyId)
+            ->where('package.del_status', 'Live')
+            ->where('item_details.del_status', 'Live')
+            ->select('package.id as package_id', 'item_details.quantity as item_quantity_in_package')
+            ->get();
+
+        $totalPackageSales = 0;
+
+        foreach ($packagesWithItem as $packageItem) {
+            // Get total sales of this package
+            $packageSales = SaleDetail::join('sales', 'sale_details.sale_id', '=', 'sales.id')
+                ->where('sale_details.item_id', $packageItem->package_id)
+                ->where('sales.company_id', $companyId)
+                ->where('sales.del_status', 'Live')
+                ->where('sale_details.del_status', 'Live')
+                ->sum('sale_details.quantity');
+
+            // Calculate how many of this item were sold through this package
+            $itemSoldThroughPackage = $packageSales * $packageItem->item_quantity_in_package;
+            $totalPackageSales += $itemSoldThroughPackage;
+        }
+
+        return $totalPackageSales;
+    }
+
+
+    public function salaryReport(Request $request)
+    {
+        $query = Salary::with(['branch:id,branch_name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id);
+            
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('generated_date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('generated_date', '<=', $request->date_to);
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        }
+
+        // Pagination
+        $perPage = $request->itemsPerPage ?? 10;
+        $salaries = $query->paginate($perPage);
+
+        return $this->successResponse([
+            'salaries' => $salaries->items(),
+            'total' => $salaries->total(),
+        ]);
+    }
+
+    /**
+     * Get filter options for salary report
+     */
+    public function salaryReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get employees
+        $employees = User::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name', 'phone')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+}

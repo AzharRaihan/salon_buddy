@@ -1,0 +1,31 @@
+{
+    "currency_position": {
+        "prefix": "Prefix",
+        "suffix": "Suffix"
+    },
+    "precision": {
+        "2": "2 Digit",
+        "3": "3 Digit"
+    },
+    "thousand_separator": {
+        "dot": "Dot(.)",
+        "comma": "Comma(,)",
+        "space": "Space"
+    },
+    "decimal_separator": {
+        "dot": "Dot(.)",
+        "comma": "Comma(,)",
+        "space": "Space"
+    },
+    "date_format": {
+        "d-m-Y": "d-m-Y",
+        "m-d-Y": "m-d-Y",
+        "Y-m-d": "Y-m-d",
+        "d/m/Y": "d/m/Y",
+        "m/d/Y": "m/d/Y",
+        "Y/m/d": "Y/m/d",
+        "d.m.Y": "d.m.Y",
+        "m.d.Y": "m.d.Y",
+        "Y.m.d": "Y.m.d"
+    }
+}

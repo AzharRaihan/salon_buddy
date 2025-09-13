@@ -1,0 +1,2790 @@
+
+@media only screen and (max-width: 1919.98px) {
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 46%;
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 46%;
+  }
+}
+@media only screen and (max-width: 1399.98px) {
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 46%;
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 46%;
+  }
+
+  /* Header Part */
+  .hero-section {
+    height: 78vh;
+  }
+  .hero-section .hero-title {
+    font-size: 40px;
+    -webkit-line-clamp: 2;
+  }
+  .hero-section .hero-subtitle {
+    font-size: 16px;
+  }
+  .hero-section .welcome-text {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  /* Package Section */
+  .special-offers-section .package-wrapper {
+    flex-direction: column;
+  }
+  .special-offers-section .offer-services {
+    flex-direction: column;
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 45%;
+  }
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 45%;
+  }
+  .special-offers-section .offer-image {
+    width: 100%;
+    height: auto;
+  }
+  .special-offers-section-2 .package-card-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .package-wrapper {
+    align-items: start !important
+  }
+  .package-wrapper .package-content {
+    width: 100%;
+  }
+  .package-wrapper .services-list li:last-child {
+    margin-bottom: 0px;
+  }
+
+
+}
+
+/* Large devices (desktops, less than 1200px) */
+@media only screen and (max-width: 1199.98px) {
+
+  /* Header Part */
+  .header-section .top-bar {
+    height: 45px;
+  }
+  .header-section .contact-info span {
+    font-size: 14px;
+  }
+  .header-section .top-bar .social-links a {
+    font-size: 14px;
+    width: 34px;
+    height: 34px;
+  }
+  .header-section #languageDropdown { 
+    font-size: 14px;
+  }
+  .header-section .navbar-nav .nav-link {
+    font-size: 14px;
+  }
+  .header-section .logo-img {
+    max-height: 35px;
+  }
+  .header-section  .btn-login, .btn-outlet {
+    font-size: 14px; 
+  }
+
+
+  /* Common Page Banner */
+  .common-page-banner .banner-title {
+    font-size: 45px;
+  }
+  .common-page-banner {
+    min-height: 360px;
+  }
+  .common-page-banner .banner-container {
+    height: 360px;
+  }
+  .common-page-banner .banner-content-section {
+    background-size: contain;
+  }
+
+  /* Default Section */
+  .section-header h2 {
+    font-size: 45px;
+  }
+  .section-header {
+    padding-bottom: 55px;
+  }
+  .default-section-padding {
+    padding: 80px 0px;
+  }
+  .default-section-padding-b {
+    padding-bottom: 80px;
+  }
+  .default-section-padding-t {
+    padding-top: 80px;
+  }
+  .btn-booking-wrap  .btn-booking {
+    padding: 6px 15px;
+  }
+  .btn-booking-wrap .arrow-icon-wrap {
+    width: 35px;
+    height: 35px;
+  }
+  .section-header h3 {
+    font-size: 35px;
+  }
+
+
+  /* Featured Services */
+  .featured-services .features-service-swiper-wrap .swiper-button-next {
+    right: 44%;
+  }
+  .featured-services .features-service-swiper-wrap .swiper-button-prev {
+    left: 44%;
+  }
+  .featured-services .features-service-swiper-wrap {
+    padding-bottom: 100px;
+  }
+  
+  /* Why Choose Us */
+  .about-section {
+    background-size: 35%;
+    background-position: right;
+  }
+  .about-counter-section .about-stats {
+    padding: 80px 0px;
+  }
+  .about-counter-section .stat-number {
+    margin-top: 20px;
+    font-size: 35px;
+  }
+  .about-counter-section .stat-label {
+    font-size: 18px;
+  }
+  .about-counter-section .stat-item {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+  .about-counter-section .start-el-wrap {
+    text-align: center;
+  }
+
+  /* Team Section  */
+  .team-section .member-title {
+    padding-left: 30px;
+  }
+  .team-section .team-nav-prev {
+    left: 30px;
+  }
+
+  /* Footer Section */
+  .app-footer .newsletter-section h2 {
+    font-size: 30px;
+  }
+  .app-footer {
+    padding-top: 150px;
+  }
+
+
+  /* About Us Page */
+  .about-us-section-discover .discover-content h2 {
+    font-size: 35px;
+  }
+  .about-us-section-discover .discover-image-content h2 {
+    font-size: 55px;
+  }
+  .about-use-video-section .about-use-video-content h1 {
+    font-size: 45px;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .about-use-video-section {
+    padding-bottom: 80px;
+  }
+  .about-use-video-section .about-use-video {
+    height: 470px;
+  }
+
+  /* Checkout Page */
+  .checkout-page-section .contact-infor-form input, .checkout-page-section .contact-infor-form select {
+    height: 50px;
+  }
+  .checkout-page-section .contact-infor-wrap h4 {
+    font-size: 25px;
+  }
+  .checkout-page-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+
+  /* Billing Details Page */
+  .shopping-cart-section .contact-infor-form input, .shopping-cart-section .contact-infor-form select {
+    height: 50px;
+  }
+
+
+  /* Contact Us Page */
+  .contact-us-wrapper .contact-us-content h3 {
+    font-size: 38px;
+  }
+  .contact-us-wrapper .contact-us-form .form-group input {
+    height: 50px;
+  }
+  .contact-us-wrapper .contact-address-part {
+    padding: 40px;
+    margin-left: 60px;
+  }
+  .contact-us-wrapper .store-card-content p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* Special Offers */
+  /* Package Section */
+  .special-offers-section .package-wrapper {
+    flex-direction: column;
+  }
+  .special-offers-section .offer-services {
+    flex-direction: column;
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 44%;
+  }
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 44%;
+  }
+  .special-offers-section .offer-image {
+    width: 100%;
+    height: auto;
+  }
+  .special-offers-section-2 .package-card-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .package-wrapper {
+    align-items: start !important
+  }
+  .package-wrapper .package-content {
+    width: 100%;
+  }
+  .package-wrapper .services-list li:last-child {
+    margin-bottom: 0px;
+  }
+  .special-offers-section .offer-name {
+    font-size: 25px;
+  }
+  .special-offers-section .services-list li > span {
+    margin-left: 15px;
+  }
+
+  /* Booking */
+  .calendar-days {
+    gap: 5px;
+  }
+  .calendar-day {
+    height: 45px;
+    width: 45px;
+  }
+  .appointment-booking-form {
+    margin-bottom: 100px;
+  }
+
+  /* Customer Dashboard */
+  .dashboard-wrapper .dashboard-card h4 {
+    font-size: 24px;
+  }
+  .dashboard-wrapper .dashboard-card {
+    padding: 15px;
+  }
+  .dashboard-wrapper .dashboard-card h5 {
+    font-size: 16px;
+  }
+
+
+  /* Forgot Password */
+  .login-title-subtitle {
+    font-size: 14px;
+  }
+  .login-title{
+    font-size: 30px;
+  }
+  .login-wrapper {
+    padding-bottom: 300px;
+  }
+  .message-header-text {
+    font-size: 22px;
+  }
+  .btn-varify {
+    font-size: 18px;
+  }
+  .message-header-icon {
+    top: -67px;
+  }
+
+  /* Package Details */
+  .customer-panel-sidebar-wrapper ul li a {
+    font-size: 13px;
+  }
+  .customer-panel-sidebar-wrapper {
+    width: 354px;
+    padding: 30px;
+  }
+  .package-details-wrapper .package-details-title {
+    font-size: 20px;
+  }
+  .package-details-wrapper .package-header ul li .value {
+    font-size: 16px;
+  }
+  .package-details-wrapper .package-header ul li .title {
+    font-size: 16px;
+  }
+
+  /* Customer Pannel */
+  .customer-panel-body table thead th {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .customer-panel-body table tbody td {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .customer-profile-setting-section {
+    padding-top: 80px;
+  }
+
+  /* Packages Styles */
+  .package-single-page-section {
+    padding-bottom: 300px;
+    padding-top: 80px;
+  }
+  .special-offers .offer-content {
+    padding: 16px;
+  }
+  .special-offers .offer-description {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-title {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-list li {
+    padding: 2px 0px;
+  }
+  .special-offers .offer-pricing {
+    padding: 10px;
+  }
+  .special-offers .package-price {
+    font-size: 16px;
+  }
+  .special-offers .label {
+    font-size: 13px;
+  }
+  .special-offers .savings {
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+
+  /* Salon Product Styles */
+  .product-single-page-section {
+    padding-bottom: 300px;
+  }
+
+  
+
+
+  /* Profile Setting */
+  .secondary-input input, .secondary-input select {
+    height: 50px;
+    padding: 0px 16px;
+  }
+
+  /* Service Page */
+  .service-wrapper .service-card-inner .service-content {
+    padding: 20px;
+  }
+  .service-wrapper .service-card-inner .service-content .service-name {
+    font-size: 18px;
+  }
+  
+  /* Shopping Cart */
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group {
+    padding: 5px;
+  }
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group button {
+    width: 30px;
+    height: 30px;
+  }
+  .shopping-cart-section .shopping-cart-footer button, .shopping-cart-section .shopping-cart-footer a {
+    padding: 12px 30px;
+  }
+  .shopping-cart-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+  .shopping-cart-section .order-summary-section ul li {
+    font-size: 14px;
+  }
+
+
+  /* Team Details */
+  .team-details-wrapper .team-details-content h2 {
+    font-size: 45px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 16px;
+  }
+  .team-details-wrapper .team-details-info h3 {
+    font-size: 25px;
+    margin-bottom: 15px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li {
+    margin-bottom: 10px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .title {
+    font-size: 16px;
+    min-width: 175px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .value {
+    font-size: 16px;
+  }
+  .team-details-wrapper .team-details-card .image-circle {
+    width: 100px;
+    height: 100px;
+  }
+  .team-details-wrapper .team-details-card .image-circle img {
+    width: 50px;
+    height: 50px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content h3 {
+    font-size: 38px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content p {
+    font-size: 18px;
+  }
+  .team-details-wrapper .team-details-card {
+    padding: 25px;
+  }
+  .team-details-wrapper .review-box input {
+    height: 50px;
+  }
+  .team-details-wrapper .customer-comment-wrapper .customer-comment-title {
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .app-footer {
+    padding-top: 100px;
+  }
+  
+
+}
+
+/* Medium devices (tablets, less than 992px) */
+@media only screen and (max-width: 991.98px) {
+  /* Header Part */
+  .righ-side-overlay {
+    width: 430px;
+  }
+  .mobile-header-icon-wrapper {
+    display: block;
+  }
+  .header-section .top-bar .contact-info .phone-number {
+    margin-right: 10px !important;
+  }
+  .header-section .top-bar {
+    height: 45px;
+  }
+  .header-section .contact-info span {
+    font-size: 14px;
+  }
+  .header-section .top-bar .social-links a {
+    font-size: 14px;
+    width: 34px;
+    height: 34px;
+  }
+  .header-section #languageDropdown { 
+    font-size: 14px;
+  }
+  .header-section .navbar-nav .nav-link {
+    font-size: 14px;
+  }
+  .header-section .logo-img {
+    max-height: 35px;
+  }
+  .header-section  .btn-login, .btn-outlet {
+    font-size: 14px; 
+  }
+
+
+  /* Common Page Banner */
+  .common-page-banner .banner-title {
+    font-size: 40px;
+  }
+  .common-page-banner {
+    min-height: 310px;
+  }
+  .common-page-banner .banner-container {
+    height: 310px;
+  }
+  .common-page-banner .banner-content-section {
+    background-size: contain;
+  }
+
+  /* Default Section */
+  .section-header h2 {
+    font-size: 40px;
+  }
+  .section-header {
+    padding-bottom: 55px;
+  }
+  .default-section-padding {
+    padding: 70px 0px;
+  }
+  .default-section-padding-b {
+    padding-bottom: 70px;
+  }
+  .default-section-padding-t {
+    padding-top: 70px;
+  }
+  .btn-booking-wrap  .btn-booking {
+    padding: 6px 15px;
+  }
+  .btn-booking-wrap .arrow-icon-wrap {
+    width: 35px;
+    height: 35px;
+  }
+  .section-header h3 {
+    font-size: 35px;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    height: 50vh;
+    background-position: unset;
+  }
+  .hero-main .hero-content-wrapper {
+    width: 80%;
+  }
+
+
+  /* Featured Services */
+  .featured-services .features-service-swiper-wrap .swiper-button-next {
+    right: 40%;
+  }
+  .featured-services .features-service-swiper-wrap .swiper-button-prev {
+    left: 40%;
+  }
+  .featured-services .features-service-swiper-wrap {
+    padding-bottom: 100px;
+  }
+  
+  /* Why Choose Us */
+  .about-section {
+    background-size: 35%;
+    background-position: right;
+  }
+  .about-counter-section .about-stats {
+    padding: 70px 0px;
+  }
+  .about-counter-section .stat-number {
+    margin-top: 20px;
+    font-size: 35px;
+  }
+  .about-counter-section .stat-label {
+    font-size: 18px;
+  }
+  .about-counter-section .stat-item {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .about-counter-section .start-el-wrap {
+    text-align: center;
+  }
+
+  /* Team Section  */
+  .team-section {
+    padding-bottom: 120px;
+  }
+  .team-section .member-title {
+    padding-left: 30px;
+  }
+  .team-section .team-nav-prev {
+    left: 41%;
+  }
+  .team-section .team-nav-next {
+    left:  53%;
+  }
+  .team-section .team-nav-prev, .team-section .team-nav-next {
+    top: 110%;
+  }
+
+  /* Footer Section */
+  .footer-row {
+    padding: 50px 30px;
+  }
+  .app-footer .newsletter-section h2 {
+    font-size: 30px;
+  }
+  .app-footer {
+    padding-top: 150px;
+  }
+  .app-footer .newsletter-section h2 {
+    max-width: 100%;
+  }
+  .app-footer .newsletter-container {
+    top: -200px;
+  }
+
+  /* Frequently Ask Question */
+  .frequently-ask-question {
+    padding-top: 70px;
+  }
+  .frequently-ask-question .image-dotted img {
+    height: 150px;
+  }
+  .frequently-ask-question .section-header {
+    padding-bottom: 20px;
+  }
+
+
+  /* About Us Page */
+  .about-section .about-content {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-content h2 {
+    margin-top: 30px;
+    font-size: 30px;
+  }
+  .about-us-section-discover .discover-image-content  {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-image-content h2 {
+    font-size: 45px;
+  }
+  .about-use-video-section .about-use-video-content h1 {
+    font-size: 40px;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .about-use-video-section {
+    padding-bottom: 80px;
+  }
+  .about-use-video-section .about-use-video {
+    height: 400px;
+  }
+  .about-us-section-padding {
+    padding-bottom: 245px;
+  }
+
+
+  /* Checkout Page */
+  .checkout-page-section {
+    padding-bottom: 270px;
+  }
+  .checkout-page-section .checkout-page {
+    margin-bottom: 70px;
+  }
+  .checkout-page-section .contact-infor-form input, .checkout-page-section .contact-infor-form select {
+    height: 50px;
+  }
+  .checkout-page-section .contact-infor-wrap h4 {
+    font-size: 25px;
+  }
+  .checkout-page-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+
+  /* Billing Details Page */
+  .shopping-cart-section .contact-infor-form input, .shopping-cart-section .contact-infor-form select {
+    height: 50px;
+  }
+
+
+  /* Contact Us Page */
+  .contact-us-wrapper {
+    padding-top: 70px;
+    padding-bottom: 270px;
+  }
+  .contact-us-wrapper .contact-us-content h3 {
+    font-size: 38px;
+  }
+  .contact-us-wrapper .contact-us-form .form-group input {
+    height: 50px;
+  }
+  .contact-us-wrapper .contact-address-part {
+    margin-top: 40px;
+    padding: 40px;
+    margin-left: 0px;
+  }
+  .contact-us-wrapper .store-card-content p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+
+  /* Customer Dashboard */
+  .customer-profile-setting-section {
+    padding-bottom: 270px;
+  }
+  .dashboard-wrapper .dashboard-card h4 {
+    font-size: 24px;
+  }
+  .dashboard-wrapper .dashboard-card {
+    padding: 15px;
+  }
+  .dashboard-wrapper .dashboard-card h5 {
+    font-size: 16px;
+  }
+
+  .customer-panel-body {
+    padding: 25px;
+  }
+
+
+  /* Forgot Password */
+  .login-title-subtitle {
+    font-size: 14px;
+  }
+  .login-title{
+    font-size: 26px;
+  }
+  .login-wrapper {
+    padding-bottom: 270px;
+  }
+  .btn-login-lg {
+    padding: 10px 18px;
+    font-size: 14px;
+    height: 45px;
+  }
+  .message-header-text {
+    font-size: 20px;
+  }
+  .btn-varify {
+    font-size: 16px;
+    height: 40px;
+  }
+  .message-header-icon {
+    top: -67px;
+  }
+  .verify-email-wrapper {
+    padding-top: 80px;
+  }
+
+  /* Gallery */
+  .gallery-wrapper .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gallery-wrapper {
+    padding-bottom: 260px;
+  }
+
+  /* Package Details */
+  .special-offers-section-2 .package-card-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 42%;
+  }
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 42%;
+  }
+  .customer-panel-sidebar-wrapper ul li a {
+    font-size: 13px;
+  }
+  .customer-panel-sidebar-wrapper {
+    width: 354px;
+    padding: 25px;
+  }
+  .package-details-wrapper .package-details-title {
+    font-size: 18px;
+  }
+  .package-details-wrapper .package-header ul li .value {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-header ul li .title {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-details-heading {
+    padding: 10px 20px;
+  }
+  .package-details-wrapper .package-details-item {
+    padding: 10px 20px;
+  }
+
+  .package-order-section .customer-panel, .product-order-section .customer-panel, .service-order-section .customer-panel, .transaction-history-section .customer-panel {
+    flex-direction: column;
+  }
+  .package-order-section .customer-panel-sidebar-wrapper, .product-order-section .customer-panel-sidebar-wrapper, .service-order-section .customer-panel-sidebar-wrapper, .transaction-history-section .customer-panel-sidebar-wrapper {
+    width: 100%;
+    padding: 25px;
+  }
+
+  /* Customer Pannel */
+  .customer-panel-body table thead th {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .customer-panel-body table tbody td {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .customer-profile-setting-section {
+    padding-top: 70px;
+  }
+
+  /* Packages Styles */
+  .package-single-page-section {
+    padding-bottom: 270px;
+    padding-top: 70px;
+  }
+  .special-offers .offer-content {
+    padding: 16px;
+  }
+  .special-offers .offer-description {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-title {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-list li {
+    padding: 2px 0px;
+  }
+  .special-offers .offer-pricing {
+    padding: 10px;
+  }
+  .special-offers .package-price {
+    font-size: 16px;
+  }
+  .special-offers .label {
+    font-size: 13px;
+  }
+  .special-offers .savings {
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  /* Salon Product Styles */
+  .product-single-page-section {
+    padding-bottom: 270px;
+  }
+
+
+  /* Profile Setting */
+  .secondary-input input, .secondary-input select {
+    height: 50px;
+    padding: 0px 16px;
+  }
+
+  /* Booking */
+  .selected-services-card {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  /* Service Page */
+  .service-wrapper {
+    padding-bottom: 290px;
+  }
+  .service-wrapper .pagination-wrapper {
+    padding-top: 40px;
+  }
+  .service-wrapper .service-card-inner .service-content {
+    padding: 20px;
+  }
+  .service-wrapper .service-card-inner .service-content .service-name {
+    font-size: 18px;
+  }
+  
+  /* Shopping Cart */
+  .shopping-cart-section {
+    padding-bottom: 270px;
+  }
+  .shopping-cart-section .order-summary-section {
+    margin-top: 40px;
+  } 
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group {
+    padding: 5px;
+  }
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group button {
+    width: 30px;
+    height: 30px;
+  }
+  .shopping-cart-section .shopping-cart-footer button, .shopping-cart-section .shopping-cart-footer a {
+    padding: 12px 30px;
+  }
+  .shopping-cart-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+  .shopping-cart-section .order-summary-section ul li {
+    font-size: 14px;
+  }
+
+
+  /* Team Details */
+  .team-details-wrapper .team-details-content h2 {
+    font-size: 40px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-info h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li {
+    margin-bottom: 10px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .title {
+    font-size: 14px;
+    min-width: 175px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .value {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-card .image-circle {
+    width: 100px;
+    height: 100px;
+  }
+  .team-details-wrapper .team-details-card .image-circle img {
+    width: 50px;
+    height: 50px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content h3 {
+    font-size: 30px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content p {
+    font-size: 16px;
+  }
+  .team-details-wrapper .team-details-card {
+    padding: 25px;
+  }
+  .team-details-wrapper .review-box input {
+    height: 50px;
+  }
+  .team-details-wrapper .customer-comment-wrapper .customer-comment-title {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+  .team-section .image-dotted {
+    display: none;
+  }
+  .team-details-wrapper {
+    padding-top: 70px;
+    padding-bottom: 270px;
+  }
+  .team-details-wrapper .team-details-content-wrapper {
+    padding-left: 15px;
+  }
+  .team-details-wrapper .team-details-portfolio-title {
+    font-size: 22px;
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  .righ-side-overlay {
+    width: 350px;
+  }
+}
+
+/* Small devices (landscape phones, less than 768px) */
+@media only screen and (max-width: 767.98px) {
+  /* Header Part */
+  .righ-side-overlay {
+    width: 150px;
+  }
+  .mobile-header-icon-wrapper {
+    display: block;
+  }
+  .header-section .top-bar .social-links {
+    display: none;
+  }
+  .header-section .top-bar .contact-info .phone-number {
+    margin-right: 10px !important;
+  }
+  .header-section .top-bar {
+    height: 40px;
+  }
+  .header-section .contact-info span {
+    font-size: 14px;
+  }
+  .header-section .top-bar .social-links a {
+    font-size: 14px;
+    width: 34px;
+    height: 34px;
+  }
+  .header-section #languageDropdown { 
+    font-size: 14px;
+  }
+  .header-section .navbar-nav .nav-link {
+    font-size: 14px;
+  }
+  .header-section .logo-img {
+    max-height: 35px;
+  }
+  .header-section  .btn-login, .btn-outlet {
+    font-size: 14px; 
+  }
+
+  /* Hero Section */
+  .hero-section .hero-title {
+    font-size: 40px;
+  }
+
+
+  /* Common Page Banner */
+  .common-page-banner .banner-title {
+    font-size: 35px;
+  }
+  .common-page-banner {
+    min-height: 230px;
+  }
+  .common-page-banner .banner-container {
+    height: 230px;
+  }
+  .common-page-banner .banner-content-section {
+    background-size: contain;
+  }
+
+  /* Default Section */
+  .section-header h2 {
+    font-size: 35px;
+  }
+  .section-header {
+    padding-bottom: 55px;
+  }
+  .default-section-padding {
+    padding: 70px 0px;
+  }
+  .default-section-padding-b {
+    padding-bottom: 70px;
+  }
+  .default-section-padding-t {
+    padding-top: 70px;
+  }
+  .btn-booking-wrap  .btn-booking {
+    padding: 6px 15px;
+  }
+  .btn-booking-wrap .arrow-icon-wrap {
+    width: 35px;
+    height: 35px;
+  }
+  .section-header h3 {
+    font-size: 30px;
+  }
+
+
+  /* Featured Services */
+  .featured-services .features-service-swiper-wrap .swiper-button-next {
+    right: 40%;
+  }
+  .featured-services .features-service-swiper-wrap .swiper-button-prev {
+    left: 40%;
+  }
+  .featured-services .features-service-swiper-wrap {
+    padding-bottom: 100px;
+  }
+  
+  /* Why Choose Us */
+  .about-section {
+    background-size: 35%;
+    background-position: right;
+  }
+  .about-counter-section .about-stats {
+    padding: 70px 0px;
+  }
+  .about-counter-section .stat-number {
+    margin-top: 20px;
+    font-size: 30px;
+  }
+  .about-counter-section .stat-label {
+    font-size: 18px;
+  }
+  .about-counter-section .stat-item {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .about-counter-section .start-el-wrap {
+    text-align: center;
+  }
+
+  /* Team Section  */
+  .team-section {
+    padding-bottom: 120px;
+  }
+  .team-section .member-title {
+    padding-left: 30px;
+  }
+  .team-section .team-nav-prev {
+    left: 41%;
+  }
+  .team-section .team-nav-next {
+    left:  53%;
+  }
+  .team-section .team-nav-prev, .team-section .team-nav-next {
+    top: 110%;
+  }
+  .team-section .team-card .team-content {
+    padding: 20px 10px;
+  }
+  .team-section .team-image {
+    height: 260px;
+  }
+  .team-section .team-card {
+    height: 435px;
+    border-radius: 12px;
+  }
+  .team-section .team-image img {
+    border-radius: 12px;
+  }
+  .team-section .team-name {
+    font-size: 30px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .team-section .team-position {
+    font-size: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Footer Section */
+  .app-footer .newsletter-section h2 {
+    font-size: 26px;
+    max-width: 100%;
+  }
+  .app-footer {
+    padding-top: 150px;
+  }
+  .app-footer .newsletter-container {
+    top: -200px;
+  }
+  .app-footer .bottom-footer {
+    justify-content: center;
+  }
+  .app-footer .copyright {
+    text-align: center;
+  }
+  .app-footer .main-footer {
+    padding-bottom: 1rem;
+  }
+  .app-footer .footer-bottom-links {
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  /* Frequently Ask Question */
+  .frequently-ask-question {
+    padding-top: 70px;
+  }
+  .frequently-ask-question .image-dotted img {
+    height: 150px;
+  }
+  .frequently-ask-question .section-header {
+    padding-bottom: 20px;
+  }
+
+
+  /* About Us Page */
+  .about-section .about-content {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-content h2 {
+    font-size: 30px;
+  }
+  .about-us-section-discover .discover-image-content  {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-image-content h2 {
+    font-size: 40px;
+  }
+  .about-use-video-section .about-use-video-content h1 {
+    font-size: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .about-use-video-section {
+    padding-bottom: 80px;
+  }
+  .about-use-video-section .about-use-video {
+    height: 400px;
+  }
+  .about-us-section-padding {
+    padding-bottom: 245px;
+  }
+  .about-use-video-section .play-container {
+    width: 70px;
+    height: 70px;
+  }
+  .about-us-section-discover .discover-image-content {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+
+
+  /* Checkout Page */
+  .checkout-page-section {
+    padding-bottom: 270px;
+  }
+  .checkout-page-section .checkout-page {
+    margin-bottom: 70px;
+  }
+  .checkout-page-section .contact-infor-form input, .checkout-page-section .contact-infor-form select {
+    height: 50px;
+  }
+  .checkout-page-section .contact-infor-wrap h4 {
+    font-size: 25px;
+  }
+  .checkout-page-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+
+  /* Billing Details Page */
+  .shopping-cart-section .contact-infor-form input, .shopping-cart-section .contact-infor-form select {
+    height: 50px;
+  }
+
+
+  /* Contact Us Page */
+  .contact-us-wrapper {
+    padding-top: 70px;
+    padding-bottom: 270px;
+  }
+  .contact-us-wrapper .contact-us-content h3 {
+    font-size: 33px;
+  }
+  .contact-us-wrapper .contact-us-form .form-group input {
+    height: 50px;
+  }
+  .contact-us-wrapper .contact-address-part {
+    margin-top: 40px;
+    padding: 40px;
+    margin-left: 0px;
+  }
+  .contact-us-wrapper .store-card-content p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+
+  /* Customer Dashboard */
+  .customer-profile-setting-section {
+    padding-bottom: 270px;
+  }
+  .dashboard-wrapper .dashboard-card h4 {
+    font-size: 24px;
+  }
+  .dashboard-wrapper .dashboard-card {
+    padding: 15px;
+  }
+  .dashboard-wrapper .dashboard-card h5 {
+    font-size: 16px;
+  }
+
+  .customer-panel-body {
+    padding: 25px;
+  }
+
+
+  /* Forgot Password */
+  .login-title-subtitle {
+    font-size: 14px;
+  }
+  .login-title{
+    font-size: 26px;
+  }
+  .login-wrapper {
+    padding-bottom: 270px;
+  }
+  .btn-login-lg {
+    padding: 10px 18px;
+    font-size: 14px;
+    height: 45px;
+  }
+  .message-header-text {
+    font-size: 20px;
+  }
+  .btn-varify {
+    font-size: 16px;
+    height: 40px;
+  }
+  .message-header-icon {
+    top: -67px;
+  }
+  .verify-email-wrapper {
+    padding-top: 80px;
+  }
+  .login-wrapper .login-image {
+    display: none;
+  }
+
+  /* Gallery */
+  .gallery-wrapper .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gallery-wrapper {
+    padding-bottom: 260px;
+  }
+
+  /* Package Details */
+  .customer-panel-sidebar-wrapper ul li a {
+    font-size: 13px;
+  }
+  .customer-panel-sidebar-wrapper {
+    width: 354px;
+    padding: 25px;
+  }
+  .package-details-wrapper .package-details-title {
+    font-size: 18px;
+  }
+  .package-details-wrapper .package-header ul li .value {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-header ul li .title {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-details-heading {
+    padding: 10px 20px;
+  }
+  .package-details-wrapper .package-details-item {
+    padding: 10px 20px;
+  }
+
+  .customer-profile-setting-section .customer-panel {
+    flex-direction: column;
+  }
+  .customer-profile-setting-section .customer-panel-sidebar-wrapper {
+    width: 100%;
+    padding: 25px;
+  }
+  .customer-panel-sidebar-wrapper {
+    border-right: none;
+  }
+
+  /* Customer Pannel */
+  .customer-panel-body table thead th {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .customer-panel-body table tbody td {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .customer-profile-setting-section {
+    padding-top: 70px;
+  }
+
+  /* Packages Styles */
+  .package-single-page-section {
+    padding-bottom: 270px;
+    padding-top: 70px;
+  }
+  .special-offers .offer-content {
+    padding: 30px;
+  }
+  .special-offers .offer-description {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-title {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-list li {
+    padding: 2px 0px;
+  }
+  .special-offers .offer-pricing {
+    padding: 10px;
+  }
+  .special-offers .package-price {
+    font-size: 16px;
+  }
+  .special-offers .label {
+    font-size: 13px;
+  }
+  .special-offers .savings {
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .service-wrapper .service-wrap-inner {
+    grid-template-columns: 100%;
+  }
+
+  /* Salon Product Styles */
+  .product-single-page-section {
+    padding-bottom: 270px;
+  }
+
+
+  /* Profile Setting */
+  .secondary-input input, .secondary-input select {
+    height: 50px;
+    padding: 0px 16px;
+  }
+
+  /* Service Page */
+  .service-wrapper {
+    padding-bottom: 270px;
+  }
+  .service-wrapper .pagination-wrapper {
+    padding-top: 40px;
+  }
+  .service-wrapper .service-card-inner .service-content {
+    padding: 20px;
+  }
+  .service-wrapper .service-card-inner .service-content .service-name {
+    font-size: 18px;
+  }
+  
+  /* Shopping Cart */
+  .shopping-cart-section {
+    padding-bottom: 270px;
+  }
+  .shopping-cart-section .order-summary-section {
+    margin-top: 40px;
+  } 
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group {
+    padding: 5px;
+  }
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group button {
+    width: 26px;
+    height: 26px;
+  }
+  .shopping-cart-section .shopping-cart-footer button, .shopping-cart-section .shopping-cart-footer a {
+    padding: 12px 30px;
+  }
+  .shopping-cart-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+  .shopping-cart-section .order-summary-section ul li {
+    font-size: 14px;
+  }
+  .shopping-cart-section .shopping-cart-body ul li {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 10px;
+    padding-right: 5px;
+  }
+
+  /* Team Details */
+  .team-details-wrapper .team-details-title {
+    margin-top: 30px;
+
+  }
+  .team-details-wrapper .team-details-content h2 {
+    font-size: 40px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-info h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li {
+    margin-bottom: 10px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .title {
+    font-size: 14px;
+    min-width: 175px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .value {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-card .image-circle {
+    width: 100px;
+    height: 100px;
+  }
+  .team-details-wrapper .team-details-card .image-circle img {
+    width: 50px;
+    height: 50px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content h3 {
+    font-size: 30px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content p {
+    font-size: 16px;
+  }
+  .team-details-wrapper .team-details-card {
+    padding: 25px;
+  }
+  .team-details-wrapper .review-box input {
+    height: 50px;
+  }
+  .team-details-wrapper .customer-comment-wrapper .customer-comment-title {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+  .team-section .image-dotted {
+    display: none;
+  }
+  .team-details-wrapper {
+    padding-top: 70px;
+    padding-bottom: 270px;
+  }
+  .team-details-wrapper .team-details-content-wrapper {
+    padding-left: 15px;
+  }
+  .team-details-wrapper .team-details-portfolio-title {
+    font-size: 22px;
+  }
+
+
+  /* Package Details */
+  .special-offers .offer-content {
+    padding: 10px;
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 40%;
+  }
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 40%;
+  }
+
+
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media only screen and (max-width: 575.98px) {
+  .mobile-header-icon-wrapper {
+    display: block;
+  }
+  nav.navbar {
+    height: 70px;
+  }
+  /* Header Part */
+  .top-bar .phone-number i, .top-bar .email-address i{
+    font-size: 16px;
+  }
+  .header-section .top-bar .social-links {
+    display: none;
+  }
+  .header-section .top-bar .contact-info .phone-number {
+    margin-right: 10px !important;
+  }
+  .header-section .top-bar .contact-info .email-address {
+    display: none;
+  }
+  .header-section .top-bar {
+    height: 40px;
+  }
+  .header-section .contact-info span {
+    font-size: 13px;
+  }
+  .header-section .top-bar .social-links a {
+    font-size: 14px;
+    width: 34px;
+    height: 34px;
+  }
+  .header-section #languageDropdown { 
+    font-size: 14px;
+  }
+  .header-section .navbar-nav .nav-link {
+    font-size: 14px;
+  }
+  .header-section .logo-img {
+    max-height: 35px;
+  }
+  .header-section  .btn-login, .btn-outlet {
+    font-size: 14px; 
+  }
+
+  /* Hero Section */
+  .hero-section .hero-title {
+    font-size: 30px;
+  }
+  .hero-main .hero-content-wrapper {
+    width: 100%;
+  }
+
+  /* Common Page Banner */
+  .common-page-banner .banner-title {
+    font-size: 35px;
+  }
+  .common-page-banner {
+    min-height: 230px;
+  }
+  .common-page-banner .banner-container {
+    height: 230px;
+  }
+  .common-page-banner .banner-content-section {
+    background-size: contain;
+  }
+
+  /* Default Section */
+  .section-header h2 {
+    font-size: 35px;
+  }
+  .section-header {
+    padding-bottom: 55px;
+  }
+  .default-section-padding {
+    padding: 70px 0px;
+  }
+  .default-section-padding-b {
+    padding-bottom: 70px;
+  }
+  .default-section-padding-t {
+    padding-top: 70px;
+  }
+  .btn-booking-wrap  .btn-booking {
+    padding: 6px 15px;
+  }
+  .btn-booking-wrap .arrow-icon-wrap {
+    width: 35px;
+    height: 35px;
+  }
+  .section-header h3 {
+    font-size: 30px;
+  }
+
+
+  /* Featured Services */
+  .featured-services .features-service-swiper-wrap .swiper-button-next {
+    right: 37%;
+  }
+  .featured-services .features-service-swiper-wrap .swiper-button-prev {
+    left: 37%;
+  }
+  .featured-services .features-service-swiper-wrap {
+    padding-bottom: 100px;
+  }
+  .featured-services .features-category a {
+    padding: 5px 11px;
+  }
+
+  /* Package */
+  .special-offers-swiper-wrap .swiper-button-next {
+    right: 38%;
+  }
+  .special-offers-swiper-wrap .swiper-button-prev {
+    left: 38%;
+  }
+  .special-offers-swiper-wrap {
+    padding-bottom: 70px;
+  }
+  
+  /* Why Choose Us */
+  .about-section {
+    background-size: 35%;
+    background-position: right;
+  }
+  .about-counter-section .about-stats {
+    padding: 70px 0px;
+  }
+  .about-counter-section .stat-number {
+    margin-top: 20px;
+    font-size: 30px;
+  }
+  .about-counter-section .stat-label {
+    font-size: 18px;
+  }
+  .about-counter-section .stat-item {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .about-counter-section .start-el-wrap {
+    text-align: center;
+  }
+
+  /* Team Section  */
+  .team-section {
+    padding-bottom: 120px;
+  }
+  .team-section .member-title {
+    padding-left: 30px;
+  }
+  .team-section .team-nav-prev {
+    left: 38%;
+  }
+  .team-section .team-nav-next {
+    right: 38%;
+  }
+  .team-section .team-nav-prev, .team-section .team-nav-next {
+    top: 110%;
+  }
+  .team-section .team-image-wrapper {
+    position: unset;
+  }
+  .team-section .team-image {
+    height: auto;
+  }
+  .team-section .team-card {
+    height: auto;
+  }
+
+  /* Booking */
+  .appointment-booking-form {
+    padding: 15px;
+    margin-bottom: 50px;
+  }
+  .calendar-container {
+    margin-top: 15px;
+  }
+
+  /* Service */
+
+  /* Footer Section */
+  .app-footer .newsletter-section h2 {
+    font-size: 26px;
+    max-width: 100%;
+  }
+  .app-footer {
+    padding-top: 150px;
+  }
+  .app-footer .newsletter-container {
+    top: -200px;
+  }
+  .app-footer .bottom-footer {
+    justify-content: center;
+  }
+  .app-footer .copyright {
+    text-align: center;
+  }
+  .app-footer .main-footer {
+    padding-bottom: 1rem;
+  }
+  .app-footer .footer-bottom-links {
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  /* Frequently Ask Question */
+  .frequently-ask-question {
+    padding-top: 70px;
+  }
+  .frequently-ask-question .image-dotted img {
+    height: 150px;
+  }
+  .frequently-ask-question .section-header {
+    padding-bottom: 20px;
+  }
+
+
+  /* About Us Page */
+  .about-section .about-content {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-content h2 {
+    font-size: 30px;
+  }
+  .about-us-section-discover .discover-image-content  {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-image-content h2 {
+    font-size: 40px;
+  }
+  .about-use-video-section .about-use-video-content h1 {
+    font-size: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .about-use-video-section {
+    padding-bottom: 80px;
+  }
+  .about-use-video-section .about-use-video {
+    height: 400px;
+  }
+  .about-us-section-padding {
+    padding-bottom: 245px;
+  }
+  .about-use-video-section .play-container {
+    width: 70px;
+    height: 70px;
+  }
+
+
+  /* Checkout Page */
+  .checkout-page-section {
+    padding-bottom: 270px;
+  }
+  .checkout-page-section .checkout-page {
+    margin-bottom: 70px;
+  }
+  .checkout-page-section .contact-infor-form input, .checkout-page-section .contact-infor-form select {
+    height: 50px;
+  }
+  .checkout-page-section .contact-infor-wrap h4 {
+    font-size: 25px;
+  }
+  .checkout-page-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+
+  /* Billing Details Page */
+  .shopping-cart-section .contact-infor-form input, .shopping-cart-section .contact-infor-form select {
+    height: 50px;
+  }
+
+
+  /* Contact Us Page */
+  .contact-us-wrapper {
+    padding-top: 70px;
+    padding-bottom: 270px;
+  }
+  .contact-us-wrapper .contact-us-content h3 {
+    font-size: 33px;
+  }
+  .contact-us-wrapper .contact-us-form .form-group input {
+    height: 50px;
+  }
+  .contact-us-wrapper .contact-address-part {
+    margin-top: 40px;
+    padding: 40px;
+    margin-left: 0px;
+  }
+  .contact-us-wrapper .store-card-content p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+
+  /* Customer Dashboard */
+  .customer-profile-setting-section {
+    padding-bottom: 270px;
+  }
+  .dashboard-wrapper .dashboard-card h4 {
+    font-size: 24px;
+  }
+  .dashboard-wrapper .dashboard-card {
+    padding: 15px;
+  }
+  .dashboard-wrapper .dashboard-card h5 {
+    font-size: 16px;
+  }
+
+  .customer-panel-body {
+    padding: 25px;
+  }
+
+
+  /* Forgot Password */
+  .login-title-subtitle {
+    font-size: 14px;
+  }
+  .login-title{
+    font-size: 26px;
+  }
+  .login-wrapper {
+    padding-bottom: 270px;
+  }
+  .btn-login-lg {
+    padding: 10px 18px;
+    font-size: 14px;
+    height: 45px;
+  }
+  .message-header-text {
+    font-size: 20px;
+  }
+  .btn-varify {
+    font-size: 16px;
+    height: 40px;
+  }
+  .message-header-icon {
+    top: -67px;
+  }
+  .verify-email-wrapper {
+    padding-top: 80px;
+  }
+  .login-wrapper .login-image {
+    display: none;
+  }
+
+  /* Gallery */
+  .gallery-wrapper .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gallery-wrapper {
+    padding-bottom: 260px;
+  }
+
+  /* Package Details */
+  .customer-panel-sidebar-wrapper ul li a {
+    font-size: 13px;
+  }
+  .customer-panel-sidebar-wrapper {
+    width: 354px;
+    padding: 25px;
+  }
+  .package-details-wrapper .package-details-title {
+    font-size: 18px;
+  }
+  .package-details-wrapper .package-header ul li .value {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-header ul li .title {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-details-heading {
+    padding: 10px 20px;
+  }
+  .package-details-wrapper .package-details-item {
+    padding: 10px 20px;
+  }
+
+  .customer-profile-setting-section .customer-panel {
+    flex-direction: column;
+  }
+  .customer-profile-setting-section .customer-panel-sidebar-wrapper {
+    width: 100%;
+    padding: 25px;
+  }
+  .customer-panel-sidebar-wrapper {
+    border-right: none;
+  }
+
+  /* Customer Pannel */
+  .customer-panel-body table thead th {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .customer-panel-body table tbody td {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .customer-profile-setting-section {
+    padding-top: 70px;
+  }
+  .customer-profile-setting-section .customer-panel-content {
+    overflow-x: auto;
+  }
+  .customer-panel-body-wrapper .customer-panel-content {
+    overflow-x: unset !important;
+  }
+  .shopping-cart-section .shopping-cart-body {
+    overflow-x: auto;
+  }
+
+  /* Packages Styles */
+  .package-single-page-section {
+    padding-bottom: 270px;
+    padding-top: 70px;
+  }
+  .special-offers .offer-content {
+    padding: 30px;
+  }
+  .special-offers .offer-description {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-title {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-list li {
+    padding: 2px 0px;
+  }
+  .special-offers .offer-pricing {
+    padding: 10px;
+  }
+  .special-offers .package-price {
+    font-size: 16px;
+  }
+  .special-offers .label {
+    font-size: 13px;
+  }
+  .special-offers .savings {
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .service-wrapper .service-wrap-inner {
+    grid-template-columns: 100%;
+  }
+
+  /* Salon Product Styles */
+  .product-single-page-section {
+    padding-bottom: 270px;
+  }
+
+
+  /* Profile Setting */
+  .secondary-input input, .secondary-input select {
+    height: 50px;
+    padding: 0px 16px;
+  }
+
+  /* Service Page */
+  .service-wrapper {
+    padding-bottom: 100px;
+  }
+  .service-wrapper .pagination-wrapper {
+    padding-top: 40px;
+  }
+  .service-wrapper .service-card-inner .service-content {
+    padding: 20px;
+  }
+  .service-wrapper .service-card-inner .service-content .service-name {
+    font-size: 18px;
+  }
+
+  /* Package */
+  .special-offers-section-2 .package-card-wrapper {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  /* Shopping Cart */
+  .shopping-cart-section {
+    padding-bottom: 270px;
+  }
+  .shopping-cart-section .order-summary-section {
+    margin-top: 40px;
+  } 
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group {
+    padding: 5px;
+  }
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group button {
+    width: 26px;
+    height: 26px;
+  }
+  .shopping-cart-section .shopping-cart-footer button, .shopping-cart-section .shopping-cart-footer a {
+    padding: 12px 30px;
+  }
+  .shopping-cart-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+  .shopping-cart-section .order-summary-section ul li {
+    font-size: 14px;
+  }
+  .shopping-cart-section .shopping-cart-body ul li {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 10px;
+    padding-right: 5px;
+  }
+  .shopping-cart-section .shopping-cart-body ul li {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+  }
+
+  /* Team Details */
+  .team-details-wrapper .team-details-title {
+    margin-top: 30px;
+
+  }
+  .team-details-wrapper .team-details-content h2 {
+    font-size: 40px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-info h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li {
+    margin-bottom: 10px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .title {
+    font-size: 14px;
+    min-width: 175px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .value {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-card .image-circle {
+    width: 100px;
+    height: 100px;
+  }
+  .team-details-wrapper .team-details-card .image-circle img {
+    width: 50px;
+    height: 50px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content h3 {
+    font-size: 30px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content p {
+    font-size: 16px;
+  }
+  .team-details-wrapper .team-details-card {
+    padding: 25px;
+  }
+  .team-details-wrapper .review-box input {
+    height: 50px;
+  }
+  .team-details-wrapper .customer-comment-wrapper .customer-comment-title {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+  .team-section .image-dotted {
+    display: none;
+  }
+  .team-details-wrapper {
+    padding-top: 70px;
+    padding-bottom: 270px;
+  }
+  .team-details-wrapper .team-details-content-wrapper {
+    padding-left: 15px;
+  }
+  .team-details-wrapper .team-details-portfolio-title {
+    font-size: 22px;
+  }
+}
+
+/* Very small devices (small phones, less than 450px) */
+@media only screen and (min-width: 330px) and (max-width: 449.98px) {
+  .mobile-header-icon-wrapper {
+    display: block;
+  }
+  nav.navbar {
+    height: 70px;
+  }
+  /* Header Part */
+  .top-bar .phone-number i, .top-bar .email-address i{
+    font-size: 16px;
+  }
+  .header-section .top-bar .social-links {
+    display: none;
+  }
+  .header-section .top-bar .contact-info .phone-number {
+    margin-right: 10px !important;
+  }
+  .header-section .top-bar .contact-info .email-address {
+    display: none;
+  }
+  .header-section .top-bar {
+    height: 40px;
+  }
+  .header-section .contact-info span {
+    font-size: 13px;
+  }
+  .header-section .top-bar .social-links a {
+    font-size: 14px;
+    width: 34px;
+    height: 34px;
+  }
+  .header-section #languageDropdown { 
+    font-size: 14px;
+  }
+  .header-section .navbar-nav .nav-link {
+    font-size: 14px;
+  }
+  .header-section .logo-img {
+    max-height: 30px;
+  }
+  .header-section  .btn-login, .btn-outlet {
+    font-size: 14px; 
+  }
+  .mobile-togler {
+    border-radius: 7px;
+    width: 38px;
+    height: 38px;
+  }
+
+  /* Hero Section */
+  .hero-section .hero-title {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+  .hero-section .hero-subtitle {
+    font-size: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  .hero-section .hero-content {
+    padding: 1rem 0;
+  }
+  .hero-section .swiper-pagination {
+    display: none;
+  }
+  .hero-section .hero-swiper-button-next {
+    display: none;
+  }
+  .hero-section .hero-swiper-button-prev {
+    display: none;
+  }
+  .testimonials-section .testimonials-slider-container {
+    padding: 0 35px;
+  }
+  .testimonials-section .testimonial-card {
+    padding: 1rem;
+  }
+
+
+  /* Common Page Banner */
+  .common-page-banner .banner-title {
+    font-size: 26px;
+  }
+  .common-page-banner {
+    min-height: 160px;
+  }
+  .common-page-banner .banner-container {
+    height: 160px;
+  }
+  .common-page-banner .banner-content-section {
+    background-size: contain;
+  }
+  .common-page-banner .breadcrumb-item {
+    font-size: 14px;
+  }
+  .common-page-banner .breadcrumb-list {
+    gap: 5px;
+  }
+
+  /* Default Section */
+  .section-header h2 {
+    font-size: 28px;
+  }
+  .featured-services .features-category {
+    display: inline-block
+  }
+  .section-header {
+    padding-bottom: 30px;
+  }
+  .default-section-padding {
+    padding: 50px 0px;
+  }
+  .default-section-padding-b {
+    padding-bottom: 50px;
+  }
+  .default-section-padding-t {
+    padding-top: 50px;
+  }
+  .btn-booking-wrap  .btn-booking {
+    padding: 6px 15px;
+  }
+  .btn-booking-wrap .arrow-icon-wrap {
+    width: 35px;
+    height: 35px;
+  }
+  .section-header h3 {
+    font-size: 30px;
+  }
+
+
+  /* Featured Services */
+  .featured-services .features-service-swiper-wrap .swiper-button-next {
+    right: 34%;
+  }
+  .featured-services .features-service-swiper-wrap .swiper-button-prev {
+    left: 34%;
+  }
+  .featured-services .features-service-swiper-wrap {
+    padding-bottom: 100px;
+  }
+  .featured-services .features-category a {
+    padding: 5px 11px;
+    margin: 3px;
+  }
+  .featured-services .features-service-swiper-wrap .swiper-button-next, .featured-services .features-service-swiper-wrap .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Why Choose Us */
+  .about-section {
+    background-size: 35%;
+    background-position: right;
+  }
+  .about-counter-section .about-stats {
+    padding: 70px 0px;
+  }
+  .about-counter-section .stat-number {
+    margin-top: 20px;
+    font-size: 30px;
+  }
+  .about-counter-section .stat-label {
+    font-size: 18px;
+  }
+  .about-counter-section .stat-item {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  .about-counter-section .start-el-wrap {
+    text-align: center;
+  }
+
+  /* Team Section  */
+  .team-section {
+    padding-bottom: 120px;
+  }
+  .team-section .member-title {
+    padding-left: 30px;
+  }
+  .team-section .team-nav-prev {
+    left: 39%;
+  }
+  .team-section .team-nav-next {
+    left:  55%;
+  }
+  .team-section .team-nav-prev, .team-section .team-nav-next {
+    top: 110%;
+  }
+  .team-section .team-nav-prev, .team-section .team-nav-next {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Footer Section */ 
+  .app-footer {
+    padding-top: 50px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  .app-footer .newsletter-section {
+    padding: 20px;
+  }
+  .app-footer .special-inner h2 {
+    font-size: 30px;
+  }
+  .app-footer .newsletter-section h2 {
+    font-size: 22px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  .app-footer .newsletter-container {
+    top: -200px;
+  }
+  .app-footer .bottom-footer {
+    justify-content: center;
+  }
+  .app-footer .copyright {
+    text-align: center;
+  }
+  .app-footer .main-footer {
+    padding-bottom: 1rem;
+  }
+  .app-footer .footer-bottom-links {
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  /* Frequently Ask Question */
+  .frequently-ask-question {
+    padding-top: 70px;
+  }
+  .frequently-ask-question .image-dotted img {
+    height: 150px;
+  }
+  .frequently-ask-question .section-header {
+    padding-bottom: 20px;
+  }
+
+
+  /* About Us Page */
+  .about-section .about-content {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-content h2 {
+    font-size: 30px;
+  }
+  .about-us-section-discover .discover-image-content  {
+    margin-top: 70px;
+  }
+  .about-us-section-discover .discover-image-content h2 {
+    font-size: 40px;
+  }
+  .about-use-video-section .about-use-video-content h1 {
+    font-size: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .about-use-video-section {
+    padding-bottom: 80px;
+  }
+  .about-use-video-section .about-use-video {
+    height: 400px;
+  }
+  .about-us-section-padding {
+    padding-bottom: 245px;
+  }
+  .about-use-video-section .play-container {
+    width: 70px;
+    height: 70px;
+  }
+
+
+  /* Booking */
+  .calendar-container {
+    padding: 10px;
+  }
+  .calendar-day {
+    height: 35px;
+    width: 35px;
+    font-size: 13px;
+    font-weight: 500;
+ }
+
+
+  /* Checkout Page */
+  .checkout-page-section {
+    padding-bottom: 250px;
+  }
+  .checkout-page-section .checkout-page {
+    margin-bottom: 50px;
+  }
+  .checkout-page-section .contact-infor-form input, .checkout-page-section .contact-infor-form select {
+    height: 50px;
+  }
+  .checkout-page-section .contact-infor-wrap h4 {
+    font-size: 25px;
+  }
+  .checkout-page-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+
+  /* Billing Details Page */
+  .shopping-cart-section .contact-infor-form input, .shopping-cart-section .contact-infor-form select {
+    height: 50px;
+  }
+
+
+  /* Contact Us Page */
+  .contact-us-wrapper {
+    padding-top: 50px;
+    padding-bottom: 250px;
+  }
+  .contact-us-wrapper .contact-us-content h3 {
+    font-size: 26px;
+  }
+  .contact-us-wrapper .contact-us-form .form-group input {
+    height: 50px;
+  }
+  .contact-us-wrapper .contact-address-part {
+    margin-top: 40px;
+    padding: 40px;
+    margin-left: 0px;
+  }
+  .contact-us-wrapper .store-card-content p {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+
+  /* Customer Dashboard */
+  .customer-profile-setting-section {
+    padding-bottom: 250px;
+  }
+  .dashboard-wrapper .dashboard-card h4 {
+    font-size: 24px;
+  }
+  .dashboard-wrapper .dashboard-card {
+    padding: 15px;
+  }
+  .dashboard-wrapper .dashboard-card h5 {
+    font-size: 16px;
+  }
+
+  .customer-panel-body {
+    padding: 25px;
+  }
+
+
+  /* Forgot Password */
+  .login-title-subtitle {
+    font-size: 14px;
+  }
+  .login-title{
+    font-size: 22px;
+  }
+  .login-wrapper {
+    padding-bottom: 250px;
+  }
+  .btn-login-lg {
+    padding: 10px 18px;
+    font-size: 14px;
+    height: 45px;
+  }
+  .message-header-text {
+    font-size: 16px;
+  }
+  .btn-varify {
+    font-size: 16px;
+    height: 40px;
+  }
+  .message-header-icon {
+    top: -111px;
+  }
+  .verify-email-wrapper {
+    padding-top: 80px;
+  }
+  .login-wrapper .login-image {
+    display: none;
+  }
+  .verify-email-button-wrapper {
+    flex-direction: column;
+  }
+  .verify-email-button-wrapper button {
+    margin-top: 10px;
+  }
+
+  /* Gallery */
+  .gallery-wrapper .gallery-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .gallery-wrapper {
+    padding-bottom: 240px;
+  }
+
+  /* Package Details */
+  .customer-panel-sidebar-wrapper ul li a {
+    font-size: 13px;
+  }
+  .customer-panel-sidebar-wrapper {
+    width: 354px;
+    padding: 25px;
+  }
+  .package-details-wrapper .package-details-title {
+    font-size: 18px;
+  }
+  .package-details-wrapper .package-header ul li .value {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-header ul li .title {
+    font-size: 14px;
+  }
+  .package-details-wrapper .package-details-heading {
+    padding: 10px 20px;
+  }
+  .package-details-wrapper .package-details-item {
+    padding: 10px 20px;
+  }
+
+  .customer-profile-setting-section .customer-panel {
+    flex-direction: column;
+  }
+  .customer-profile-setting-section .customer-panel-sidebar-wrapper {
+    width: 100%;
+    padding: 25px;
+  }
+  .customer-panel-sidebar-wrapper {
+    border-right: none;
+  }
+
+  /* Customer Pannel */
+  .customer-panel-body table thead th {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .customer-panel-body table tbody td {
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .customer-profile-setting-section {
+    padding-top: 50px;
+  }
+  .customer-profile-setting-section .customer-panel-content {
+    overflow-x: auto;
+  }
+  .customer-panel-body-wrapper .customer-panel-content {
+    overflow-x: unset !important;
+  }
+  .shopping-cart-section .shopping-cart-body {
+    overflow-x: auto;
+  }
+
+  /* Packages Styles */
+  .package-single-page-section {
+    padding-bottom: 250px;
+    padding-top: 50px;
+  }
+  .special-offers .offer-content {
+    padding: 15px;
+  }
+  .special-offers .offer-description {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-title {
+    margin-bottom: 10px;
+  }
+  .special-offers .services-list li {
+    padding: 2px 0px;
+  }
+  .special-offers .offer-pricing {
+    padding: 10px;
+  }
+  .special-offers .package-price {
+    font-size: 16px;
+  }
+  .special-offers .label {
+    font-size: 13px;
+  }
+  .special-offers .savings {
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  .service-wrapper .service-wrap-inner {
+    grid-template-columns: 100%;
+  }
+
+  /* Salon Product Styles */
+  .product-single-page-section {
+    padding-bottom: 250px;
+  }
+
+
+  /* Profile Setting */
+  .secondary-input input, .secondary-input select {
+    height: 50px;
+    padding: 0px 16px;
+  }
+
+  /* Service Page */
+  .service-wrapper {
+    padding-bottom: 250px;
+  }
+  .service-wrapper .pagination-wrapper {
+    padding-top: 20px;
+  }
+  .service-wrapper .service-card-inner .service-content {
+    padding: 20px;
+  }
+  .service-wrapper .service-card-inner .service-content .service-name {
+    font-size: 18px;
+  }
+  .filter-and-result-header {
+    flex-direction: column;
+  }
+  .filter-and-result-header .result-count p{
+    margin-top: 10px;
+  }
+  
+  /* Shopping Cart */
+  .shopping-cart-section .billing-details-page {
+    padding: 20px;
+  }
+  .shopping-cart-section {
+    padding-bottom: 250px;
+  }
+  .shopping-cart-section .order-summary-section {
+    margin-top: 40px;
+  } 
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group {
+    padding: 5px;
+  }
+  .shopping-cart-section .shopping-cart-details .cart-inc-dec-group button {
+    width: 26px;
+    height: 26px;
+  }
+  .shopping-cart-section .shopping-cart-footer button, .shopping-cart-section .shopping-cart-footer a {
+    padding: 12px 30px;
+  }
+  .shopping-cart-section .order-summary-section h3 {
+    font-size: 24px;
+  }
+  .shopping-cart-section .order-summary-section ul li {
+    font-size: 14px;
+  }
+  .shopping-cart-section .shopping-cart-body ul li {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 10px;
+    padding-right: 5px;
+  }
+  .shopping-cart-section .shopping-cart-body ul li {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+  }
+
+  /* Team Details */
+  .team-details-wrapper .team-details-title {
+    margin-top: 30px;
+
+  }
+  .team-details-wrapper .team-details-content h2 {
+    font-size: 40px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-info h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .team-details-wrapper .team-details-content p, .team-details-wrapper .team-details-info p {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li {
+    margin-bottom: 10px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .title {
+    font-size: 14px;
+    min-width: 175px;
+  }
+  .team-details-wrapper .team-details-content-wrapper ul li .value {
+    font-size: 14px;
+  }
+  .team-details-wrapper .team-details-card .image-circle {
+    width: 100px;
+    height: 100px;
+  }
+  .team-details-wrapper .team-details-card .image-circle img {
+    width: 50px;
+    height: 50px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content h3 {
+    font-size: 30px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+  }
+  .team-details-wrapper .team-details-card .team-details-card-content p {
+    font-size: 16px;
+  }
+  .team-details-wrapper .team-details-card {
+    padding: 25px;
+  }
+  .team-details-wrapper .review-box input {
+    height: 50px;
+  }
+  .team-details-wrapper .customer-comment-wrapper .customer-comment-title {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+  .team-section .image-dotted {
+    display: none;
+  }
+  .team-details-wrapper {
+    padding-top: 50px;
+    padding-bottom: 270px;
+  }
+  .team-details-wrapper .team-details-content-wrapper {
+    padding-left: 15px;
+  }
+  .team-details-wrapper .team-details-portfolio-title {
+    font-size: 22px;
+  }
+}

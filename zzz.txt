@@ -1,0 +1,97 @@
+1. Report
+2. Responsive, POS Frontend both//done
+3. Email after Booking, Email after confirmation
+4. Payment Testing
+5. Bottom to top icon color change 
+6. Stock//done
+
+
+- Cart calculatin e tax and delivary change dekhate hobe, off canvas e.
+- Booking theke price ta bad dite hobe
+- Loyalty point checking
+
+
+$curl = curl_init();
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => 'https://whats-api.rcsoft.in/api/create-message',
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'POST',
+  CURLOPT_POSTFIELDS => array(
+  'appkey' => '2f764d2c-14e4-4a57-98a6-0b384cdf0416',
+  'authkey' => 'TS2pXLBYSBUISPw9oM6QEVMsPPTFzB0tC4ZAahf6ttoH5VeUFR',
+  'to' => 'RECEIVER_NUMBER',
+  'message' => 'Example message',
+  'file' => 'https://www.africau.edu/images/default/sample.pdf',
+  'sandbox' => 'false'
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+
+
+
+
+{
+    "message_status": "Success",
+    "data": {
+        "from": "SENDER_NUMBER",
+        "to": "RECEIVER_NUMBER",
+        "status_code": 200
+    }
+}
+
+
+
+
+
+--------------------
+
+
+
+
+
+
+
+ALTER TABLE `companies` ADD `print_formate` ENUM('56mm','80mm') NOT NULL DEFAULT '56mm' AFTER `default_payment`, ADD `over_sale` ENUM('Yes','No') NOT NULL DEFAULT 'No' AFTER `print_formate`;
+ALTER TABLE `companies` CHANGE `print_formate` `print_formate` VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '56mm';
+ALTER TABLE `companies` CHANGE `over_sale` `over_sale` VARCHAR(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'No';
+
+
+ALTER TABLE `sales` ADD `tax_breakdown` TEXT NULL DEFAULT NULL AFTER `total_tax`;
+ALTER TABLE `promotions` ADD `discount_type` ENUM('Percentage','Fixed') NULL DEFAULT NULL AFTER `discount`;
+
+ALTER TABLE `sale_details` ADD `promotion_discount` DECIMAL(11,3) NULL DEFAULT NULL AFTER `subtotal`;
+
+ALTER TABLE `sales` ADD `promotion_discount` DECIMAL(10,3) NULL DEFAULT NULL AFTER `discount`;
+
+
+
+INSERT INTO `permissions` (`id`, `group_name`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES (NULL, 'report-management', 'report-daily_summary', 'sanctum', '2025-08-23 18:28:38', '2025-08-23 18:28:38');
+
+INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES ('104', '1');
+INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES ('105', '1');
+
+
+ALTER TABLE `salary_payments` CHANGE `payment_method_id` `payment_method_id` INT(10) UNSIGNED NULL DEFAULT NULL;
+
+POSController.php 
+api.php 
+usesaleEdit.js 
+index.vue POS
+
+
+
+
+
+
+
+

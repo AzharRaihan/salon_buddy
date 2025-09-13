@@ -1,0 +1,479 @@
+@media (max-width: 1367.98px) {
+    /* Left Side */
+    .nav-top-bar {
+        height: 60px;
+    }
+    .left-actions .btn {
+        height: 50px;
+        font-size: 16px;
+    }
+    .right-actions .btn {
+        width: 45px;
+        height: 45px;
+    }
+    .right-actions .btn i {
+        font-size: 24px;
+    }
+    .right-actions .btn .badge, .left-actions .btn .badge {
+        width: 25px;
+        height: 25px;
+        top: 11px;
+    }
+    .main-content .order-section {
+        padding: 10px 10px;
+    }
+    .filter-options .btn {
+        height: 48px;
+        font-size: 16px;
+    }
+    .filter-options {
+        margin-bottom: 5px;
+    }
+    .select-modal {
+        width: 464px;
+    }
+    .common-modal .modal-header, .customer-modal .modal-header, .employee-modal .modal-header {
+        padding: 5px 15px;
+    }
+    .customer-modal .customer-list ul li h5, .employee-modal .employee-list ul li h5 {
+        font-size: 16px;
+    }
+    .customer-modal .customer-list ul li .customer-details, .employee-modal .employee-list ul li .employee-details {
+        height: 40px;
+    }
+    .customer-modal .edit-btn {
+        height: 40px;
+        width: 40px;
+    }
+    .customer-modal .customer-list ul, .employee-modal .employee-list ul {
+        max-height: 190px;
+    }
+    .customer-modal .customer-list, .employee-modal .employee-list {
+        min-height: 125px;
+        max-height: 180px;
+    }
+    .customer-modal .add-customer-btn {
+        font-size: 16px;
+        height: 45px;
+    }
+    .order-summary {
+        padding: 5px 8px;
+    }
+    .summary-table td {
+        font-size: 14px;
+    }
+    .summary-table .text-end {
+        font-size: 14px;
+    }
+    .grand-total td {
+        font-weight: 600 !important;
+        font-size: 16px !important;
+    }
+    .bottom-actions .btn {
+        height: 55px;
+        font-size: 16px;
+    }
+    .frame {
+        margin-bottom: 5px;
+    }
+    .order-table .empty-cart-message {
+        padding: 20px 20px;
+    }
+    .order-table .empty-cart-icon {
+        margin-bottom: 8px;
+    }
+    .empty-cart-message i {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+    .order-table .empty-cart-icon i {
+        font-size: 3rem;
+    }
+    .order-table .table-body {
+        height: 170px;
+    }
+    .table-body.booking-table-body  {
+        height: 160px;
+    }
+    /* Right Side */
+    .category-buttons .btn {
+        height: 50px;
+        font-size: 16px;
+        margin-bottom: 7px;
+    }
+    .category-buttons {
+        width: 150px;
+    }
+    .item-grid .item-name, .item-grid .item-price {
+        font-size: 14px;
+    }
+    .order-table th, .order-table td {
+        font-size: 16px;
+    }
+    .product-type small {
+        font-size: 13px;
+    }
+    .order-actions .btn {
+        height: 35px;
+    }
+    .order-actions button i {
+        font-size: 18px;
+    }
+    .main-content {
+        height: calc(100vh - 77px);
+    }
+    .menu-section {
+        padding: 10px 10px;
+    }
+
+    /* Modals */
+    .add-edit-customer-modal .modal-body {
+        height: calc(100vh - 165px);
+        overflow-y: auto;
+    }
+    .common-modal .modal-header, .payment-modal-content .payment-modal-header {
+        padding: 10px 15px;
+    }
+    .select-modal .close-modal {
+        font-size: 16px;
+    }
+    .payment-modal-footer, .modal-footer {
+        padding: 10px 15px;
+    }
+    .payment-modal-content .btn, .modal-footer .btn {
+        font-size: 16px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .employee-assignment-modal-body  h4 {
+        font-size: 20px;
+    }
+    .employee-assignment-modal-body .text-muted p {
+        font-size: 16px !important;
+    }
+    .employee-assignment-modal-body .price-edit {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+    .employee-assignment-modal-body .service-info {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .employee-assignment-modal-body .employee-list-section h4 {
+        font-size: 16px !important;
+        margin-bottom: 5px;
+    }
+    .employee-assignment-modal-body .price-edit label {
+        font-size: 16px !important;
+    }
+    .employee-assignment-modal-body .employee-name {
+        font-size: 16px;
+        margin-bottom: 2px;
+    }
+    .employee-assignment-modal-body .employee-details {
+        font-size: 13px;
+    }
+    .employee-assignment-modal-body .employee-item {
+        padding: 7px 10px;
+    }
+    .payment-modal-content .order-totals .label, .payment-modal-content .order-totals .value {
+        font-size: 18px;
+    }
+    .payment-modal-content .order-totals .total .label, .payment-modal-content .order-totals .total .value {
+        font-size: 20px;
+    }
+    .payment-amount-section h4 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+    }
+    .payment-modal-content .payment-method-section h4 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+    }
+    .payment-order-summary h4 {
+        font-size: 20px;
+    }
+    .payment-modal-content .payment-modal-body {
+        height: calc(100vh - 180px);
+    }
+    .discount-modal .modal-body label {
+        font-size: 18px;
+    }
+
+    /* Booking List */
+    .booking-view .booking-list-header h3, .booking-view .booking-details-section h3, .package-details .summary-section h3, .booking-list-section h3 {
+        font-size: 20px;
+    }
+    .booking-view .booking-list-section {
+        padding: 20px 10px;
+    }
+    .booking-view .table th, .booking-view .table td {
+        font-size: 14px;
+    }
+    .booking-view .search-booking {
+        width: 225px;
+    }
+    .booking-view .info-item .label {
+        font-size: 16px;
+    }
+    .booking-view .info-item .value {
+        font-size: 16px;
+    }
+    .booking-view .booking-details-section h3 {
+        margin-bottom: 15px;
+    }
+    .booking-view .totals-section .label {
+        font-size: 18px;
+    }
+    .booking-view .totals-section .value {
+        font-size: 18px;
+    }
+    .booking-view .action-section .btn {
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+
+    /* Package List */
+    .package-details .summary-section h3 {
+        margin-bottom: 15px;
+    }
+    .package-details .summary-section .summary-heading {
+        font-size: 16px;
+    }
+    .package-details .summary-section .summary-value {
+        font-size: 16px;
+    }
+    .package-details .summary-section p {
+        display: flex;
+        gap: 12px;
+    }
+    .package-details .btn-primary {
+        font-size: 16px;
+    }
+    
+    /* Notification */
+    .notification-view .title {
+        font-size: 22px;
+    }
+    .notification-view .notification-item {
+        gap: 10px;
+        padding: 5px 10px;
+    }
+    .notification-view .notification-content {
+        padding: 10px;
+    }
+    .notification-view .checkmark {
+        height: 23px;
+        width: 23px;
+    }
+    .custom-checkbox:checked ~ .checkmark::after {
+        left: 5px;
+        top: 0px;
+    }
+
+    /* Booking List */
+    .booking-header h5 {
+        font-size: 14px;
+    }
+    .booking-info-item {
+        font-size: 12px;
+    }
+    .order-table .table-header {
+        font-size: 14px;
+    }
+    .order-table .table-row {
+        font-size: 13px;
+    }
+    .order-actions {
+        /* bottom: 113px; */
+        bottom: 135px;
+    }
+    .menu-section .search-container input::placeholder {
+        font-size: 16px;
+    }
+    .left-actions .dropdown-item {
+        font-size: 16px;
+        line-height: unset;
+    }
+    .left-actions .dropdown-menu {
+        width: 223px;
+    }
+}
+@media (max-width: 1199.98px) {
+    .left-actions .btn {
+        height: 40px;
+        font-size: 15px;
+        padding: 10px 10px;
+    }
+    .nav-top-bar {
+        height: 50px;
+    }
+    .right-actions .btn {
+        width: 40px;
+        height: 40px;
+    }
+    .right-actions .btn i {
+        font-size: 20px;
+    }
+    .filter-options .btn {
+        height: 40px;
+        font-size: 18px;
+    }
+    .select-modal {
+        width: 390px;
+    }
+    .pos-item-grid-wrap {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 991.98px) {
+    .mobile-top-navigation-wrapper {
+        display: block;
+    }
+    .pos-item-grid-wrap {
+        grid-template-columns: 1fr 1fr;
+    }
+    .pos-main-content-wrapper {
+        flex-direction: column;
+    }
+    .pos-main-content-wrapper .order-section {
+        width: 100%;
+    }
+    .pos-main-content-wrapper .menu-section {
+        width: 100%;
+    }
+    .mobile-top-navigation {
+        top: 50px;
+    }
+    .main-content {
+        top: 0px;
+    }
+    .main-content {
+        height: calc(100vh - 125px);
+    }
+}
+@media (max-width: 767.98px) {
+    .mobile-booking-package-dropdown {
+        display: block;
+    }
+    .book-package {
+        display: none !important;
+    }
+    .select-modal {
+        width: 80%;
+    }
+    .container, .container-sm {
+        max-width: 95%;
+    }
+}
+@media (max-width: 575.98px) {
+    .mobile-booking-package-dropdown {
+        display: block;
+    }
+    .book-package {
+        display: none !important;
+    }
+    .select-modal {
+        width: 95%;
+    }
+    .container, .container-sm {
+        max-width: 100%;
+    }
+}
+@media (max-width: 475.98px) {
+    .left-actions .btn {
+        font-size: 12px;
+    }
+    .right-actions {
+        gap: 5px;
+    }
+    .mobile-booking-package-dropdown {
+        display: block;
+    }
+    .book-package {
+        display: none !important;
+    }
+    .left-actions {
+        gap: 5px;
+    }
+    .category-buttons {
+        width: 120px;
+    }
+    .category-buttons .btn {
+        height: 40px;
+        font-size: 13px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .category-item-section {
+        display: flex;
+        gap: 5px;
+    }
+    .filter-options .btn {
+        font-size: 14px;
+    }
+    .filter-options img {
+        display: none;
+    }
+    .select-modal {
+        width: 95%;
+    }
+    .customer-modal .edit-btn {
+        height: 35px;
+        width: 35px;
+    }
+    .customer-modal .edit-btn {
+        height: 35px;
+        width: 35px;
+    }
+    .item-grid .item-info {
+        padding: 4px;
+    }
+    .item-grid .item-name, .item-grid .item-price {
+        font-size: 12px;
+    }
+    .menu-section .search-container input {
+        height: 40px;
+    }
+    .container, .container-sm {
+        max-width: 100%;
+    }
+
+    .booking-view .booking-summary-wrap {
+        grid-template-columns: 1fr;
+    }
+    .booking-list-section .summary-section {
+        margin-top: 10px;
+    }
+    .booking-table, .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* smooth scroll for iOS */
+    }
+      
+    .booking-table table, .table-wrapper table {
+        min-width: 600px; /* force horizontal scroll if screen smaller */
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .package-usage-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .offcanvas-footer .footer-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .offcanvas-footer .send-notification-checkbox {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .booking-view .totals-section {
+        width: 75%;
+        margin-left: auto;
+    }
+}

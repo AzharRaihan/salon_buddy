@@ -1,0 +1,23 @@
+Here I've attached some files,
+You need to implement a e commerce features, eg: add to cart to checkout functionality. lets break down the features into smaller parts and implement them one by one.
+
+Step 1: Here is 2 components where name as SalonProducts.vue and SpecialOffers.vue
+In the SalonProducts.vue showed normal products like: facewash, oil etc, in the SpecialOffers.vue showed some packages products, both components main goal is when customer will click on add-to-cart button or Buy This Package button, it will add the product or package to the cart, you will find card content in AppHeader.vue component cart-sidebar off canvas section, when customer will check on checkout button from cart-sidebar off canvas section, it will redirect to the checkout page checkout.vue page has a button  name as Proced To Checkout when click on the button then it will redirect to the payment page, payment page will show payment method by calling api -> get-payment-methods.
+
+payment method can be razorpay, paypal, stripe, paytm which is cames from database you already did payment process for package booking system so you can get Idea from here. after that you can show a success page after payment success.
+
+
+I've attached all necessary files.
+
+Some Note: Do not integrate design because I've already done design part which is connectd via extarnal css files.
+Don't break the existing code, just implement the new features.
+Don't modify existing design, just implement the new features.
+Don't use axios use current api call method.
+Don't user inertiajs follow the existing code.
+
+
+
+
+
+
+

@@ -1,0 +1,137 @@
+/* Backend Template Styles */
+.w-5 {
+  width: 5%;
+}
+.w-10 {
+  width: 10%;
+}
+.w-15 {
+  width: 15%;
+}
+.w-20 {
+  width: 20%;
+}
+.w-25 {
+  width: 25%;
+}
+.w-30 {
+  width: 30%;
+}
+.w-35 {
+  width: 35%;
+}
+.w-40 {
+  width: 40%;
+}
+.w-45 {
+  width: 45%;
+}
+.w-50 {
+  width: 50%;
+}
+.w-55 {
+  width: 55%;
+}
+.w-60 {
+  width: 60%;
+}
+.w-65 {
+  width: 65%;
+}
+.w-70 {
+  width: 70%;
+}
+.w-75 {
+  width: 75%;
+}
+.w-80 {
+  width: 80%;
+}
+.w-85 {
+  width: 85%;
+}
+.w-90 {
+  width: 90%;
+}
+.w-95 {
+  width: 95%;
+}
+.w-100 {
+  width: 100%;
+}
+.cursor-dot, .cursor-ring { display: none; }
+
+.repeter-form .v-field__input {
+  height: 40px;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.btn-primary-2, .btn-secondary-2 {
+  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 4px;
+}
+.btn-primary-2 {
+  background-color: #3078f6;
+  border-color: #3078f6;
+  color: #fff;
+}
+.btn-secondary-2 {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+.required-error {
+  font-size: 13px !important;
+  color: #ff4c51 !important;
+}
+.required-asterisk {
+  color: red !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+.v-align-top {
+  vertical-align: top;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+.repeter-form tbody tr td {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+.cropper-preview img {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  max-width: 200px;
+  height: auto;
+  object-fit: cover;
+}
+.text-wrap-auto {
+  text-wrap: auto !important;
+}
+
+.modal-card .v-card-title {
+  padding: 25px 25px 20px 25px !important;
+  border-bottom: 1px solid #dbdbdb;
+}
+.modal-card .v-card-actions {
+  padding: 25px 25px 25px 25px !important;
+  border-top: 1px solid #dbdbdb;
+}
+.modal-card.modal-card-sm .v-card-text {
+  max-height: calc(60vh - 200px);
+  overflow-y: auto;
+}
+.modal-card.modal-card-md .v-card-text {
+  max-height: calc(80vh - 200px);
+  overflow-y: auto;
+}
+.modal-card.modal-card-lg .v-card-text {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
