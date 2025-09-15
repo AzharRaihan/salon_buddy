@@ -71,6 +71,11 @@ class HelperController extends Controller
         $categoryList = Category::where('company_id', Auth::user()->company_id)->where('status', 'Enabled')->where('del_status', 'Live')->where('type', 'Service')->get();
         return $this->successResponse($categoryList, 'Category list fetched successfully');
     }
+    public function getProductCategoryList()
+    {
+        $categoryList = Category::where('company_id', Auth::user()->company_id)->where('status', 'Enabled')->where('del_status', 'Live')->where('type', 'Product')->get();
+        return $this->successResponse($categoryList, 'Category list fetched successfully');
+    }
     public function getUnitList()
     {
         $unitList = Unit::where('company_id', Auth::user()->company_id)->where('del_status', 'Live')->get();

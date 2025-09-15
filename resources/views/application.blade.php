@@ -57,11 +57,11 @@
                 <!-- SVG Logo -->
                 <img src="{{ favicon_url() }}" width="60" height="60" alt="Logo" />
             </div>
-            <div class=" loading">
-                <div class="effect-1 effects"></div>
-                <div class="effect-2 effects"></div>
-                <div class="effect-3 effects"></div>
-            </div>
+            <!-- <div class=" loading">
+              <div class="effect-1 effects"></div>
+              <div class="effect-2 effects"></div>
+              <div class="effect-3 effects"></div>
+            </div> -->
         </div>
     </div>
     <div aria-hidden="true" class="cursor-dot" id="cursorDot"></div>

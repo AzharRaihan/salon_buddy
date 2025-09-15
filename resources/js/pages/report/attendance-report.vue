@@ -4,7 +4,7 @@ import { useAttendanceReport } from '@/composables/useAttendanceReport'
 import AttendanceReportFilters from '@/components/report/AttendanceReportFilters.vue'
 import AttendanceSummaryCards from '@/components/report/AttendanceSummaryCards.vue'
 import AttendanceReportTable from '@/components/report/AttendanceReportTable.vue'
-import ExportTable from '@/components/ExportTable.vue'
+import ExportTableAttendanceReport from '@/components/ExportTableAttendanceReport.vue'
 
 // Use the attendance report composable
 const {
@@ -17,10 +17,7 @@ const {
     employees,
     
     // Methods
-    fetchFilterOptions,
-    fetchAttendanceReport,
     resetFilters,
-    exportReport,
     
     // Computed
     attendances,
@@ -45,6 +42,11 @@ const exportHeaders = computed(() => [
     { title: 'Status', key: 'status' },
     { title: 'Note', key: 'note' },
 ])
+
+const handleResetFilters = () => {
+    resetFilters()
+}
+
 </script>
 
 <template>
@@ -57,8 +59,6 @@ const exportHeaders = computed(() => [
                     v-model:date-to="dateTo"
                     v-model:employee-id="employeeId"
                     :employees="employees"
-                    @reset-filters="resetFilters"
-                    @export-report="exportReport"
                 />
             </VCardText>
         </VCard>
@@ -74,20 +74,21 @@ const exportHeaders = computed(() => [
         </VCard>
 
         <!-- Action Buttons -->
-        <div class="table-action action">
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
                 prepend-icon="tabler-refresh" 
                 variant="outlined" 
-                @click="resetFilters"
+                @click="handleResetFilters"
             >
                 Reset Filters
             </VBtn>
 
-            <ExportTable 
+            <ExportTableAttendanceReport 
                 :data="attendances" 
                 :headers="exportHeaders" 
                 filename="attendance-report"
                 title="Attendance Report"
+                :summary-data="summary"
             />
         </div>
 
@@ -98,6 +99,7 @@ const exportHeaders = computed(() => [
             :date-to="dateTo"
             :selected-employee-name="selectedEmployeeName"
             :is-loading="isLoading"
+            :export-headers="exportHeaders"
         />
     </div>
 </template>
@@ -110,13 +112,5 @@ const exportHeaders = computed(() => [
     &:hover {
         color: rgba(var(--v-theme-primary), 0.8);
     }
-}
-
-.table-action {
-    display: flex;
-    justify-content: end;
-    gap: 10px;
-    padding-right: 24px;
-    padding-bottom: 24px;
 }
 </style>

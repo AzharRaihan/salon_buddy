@@ -23,6 +23,8 @@ class Sale extends Model
         'subtotal_without_tax_discount',
         'grandtotal_with_tax_discount',
         'discount',
+        'delivery_charge',
+        'delivery_area_id',
         'promotion_discount',
         'customer_id',
         'payment_method_id',

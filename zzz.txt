@@ -1,8 +1,8 @@
 1. Report
 2. Responsive, POS Frontend both//done
 3. Email after Booking, Email after confirmation
-4. Payment Testing
-5. Bottom to top icon color change 
+4. Payment Testing 
+5. Bottom to top icon color change //done,
 6. Stock//done
 
 

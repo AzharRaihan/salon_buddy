@@ -44,7 +44,7 @@
                             v-for="employee in filteredEmployees" 
                             :key="employee.id"
                             class="employee-item"
-                            :class="{ 'selected': getEmployeeId(props.item) == employee.id }"
+                            :class="{ 'selected': selectedEmployeeId == employee.id }"
                             @click="selectEmployee(employee)"
                         >
                             <div class="employee-avatar">
@@ -173,8 +173,13 @@ const formatPrice = (price) => {
     return parseFloat(price || 0).toFixed(2)
 }
 
+const selectedEmployeeId = ref(null)
+
 const selectEmployee = (employee) => {
     selectedEmployee.value = employee
+
+    selectedEmployeeId.value = employee.id
+
 }
 
 const handleConfirm = async () => {
@@ -198,6 +203,7 @@ const handleClose = () => {
     // Reset form
     searchQuery.value = ''
     selectedEmployee.value = null
+    selectedEmployeeId.value = getEmployeeId(props.item)
     emit('close')
 }
 

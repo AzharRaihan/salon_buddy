@@ -109,6 +109,55 @@ html {
   color: red;
   font-weight: 600;
 }
+
+
+
+
+/* Common animation button */
+.common-animation-button {
+  display: inline-flex;
+  align-items: center;
+  text-transform: capitalize;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 50px;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.common-animation-button::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  transition: all 0.3s;
+  border-radius: 10rem;
+  z-index: -1;
+}
+.common-animation-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10rem;
+  z-index: -2;
+}
+.common-animation-button:hover {
+  color: var(--color-white);
+}
+.common-animation-button:hover::before {
+  width: 100%;
+}
+.common-animation-button:hover .arrow-icon{
+  transform: rotate(360deg);
+  transition: all 0.3s ease;
+}
 /* ==============#  Button Component Styles #============== */
 
 .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
@@ -559,7 +608,6 @@ html {
   transform: rotate(210deg);
 }
 
-
 /* ==============#  Button Component Styles End #============== */
 
 
@@ -694,24 +742,41 @@ nav.navbar{
   justify-content: center;
   align-items: center;
 }
-.btn-login{
+
+
+.btn-login {
   background-color: var(--primary-bg-color);
-  color: var(--color-white);
+  border-radius: 25px;
 }
-.btn-login:hover{
-  background-color: var(--color-white);
-  color: var(--primary-bg-hover-color);
-  border: 1px solid var(--primary-bg-hover-color);
-}
-.btn-outlet{
-  background-color: var(--color-white);
-  color: var(--primary-bg-color);
-}
-.btn-outlet:hover{
+.btn-login::before {
   background-color: var(--primary-bg-hover-color);
-  color: var(--color-white);
-  border: 1px solid var(--primary-bg-hover-color);
 }
+.btn-login::after {
+  color: var(--primary-bg-color);
+  background-color: var(--primary-bg-color);
+}
+.btn-login:hover {
+  color: var(--color-white);
+}
+
+.btn-register {
+  background-color: var(--color-white);
+  border-radius: 25px;
+  border: 1px solid var(--primary-bg-color);
+}
+.btn-register::before {
+  background-color: var(--primary-bg-color);
+}
+.btn-register::after {
+  color: var(--primary-bg-color);
+  background-color: var(--color-white);
+}
+.btn-register:hover {
+  color: var(--color-white);
+}
+
+
+
 
 /* Top Bar */
 .top-bar {
@@ -724,7 +789,8 @@ nav.navbar{
   position: absolute;
   top: 0;
   right: 0;
-  width: 565px;
+  /* width: 565px; */
+  width: 660px;
   height: 42px;
   background-color: var(--primary-bg-color);
 }
@@ -1283,6 +1349,8 @@ nav.navbar{
 .hero-section .customer-review-text div {
   gap: 20px;
 }
+
+
 /* ==============#  Hero Section Styles End #============== */
 
 /* ==============#  Special Offers Styles #============== */
@@ -3718,7 +3786,7 @@ transition: 0.3s;
   border-radius: 25px;
 }
 
-.featured-services .features-category a {
+/* .featured-services .features-category a {
   background: #F1F1F1;
   color: #000;
   padding: 7px 20px;
@@ -3731,8 +3799,34 @@ transition: 0.3s;
 .featured-services .features-category a:hover {
   background: var(--primary-bg-hover-color);
   color: var(--color-white);
+} */
+.features-category-btn {
+  padding: 7px 20px;
+  color: #000;
+  background-color: white !important;
+  height: 46px;
 }
-
+.features-category-btn::before {
+  background-color: var(--primary-bg-color);
+}
+.features-category-btn::after {
+  color: var(--primary-bg-color);
+  background-color: #F1F1F1;
+}
+.features-category-btn:hover {
+  color: var(--color-white);
+}
+.features-category-btn.active {
+  background-color: var(--primary-bg-hover-color);
+  color: var(--color-white);
+}
+.features-category-btn.active::before {
+  background-color: var(--primary-bg-hover-color);
+}
+.features-category-btn.active::after {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-bg-color);
+}
 .featured-services .features-service-swiper-wrap .service-card {
   background: var(--color-white);
   border-radius: 15px;

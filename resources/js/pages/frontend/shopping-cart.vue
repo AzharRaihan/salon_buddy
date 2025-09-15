@@ -1,9 +1,13 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
-import BookingSamllBtn from '@/components/frontend/mini-components/BookingSamllBtn.vue'  
+import BookingSamllBtn from '@/components/frontend/mini-components/BookingSamllBtn.vue' 
+import BookingSamllBtn2 from '@/components/frontend/mini-components/BookingSamllBtn2.vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
+import AppAutocomplete from '../../@core/components/app-form-elements/AppAutocomplete.vue'
 
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n()
 definePage({
   meta: {
     layout: 'frontend',
@@ -88,7 +92,7 @@ onMounted(async () => {
               <div class="order-summary-section" v-if="cartStore.hasItems">
                 <h3>Order Summary</h3>
                 <div class="order-summary-table">
-                  <ul class="table">
+                  <ul>
                     <li>
                       <span>Subtotal</span>
                       <span class="text-end">{{ cartStore.subtotal.toFixed(2) }}</span>
@@ -97,17 +101,38 @@ onMounted(async () => {
                       <span>Tax</span>
                       <span class="text-end">{{ cartStore.taxAmount.toFixed(2) }}</span>
                     </li>
+                    <!-- Show Delivery Area  list -->
+                    <li>
+                      <div class="flex-grow-1">
+                        <label>Delivery Area</label>
+                        <AppAutocomplete 
+                          class="delivery-area-selection" 
+                          :items="cartStore.deliveryAreas"
+                          :placeholder="t('Select a delivery area')"
+                          item-title="name"
+                          item-value="id"
+                          v-model="cartStore.selectedDeliveryAreaId"
+                          @update:model-value="cartStore.setDeliveryArea"
+                        />
+                      </div>
+                    </li>
                     <li>
                       <span>Delivery Charge</span>
-                      <span class="text-end">{{ cartStore.deliveryCharge.toFixed(2) }}</span>
+                      <span class="text-end">
+                        {{ cartStore.deliveryCharge.toFixed(2) }} 
+                        <template v-if="cartStore.selectedDeliveryArea?.name">({{ cartStore.selectedDeliveryArea?.name }})</template>
+                      </span>
                     </li>
                     <li class="total">
                       <span>Total</span>
                       <span class="text-end">{{ cartStore.total.toFixed(2) }}</span>
                     </li>
                   </ul>
-                  <div class="d-flex justify-content-center order-summary-button-group">
+                  <div class="d-flex justify-content-center order-summary-button-group" v-if="cartStore.selectedDeliveryAreaId">
                     <BookingSamllBtn :link="'/frontend/checkout'" :text="'Proceed to checkout'" />
+                  </div>
+                  <div class="d-flex justify-content-center order-summary-button-group" v-else>
+                    <BookingSamllBtn2 :disabled="true" :text="'Proceed to checkout'" />
                   </div>
                 </div>
               </div>

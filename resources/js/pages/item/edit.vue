@@ -251,11 +251,17 @@ const fetchUnitList = async () => {
 
 const fetchCategoryList = async () => {
     try {
-        const res = await $api('/get-category-list')
-        categoryList.value = res.data.map(category => ({
-            id: category.id,
-            name: category.name
-        }))
+        if(form.value.type == 'Service') {
+            const res = await $api('/get-service-category-list')
+            categoryList.value = res.data
+        
+        } else if(form.value.type == 'Product') {
+            const res = await $api('/get-product-category-list')
+            categoryList.value = res.data
+        } else {
+            const res = await $api('/get-category-list')
+            categoryList.value = res.data
+        }
     } catch (err) {
         console.error('Error fetching category list:', err)
         toast('Error fetching category list', {
@@ -314,7 +320,7 @@ onMounted(() => {
     fetchUnitList()
     fetchCategoryList()
     fetchItemList()
-    fetchTaxDetails()
+    // fetchTaxDetails()
     fetchSupplierList()
 })
 

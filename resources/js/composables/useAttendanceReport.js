@@ -8,11 +8,20 @@ export function useAttendanceReport() {
 
     // Filter states
     const employeeId = ref('')
+    const attendances = ref([])
+    const totalAttendances = ref(0)
+    const summary = ref({
+        total_records: 0,
+        total_work_days: 0,
+        total_absent_days: 0,
+        total_late_days: 0,
+        avg_working_hours: 0
+    })
 
     const today = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(today.getDate() - 7)
-    const dateFrom = ref(sevenDaysAgo.toISOString().split('T')[0])
+    const dateFrom = ref(today.toISOString().split('T')[0])
     const dateTo = ref(today.toISOString().split('T')[0])
 
     // Filter options
@@ -46,7 +55,13 @@ export function useAttendanceReport() {
                 method: 'GET',
                 query: queryParams,
             })
+
             attendanceData.value = response.data
+            attendances.value = response.data.attendances
+            totalAttendances.value = response.data.total
+            summary.value = response.data.summary
+
+
         } catch (error) {
             console.error('Error fetching attendance report:', error)
             toast('Failed to load attendance report', {
@@ -64,39 +79,6 @@ export function useAttendanceReport() {
         fetchAttendanceReport()
     }
 
-    const exportReport = async (format = 'pdf') => {
-        const params = {
-            employee_id: employeeId.value,
-            date_from: dateFrom.value,
-            date_to: dateTo.value,
-            format,
-        }
-
-        if (format === 'pdf' || format === 'excel' || format === 'csv') {
-            try {
-                const response = await $api('/attendance-report-export', {
-                    method: 'GET',
-                    query: params,
-                    responseType: 'blob',
-                })
-                const ext = format === 'pdf' ? 'pdf' : format === 'excel' ? 'xlsx' : 'csv'
-                saveAs(new Blob([response.data]), `attendance-report.${ext}`)
-            } catch (error) {
-                toast('Failed to export report', { type: 'error' })
-            }
-        }
-    }
-
-    // Computed properties
-    const attendances = computed(() => attendanceData.value?.attendances || [])
-    const totalAttendances = computed(() => attendanceData.value?.total_attendances || 0)
-    const summary = computed(() => attendanceData.value?.summary || {
-        total_records: 0,
-        total_work_days: 0,
-        total_absent_days: 0,
-        total_late_days: 0,
-        avg_working_hours: 0
-    })
 
     // Watch for changes in filters
     watch([employeeId, dateFrom, dateTo], () => {
@@ -122,7 +104,6 @@ export function useAttendanceReport() {
         fetchFilterOptions,
         fetchAttendanceReport,
         resetFilters,
-        exportReport,
         
         // Computed
         attendances,

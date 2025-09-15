@@ -69,12 +69,11 @@ const processPayment = async () => {
       subtotal: cartStore.subtotal,
       tax_amount: cartStore.taxAmount,
       delivery_charge: cartStore.deliveryCharge,
+      delivery_area_id: cartStore.selectedDeliveryAreaId,
       total_amount: cartStore.total,
       payment_method_id: selectedPaymentMethod.value,
       customer_data: customerData.value
     }
-    
-    console.log(orderData)
     
     // Create order in database
     const response = await $api('/create-order', {

@@ -173,6 +173,8 @@ class PermissionTableSeeder extends Seeder
                 'website-settings',
                 'website-aboutus',
                 'website-banner',
+                'website-delivery_area',
+                'website-delivery_partner',
                 'website-faq',
                 'website-workingprocess',
                 'website-portfolio',

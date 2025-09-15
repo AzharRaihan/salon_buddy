@@ -66,6 +66,10 @@ const props = defineProps({
     employees: {
         type: Array,
         default: () => []
+    },
+    exportHeaders: {
+        type: Array,
+        default: () => []
     }
 })
 
@@ -78,14 +82,6 @@ const emit = defineEmits([
     'export-report'
 ])
 
-// Handle filter updates
-const handleResetFilters = () => {
-    emit('reset-filters')
-}
-
-const handleExport = () => {
-    emit('export-report')
-}
 </script>
 
 <style lang="scss" scoped>

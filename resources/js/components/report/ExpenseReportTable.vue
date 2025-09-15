@@ -126,8 +126,6 @@
                             </tbody>
                         </VTable>
                     </template>
-
-
                 </VDataTable>
             </VCardText>
         </VCard>

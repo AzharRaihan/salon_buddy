@@ -21,10 +21,12 @@
                 <!-- Damage Table -->
                 <VDataTable
                     :items="damages"
-                    :headers="headers"
+                    :headers="exportHeaders"
                     class="text-no-wrap"
                     :loading="isLoading"
                     hide-default-footer
+                    :items-per-page="-1"
+
                 >
                     <!-- Loading state -->
                     <template #loading>
@@ -59,6 +61,7 @@
                     <template #item.employee.name="{ item }">
                         <span class="text-high-emphasis">
                             {{ item.employee?.name || 'N/A' }}
+                            {{ item.employee?.phone ? `(${item.employee?.phone})` : '' }}
                         </span>
                     </template>
 
@@ -76,6 +79,37 @@
                         <span :title="item.note">
                             {{ item.note ? (item.note.length > 50 ? item.note.substring(0, 50) + '...' : item.note) : 'N/A' }}
                         </span>
+                    </template>
+
+
+                    <!-- Summary Row -->
+                    <template #bottom>
+                        <VTable>
+                            <thead>
+                                <tr>
+                                    <th colspan="5">
+                                        Summary
+                                    </th>
+                                    
+                                    <th>
+                                        Total Amount
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="summary-row">
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="5">
+                                        <span class="d-flex align-center">
+                                            <VIcon icon="tabler-calculator" class="me-2" />
+                                            Total Summary
+                                        </span>
+                                    </td>
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
+                                        {{ formatAmount(calculateTotal('total_loss')) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </VTable>
                     </template>
                 </VDataTable>
             </VCardText>
@@ -112,17 +146,13 @@ const props = defineProps({
     isLoading: {
         type: Boolean,
         default: false
+    },
+    exportHeaders: {
+        type: Array,
+        default: () => []
     }
 })
 
-// Table headers
-const headers = [
-    { title: 'Reference No', key: 'reference_no', sortable: true },
-    { title: 'Date', key: 'date', sortable: true },
-    { title: 'Employee', key: 'employee.name', sortable: false },
-    { title: 'Total Loss', key: 'total_loss', sortable: true },
-    { title: 'Note', key: 'note', sortable: false },
-]
 
 // Helper functions
 const formatDateRange = (from, to) => {
@@ -131,6 +161,14 @@ const formatDateRange = (from, to) => {
     if (!to) return `From ${formatDate(from)}`
     return `${formatDate(from)} - ${formatDate(to)}`
 }
+
+const calculateTotal = (field) => {
+    return props.damages.reduce((sum, item) => {
+        return sum + (parseFloat(item[field]) || 0)
+    }, 0)
+}
+
+
 
 </script>
 

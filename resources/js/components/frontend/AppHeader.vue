@@ -147,10 +147,10 @@
 
             <!-- Guest Authentication -->
             <div v-else class="guest-auth-buttons">
-              <RouterLink to="/frontend/login" class="btn btn-primary btn-login me-2">
+              <RouterLink to="/frontend/login" class="btn btn-primary btn-login me-2 common-animation-button">
                 {{ t('Login') }}
               </RouterLink>
-              <RouterLink to="/frontend/register" class="btn btn-primary btn-outlet">
+              <RouterLink to="/frontend/register" class="btn btn-register common-animation-button">
                 {{ t('Register') }}
               </RouterLink>
             </div>
@@ -161,6 +161,7 @@
   </header>
 
   <!-- This is Cart Sidebar Content -->
+   
   <div class="cart-sidebar offcanvas offcanvas-end" tabindex="-1" id="staticBackdrop" data-bs-backdrop="static" aria-labelledby="staticBackdropLabel" @click="enableScroll();">
     <div class="offcanvas-header">
       <h1 class="offcanvas-title">Cart {{ cartStore.items.length }}({{ cartStore.itemCount }})</h1>
@@ -284,10 +285,10 @@
           </button>
         </div>
         <div v-else class="guest-mobile-auth">
-          <RouterLink to="/frontend/login" class="btn btn-primary btn-login w-100 mb-2">
+          <RouterLink to="/frontend/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
             {{ t('Login') }}
           </RouterLink>
-          <RouterLink to="/frontend/register" class="btn btn-primary btn-outlet w-100">
+          <RouterLink to="/frontend/register" class="btn btn-register w-100">
             {{ t('Register') }}
           </RouterLink>
         </div>
@@ -322,7 +323,6 @@ import BookPackageBtn from './mini-components/BookPackageBtn.vue'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 import { useI18n } from 'vue-i18n';
-
 const { locale, t } = useI18n({ useScope: 'global' })
 
 const websiteStore = useWebsiteSettingsStore()
@@ -364,12 +364,10 @@ const handleLogout = async () => {
     })
   }
 }
-
 function setLanguage(lang) {
   locale.value = lang
   localStorage.setItem('selectedLanguage', lang) // save in localStorage
 }
-
 // on mount, restore language
 onMounted(() => {
   const savedLang = localStorage.getItem('selectedLanguage')
@@ -377,12 +375,10 @@ onMounted(() => {
     locale.value = savedLang
   }
 })
-
 // Active social media links
 const activeSocialMedia = computed(() => {
   return websiteStore.getSocialMedia.filter(social => social.is_active && social.url)
 })
-
 // Social media icon mapping
 const getSocialIcon = (socialName) => {
   const iconMap = {
@@ -395,7 +391,6 @@ const getSocialIcon = (socialName) => {
   }
   return iconMap[socialName] || 'tabler-link'
 }
-
 const removePadding = () => {
   document.body.style.paddingRight = '0';
 }
@@ -434,13 +429,11 @@ onMounted(async () => {
   transition: all 0.3s ease;
   border: 1px solid transparent;
 }
-
 .customer-auth-dropdown .customer-avatar-btn:hover {
   background-color: rgba(0, 0, 0, 0.05);
   border-color: rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
-
 .customer-avatar {
   width: 32px;
   height: 32px;
@@ -449,12 +442,10 @@ onMounted(async () => {
   border: 2px solid #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .customer-name {
   font-weight: 500;
   font-size: 14px;
 }
-
 .customer-dropdown-menu {
   border: none;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -464,7 +455,6 @@ onMounted(async () => {
   margin-top: 8px;
   animation: dropdownFadeIn 0.3s ease;
 }
-
 @keyframes dropdownFadeIn {
   from {
     opacity: 0;
@@ -475,7 +465,6 @@ onMounted(async () => {
     transform: translateY(0);
   }
 }
-
 .customer-dropdown-menu .dropdown-item {
   display: flex;
   align-items: center;
@@ -493,24 +482,20 @@ onMounted(async () => {
   transition: all 0.2s ease;
   transform: translateX(0px);
 }
-
 .customer-dropdown-menu .dropdown-item:hover .inner-item {
   transform: translateX(4px);
 }
 .customer-dropdown-menu .dropdown-item:hover {
   background-color: #f8f9fa;
 }
-
 .customer-dropdown-menu .logout-item:hover {
   background-color: #fff5f5;
   color: #dc3545;
 }
-
 .customer-dropdown-menu .dropdown-divider {
   margin: 8px 16px;
   border-color: #e9ecef;
 }
-
 /* Mobile Customer Auth */
 .customer-info-mobile {
   display: flex;
@@ -520,7 +505,6 @@ onMounted(async () => {
   background-color: #f8f9fa;
   border-radius: 8px;
 }
-
 .customer-avatar-mobile {
   width: 40px;
   height: 40px;
@@ -528,12 +512,10 @@ onMounted(async () => {
   object-fit: cover;
   border: 2px solid #ffffff;
 }
-
 .customer-name-mobile {
   font-weight: 600;
   font-size: 16px;
 }
-
 .customer-mobile-auth .btn {
   display: flex;
   align-items: center;
@@ -541,7 +523,6 @@ onMounted(async () => {
   gap: 8px;
   transition: all 0.2s ease;
 }
-
 .customer-mobile-auth .btn:hover {
   transform: translateY(-1px);
 }

@@ -10,14 +10,18 @@ export function useDamageReport() {
     // Filter states
     const branchId = ref('')
     const employeeId = ref('')
+    
 
 
     const today = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(today.getDate() - 7)
-    const dateFrom = ref(sevenDaysAgo.toISOString().split('T')[0])
+    const dateFrom = ref(today.toISOString().split('T')[0])
     const dateTo = ref(today.toISOString().split('T')[0])
 
+    const damages = ref([]);
+    const totalDamages = ref(0);
+    const summary = ref({});
     // Filter options
     const branches = ref([])
     const employees = ref([])
@@ -47,12 +51,16 @@ export function useDamageReport() {
                 date_from: dateFrom.value,
                 date_to: dateTo.value,
             }
-
             const response = await $api('/damage-report', {
                 method: 'GET',
                 query: queryParams,
             })
             damageData.value = response.data
+            
+            damages.value = response.data.damages
+            totalDamages.value = response.data.total
+            summary.value = response.data.summary
+
         } catch (error) {
             console.error('Error fetching damage report:', error)
             toast('Failed to load damage report', {
@@ -70,40 +78,6 @@ export function useDamageReport() {
         dateTo.value = ''
         fetchDamageReport()
     }
-
-    const exportReport = async (format = 'pdf') => {
-        const params = {
-            branch_id: branchId.value,
-            employee_id: employeeId.value,
-            date_from: dateFrom.value,
-            date_to: dateTo.value,
-            format,
-        }
-
-        if (format === 'pdf' || format === 'excel' || format === 'csv') {
-            try {
-                const response = await $api('/damage-report-export', {
-                    method: 'GET',
-                    query: params,
-                    responseType: 'blob',
-                })
-                const ext = format === 'pdf' ? 'pdf' : format === 'excel' ? 'xlsx' : 'csv'
-                saveAs(new Blob([response.data]), `damage-report.${ext}`)
-            } catch (error) {
-                toast('Failed to export report', { type: 'error' })
-            }
-        }
-    }
-
-    // Computed properties
-    const damages = computed(() => damageData.value?.damages || [])
-    const totalDamages = computed(() => damageData.value?.total || 0)
-    const summary = computed(() => damageData.value?.summary || {
-        total_amount: 0,
-        total_paid: 0,
-        total_due: 0,
-        total_items: 0
-    })
 
     // Watch for changes in filters
     watch([branchId, employeeId, dateFrom, dateTo], () => {
@@ -131,7 +105,6 @@ export function useDamageReport() {
         fetchFilterOptions,
         fetchDamageReport,
         resetFilters,
-        exportReport,
         
         // Computed
         damages,

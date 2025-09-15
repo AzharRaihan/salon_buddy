@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('subtotal_without_tax_discount', 10, 3)->nullable();
             $table->decimal('grandtotal_with_tax_discount', 10, 3)->nullable();
             $table->decimal('discount', 10, 3)->nullable();
+            $table->decimal('delivery_charge', 10, 3)->nullable();
+            $table->unsignedInteger('delivery_area_id')->nullable();
             $table->decimal('promotion_discount', 10, 3)->nullable();
             $table->decimal('total_tax', 10, 3)->nullable();
             $table->text('tax_breakdown')->nullable();

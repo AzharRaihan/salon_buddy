@@ -511,7 +511,6 @@ const addSupplier = async () => {
                                     :label="$t('Date')" :required="true"
                                     :placeholder="$t('Select date')" 
                                     :error-messages="dateError"
-                                    @update:model-value="validateDate"
                                     :config="{
                                         enableTime: false,
                                         dateFormat: 'Y-m-d'

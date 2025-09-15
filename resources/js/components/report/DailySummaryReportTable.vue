@@ -20,59 +20,45 @@
                     <VCol cols="12" sm="6" md="3">
                         <VCard variant="outlined" class="summary-card">
                             <VCardText class="d-flex align-center justify-space-between">
-                                <div>
-                                    <div class="text-h6 font-weight-bold text-success">
-                                        {{ formatAmount(totalSales) }}
-                                    </div>
-                                    <div class="text-body-2 text-medium-emphasis">
-                                        Total Sales
-                                    </div>
-                                </div>
+                                
                                 <VIcon 
                                     icon="tabler-shopping-cart" 
                                     size="32" 
                                     color="success"
                                 />
                             </VCardText>
+                            <VCardText class="d-flex align-center justify-space-between">
+                                <div class="text-body-2 text-medium-emphasis">
+                                    Total Sales
+                                    {{ formatAmount(totalSales) }}
+                                </div>
+                                <div class="text-body-2 text-medium-emphasis">
+                                    Total Due
+                                    {{ formatAmount(totalSaleDue) }}
+                                </div>
+                            </VCardText>
                         </VCard>
                     </VCol>
 
                     <VCol cols="12" sm="6" md="3">
                         <VCard variant="outlined" class="summary-card">
                             <VCardText class="d-flex align-center justify-space-between">
-                                <div>
-                                    <div class="text-h6 font-weight-bold text-info">
-                                        {{ formatAmount(totalPurchases) }}
-                                    </div>
-                                    <div class="text-body-2 text-medium-emphasis">
-                                        Total Purchases
-                                    </div>
-                                </div>
+                                
                                 <VIcon 
                                     icon="tabler-package" 
                                     size="32" 
                                     color="info"
                                 />
                             </VCardText>
-                        </VCard>
-                    </VCol>
-
-                    <VCol cols="12" sm="6" md="3">
-                        <VCard variant="outlined" class="summary-card">
                             <VCardText class="d-flex align-center justify-space-between">
-                                <div>
-                                    <div class="text-h6 font-weight-bold text-warning">
-                                        {{ formatAmount(totalSupplierDue) }}
-                                    </div>
-                                    <div class="text-body-2 text-medium-emphasis">
-                                        Supplier Due Payment
-                                    </div>
+                                <div class="text-body-2 text-medium-emphasis">
+                                    Total Purchases
+                                    {{ formatAmount(totalPurchases) }}
                                 </div>
-                                <VIcon 
-                                    icon="tabler-credit-card" 
-                                    size="32" 
-                                    color="warning"
-                                />
+                                <div class="text-body-2 text-medium-emphasis">
+                                    Total Due
+                                    {{ formatAmount(totalPurchaseDue) }}
+                                </div>
                             </VCardText>
                         </VCard>
                     </VCol>
@@ -80,19 +66,36 @@
                     <VCol cols="12" sm="6" md="3">
                         <VCard variant="outlined" class="summary-card">
                             <VCardText class="d-flex align-center justify-space-between">
-                                <div>
-                                    <div class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(totalCustomerDue) }}
-                                    </div>
-                                    <div class="text-body-2 text-medium-emphasis">
-                                        Customer Due Receive
-                                    </div>
+                                <VIcon 
+                                    icon="tabler-credit-card" 
+                                    size="32" 
+                                    color="warning"
+                                />
+                            </VCardText>
+                            <VCardText class="d-flex align-center justify-space-between">
+                                <div class="text-body-2 text-medium-emphasis">
+                                    Total Supplier Due
+                                    {{ formatAmount(totalSupplierDue) }}
                                 </div>
+                            </VCardText>
+                        </VCard>
+                    </VCol>
+
+                    <VCol cols="12" sm="6" md="3">
+                        <VCard variant="outlined" class="summary-card">
+                            <VCardText class="d-flex align-center justify-space-between">
+                                
                                 <VIcon 
                                     icon="tabler-wallet" 
                                     size="32" 
                                     color="primary"
                                 />
+                            </VCardText>
+                            <VCardText class="d-flex align-center justify-space-between">   
+                                <div class="text-body-2 text-medium-emphasis">
+                                    Total Customer Due
+                                    {{ formatAmount(totalCustomerDue) }}
+                                </div>
                             </VCardText>
                         </VCard>
                     </VCol>
@@ -110,6 +113,7 @@
                         class="text-no-wrap"
                         :loading="isLoading"
                         hide-default-footer
+                        :items-per-page="-1"
                     >
                         <template #item.date="{ item }">
                             <span class="font-weight-medium">
@@ -153,6 +157,7 @@
                         class="text-no-wrap"
                         :loading="isLoading"
                         hide-default-footer
+                        :items-per-page="-1"
                     >
                         <template #item.date="{ item }">
                             <span class="font-weight-medium">
@@ -197,6 +202,7 @@
                         class="text-no-wrap"
                         :loading="isLoading"
                         hide-default-footer
+                        :items-per-page="-1"
                     >
                         <template #item.date="{ item }">
                             <span class="font-weight-medium">
@@ -238,6 +244,7 @@
                         class="text-no-wrap"
                         :loading="isLoading"
                         hide-default-footer
+                        :items-per-page="-1"
                     >
                         <template #item.due_date="{ item }">
                             <span class="font-weight-medium">
@@ -342,9 +349,16 @@ const customerDueHeaders = [
 const totalSales = computed(() => {
     return props.sales.reduce((sum, sale) => sum + (sale.total_payable || 0), 0)
 })
+const totalSaleDue = computed(() => {
+    return props.sales.reduce((sum, sale) => sum + (sale.total_due || 0), 0)
+})
 
 const totalPurchases = computed(() => {
     return props.purchases.reduce((sum, purchase) => sum + (purchase.grand_total || 0), 0)
+})
+
+const totalPurchaseDue = computed(() => {
+    return props.purchases.reduce((sum, purchase) => sum + (purchase.due_amount || 0), 0)
 })
 
 const totalSupplierDue = computed(() => {

@@ -158,15 +158,13 @@ class ReportController extends Controller
      */
     public function attendanceReport(Request $request)
     {
-        // Validate required fields
-        $request->validate([
-            'employee_id' => 'required|integer|exists:users,id',
-        ]);
 
         $query = Attendance::with(['user'])
             ->where('del_status', 'Live')
-            ->where('company_id', Auth::user()->company_id)
-            ->where('user_id', $request->employee_id); // Always filter by employee
+            ->where('company_id', Auth::user()->company_id);
+            if ($request->has('employee_id') && !empty($request->employee_id)) {
+                $query->where('user_id', $request->employee_id);
+            }
 
         // Date range filter
         if ($request->has('date_from') && !empty($request->date_from)) {
@@ -185,17 +183,15 @@ class ReportController extends Controller
             $query->orderBy('date', 'desc');
         }
 
-        // Pagination
-        $perPage = $request->itemsPerPage ?? 10;
-        $attendances = $query->paginate($perPage);
+        $attendances = $query->get();
 
         // Calculate summary statistics
         $summary = $this->calculateAttendanceSummary($query);
 
         return $this->successResponse([
-            'attendances' => $attendances->items(),
-            'total' => $attendances->total(),
-            'summary' => $summary,
+            'attendances' => $attendances,
+            'total' => $attendances->count(),
+            'summary' => $summary
         ]);
     }
 
@@ -223,11 +219,7 @@ class ReportController extends Controller
     private function calculateAttendanceSummary($query)
     {
         $totalRecords = $query->count();
-        $totalWorkDays = $query->whereNotNull('in_time')->count();
-        $totalAbsentDays = $query->whereNull('in_time')->count();
-        $totalLateDays = $query->whereNotNull('in_time')
-            ->where('in_time', '>', '09:00:00')
-            ->count();
+
         
         // Calculate average working hours
         $totalHours = $query->whereNotNull('total_time')
@@ -235,15 +227,10 @@ class ReportController extends Controller
             ->sum(function($attendance) {
                 return $this->timeToHours($attendance->total_time);
             });
-        
-        $avgWorkingHours = $totalWorkDays > 0 ? round($totalHours / $totalWorkDays, 2) : 0;
 
         return [
             'totalRecords' => $totalRecords,
-            'totalWorkDays' => $totalWorkDays,
-            'totalAbsentDays' => $totalAbsentDays,
-            'totalLateDays' => $totalLateDays,
-            'avgWorkingHours' => $avgWorkingHours,
+            'totalHours' => $totalHours,
         ];
     }
 
@@ -354,7 +341,7 @@ class ReportController extends Controller
      */
     public function damageReport(Request $request)
     {
-        $query = Damage::with(['employee:id,name', 'damageDetails.item:id,name,type'])
+        $query = Damage::with(['employee:id,name,phone', 'damageDetails.item:id,name,type,code'])
             ->where('del_status', 'Live')
             ->where('company_id', Auth::user()->company_id);
 
@@ -402,16 +389,26 @@ class ReportController extends Controller
             $query->orderBy('date', 'desc');
         }
 
-        // Pagination
-        $perPage = $request->itemsPerPage ?? 10;
-        $damages = $query->paginate($perPage);
+        $damages = $query->get();
+
+        // Add damage_items field
+        $damages->map(function ($damage) {
+            $damage->damage_items = $damage->damageDetails
+                ->map(function ($detail) {
+                    return $detail->item->name . ' (' . $detail->item->code . ')';
+                })
+                ->implode(",");
+            return $damage;
+        });
+
+
 
         // Calculate summary statistics
         $summary = $this->calculateDamageSummary($query);
 
         return $this->successResponse([
-            'damages' => $damages->items(),
-            'total' => $damages->total(),
+            'damages' => $damages,
+            'total' => $damages->count(),
             'summary' => $summary,
         ]);
     }
@@ -599,7 +596,7 @@ class ReportController extends Controller
      */
     public function employeeCommissionReport(Request $request)
     {
-        $query = \App\Models\SaleDetail::with(['sale', 'item', 'employee'])
+        $query = \App\Models\SaleDetail::with(['sale:id,reference_no,order_date,order_status', 'item:id,name,code', 'employee:id,name,phone,commission'])
             ->whereHas('sale', function($q) {
                 $q->where('del_status', 'Live')
                   ->where('company_id', Auth::user()->company_id);
@@ -679,11 +676,11 @@ class ReportController extends Controller
         }
 
         // Pagination
-        $perPage = $request->itemsPerPage ?? 10;
-        $commissionDetails = $query->paginate($perPage);
+        $commissionDetails = $query->get();
+    
 
         // Transform data to include calculated commission
-        $transformedData = $commissionDetails->getCollection()->map(function($detail) {
+        $transformedData = $commissionDetails->map(function ($detail) {
             $commissionRate = $detail->employee->commission ?? 0;
             $commissionAmount = ($detail->subtotal * $commissionRate) / 100;
             
@@ -694,6 +691,7 @@ class ReportController extends Controller
                 'employee' => [
                     'id' => $detail->employee->id,
                     'name' => $detail->employee->name,
+                    'phone' => $detail->employee->phone,
                 ],
                 'item' => [
                     'id' => $detail->item->id,
@@ -711,7 +709,7 @@ class ReportController extends Controller
 
         return $this->successResponse([
             'commissions' => $transformedData,
-            'total' => $commissionDetails->total(),
+            'total' => $commissionDetails->count(),
             'summary' => $summary,
         ]);
     }
@@ -735,11 +733,23 @@ class ReportController extends Controller
             return $detail->employee->commission ?? 0;
         });
 
+        // sum of commission rate
+        $totalCommissionRate = $query->get()->sum(function($detail) {
+            return $detail->employee->commission ?? 0;
+        });
+
+        // sum of commission amount
+        $totalCommissionAmount = $query->get()->sum(function($detail) {
+            return ($detail->subtotal * $detail->employee->commission) / 100;
+        });
+
         return [
             'totalOrders' => $totalOrders,
             'totalSubtotal' => $totalSubtotal,
             'totalCommissionAmount' => $totalCommissionAmount,
             'avgCommissionRate' => round($avgCommissionRate, 2),
+            'totalCommissionRate' => $totalCommissionRate,
+            'totalCommissionAmount' => round($totalCommissionAmount, 2),
         ];
     }
 
@@ -1213,7 +1223,8 @@ class ReportController extends Controller
 
     public function salaryReport(Request $request)
     {
-        $query = Salary::with(['branch:id,branch_name', 'user:id,name'])
+        $query = Salary::with(['branch:id,branch_name', 'user:id,name,phone', 'salaryPayments:id,salary_id,payment_method_id,amount',
+    'salaryPayments.paymentMethod:id,name'])
             ->where('del_status', 'Live')
             ->where('company_id', Auth::user()->company_id);
             
@@ -1237,13 +1248,27 @@ class ReportController extends Controller
             $query->orderBy($request->sortBy, $direction);
         }
 
-        // Pagination
-        $perPage = $request->itemsPerPage ?? 10;
-        $salaries = $query->paginate($perPage);
+
+        $salaries = $query->get();
+
+        // Make Payment method name by comma separated
+        $salaries->map(function($salary) {
+            $salary->payment_method_name = $salary->salaryPayments->map(function($payment) {
+                return $payment->paymentMethod->name;
+            })->implode(', ');
+            return $salary;
+        });
+
+        // convert month number to month name
+        $salaries->map(function($salary) {
+            $salary->month = date('F', strtotime('2025-' . $salary->month . '-01')) . ', ' . $salary->year;
+            return $salary;
+        });
 
         return $this->successResponse([
-            'salaries' => $salaries->items(),
-            'total' => $salaries->total(),
+            'salaries' => $salaries,
+            'total' => $salaries->count(),
+            'total_amount' => $salaries->sum('total_amount'),
         ]);
     }
 

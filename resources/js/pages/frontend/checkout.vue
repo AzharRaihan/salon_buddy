@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 import { useCustomerAuth } from '@/composables/useCustomerAuth'
 import { useAuthState } from '@/composables/useAuthState'
-import BookAppointmentBtn from '@/components/frontend/mini-components/BookAppointmentBtn.vue'
+import BookingSamllBtn2 from '@/components/frontend/mini-components/BookingSamllBtn2.vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import LoginModal from '@/components/auth/LoginModal.vue'
 
@@ -28,8 +28,6 @@ const customerForm = reactive({
   l_name: '',
   email: '',
   phone: '',
-  country: '',
-  state: '',
   street: '',
   address: '',
   zip: '',
@@ -46,7 +44,7 @@ const isAuthenticated = computed(() => customerAuthState.value.isAuthenticated)
 // Check if form is valid
 const isFormValid = computed(() => {
   return customerForm.f_name && customerForm.email && customerForm.phone && 
-         customerForm.country && customerForm.state && customerForm.address && customerForm.zip
+         customerForm.street && customerForm.address && customerForm.zip
 })
 
 // Clear validation errors when user starts typing
@@ -92,6 +90,7 @@ const handleLoginModalClose = () => {
 
 // Proceed to payment
 const proceedToPayment = () => {
+
   if (!isAuthenticated.value) {
     showLoginModal.value = true
     return
@@ -111,11 +110,8 @@ const proceedToPayment = () => {
   if (!customerForm.phone) {
     errors.phone = 'Phone is required'
   }
-  if (!customerForm.country) {
-    errors.country = 'Country is required'
-  }
-  if (!customerForm.state) {
-    errors.state = 'State is required'
+  if (!customerForm.street) {
+    errors.street = 'Street is required'
   }
   if (!customerForm.address) {
     errors.address = 'Address is required'
@@ -125,6 +121,7 @@ const proceedToPayment = () => {
   }
   
   if (Object.keys(errors).length > 0) {
+    console.log('errors', errors)
     // Show validation errors
     Object.keys(errors).forEach(field => {
       const element = document.getElementById(field)
@@ -236,47 +233,9 @@ onMounted(async () => {
                   <h4 class="mb-3">Delivery Information</h4>
                   <div class="contact-infor-form">
                     <div class="row">
-                      <div class="col-lg-6 mb-3">
-                        <div class="form-group">
-                          <label for="country">Country <span class="text-danger">*</span></label>
-                          <select 
-                            name="country" 
-                            id="country" 
-                            class="form-control" 
-                            v-model="customerForm.country"
-                            @change="clearValidationErrors('country')"
-                          >
-                            <option value="">Select Country</option>
-                            <option value="1">United States</option>
-                            <option value="2">Canada</option>
-                            <option value="3">United Kingdom</option>
-                            <option value="4">Australia</option>
-                            <option value="5">New Zealand</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-lg-6 mb-3">
-                        <div class="form-group">
-                          <label for="state">State <span class="text-danger">*</span></label>
-                          <select 
-                            name="state" 
-                            id="state" 
-                            class="form-control" 
-                            v-model="customerForm.state"
-                            @change="clearValidationErrors('state')"
-                          >
-                            <option value="">Select State</option>
-                            <option value="1">California</option>
-                            <option value="2">New York</option>
-                            <option value="3">Texas</option>
-                            <option value="4">Florida</option>
-                            <option value="5">Illinois</option>
-                          </select>
-                        </div>
-                      </div>
                       <div class="col-lg-4 col-md-6 mb-3">
                         <div class="form-group">
-                          <label for="street">Street/Town </label>
+                          <label for="street">Street/Town <span class="text-danger">*</span></label>
                           <input 
                             type="text" 
                             class="form-control" 
@@ -322,7 +281,14 @@ onMounted(async () => {
                   </div>
                 </div>
                 <div class="d-flex justify-content-center order-summary-button-group">
-                  <BookAppointmentBtn :link="'/frontend/payment'" :text="'Proceed to checkout'" @click="proceedToPayment" />
+                  <div class="booking-small-btn">
+                    <button type="button" class="btn btn-booking" @click="proceedToPayment">
+                      <span>Proceed to checkout</span>
+                      <div class="arrow-icon-wrap">
+                        <VIcon size="22" icon="tabler-arrow-narrow-right" class="arrow-icon"/>
+                      </div>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -333,19 +299,19 @@ onMounted(async () => {
                   <ul class="table">
                     <li>
                       <span>Subtotal</span>
-                      <span class="text-end">${{ cartStore.subtotal.toFixed(2) }}</span>
+                      <span class="text-end">{{ cartStore.subtotal.toFixed(2) }}</span>
                     </li>
                     <li>
                       <span>Tax</span>
-                      <span class="text-end">${{ cartStore.taxAmount.toFixed(2) }}</span>
+                      <span class="text-end">{{ cartStore.taxAmount.toFixed(2) }}</span>
                     </li>
                     <li>
                       <span>Delivery Charge</span>
-                      <span class="text-end">${{ cartStore.deliveryCharge.toFixed(2) }}</span>
+                      <span class="text-end">{{ cartStore.deliveryCharge.toFixed(2) }}</span>
                     </li>
                     <li class="total">
                       <span>Total</span>
-                      <span class="text-end">${{ cartStore.total.toFixed(2) }}</span>
+                      <span class="text-end">{{ cartStore.total.toFixed(2) }}</span>
                     </li>
                   </ul>
                 </div>

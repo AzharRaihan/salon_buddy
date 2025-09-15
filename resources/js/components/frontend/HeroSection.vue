@@ -13,7 +13,7 @@
             </p>
             <div class="d-flex gap-2">
               <BookingSamllBtn :link="'frontend/appointment-service'" :text="'Book Appointment'" />
-              <RouterLink to="/frontend/contact-us" class="btn btn-outline-primary">
+              <RouterLink to="/frontend/contact-us" class="btn hero-contact-us common-animation-button">
                 Contact Us
               </RouterLink>
             </div>
@@ -65,3 +65,23 @@ onMounted(async () => {
   await fetchBanners()
 })
 </script>
+
+<style scoped>
+.hero-contact-us {
+  padding: 10px 20px;
+  background-color: white !important;
+  color: var(--primary-bg-color);
+  height: 46px;
+}
+.hero-contact-us::before {
+  background-color: var(--primary-bg-color);
+}
+.hero-contact-us::after {
+  border: 1px solid var(--primary-bg-color);
+  color: var(--primary-bg-color);
+  background-color: white;
+}
+.hero-contact-us:hover {
+  color: var(--color-white);
+}
+</style>

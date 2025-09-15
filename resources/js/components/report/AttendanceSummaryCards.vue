@@ -30,47 +30,12 @@ defineProps({
             </VCard>
         </VCol>
         
+       
         <VCol cols="12" md="2">
             <VCard variant="outlined" class="text-center">
                 <VCardText>
-                    <div class="text-h6 text-success">{{ summary.totalWorkDays ?? 0 }}</div>
-                    <div class="text-body-2">Work Days</div>
-                </VCardText>
-            </VCard>
-        </VCol>
-        
-        <VCol cols="12" md="2">
-            <VCard variant="outlined" class="text-center">
-                <VCardText>
-                    <div class="text-h6 text-error">{{ summary.totalAbsentDays ?? 0 }}</div>
-                    <div class="text-body-2">Absent Days</div>
-                </VCardText>
-            </VCard>
-        </VCol>
-        
-        <VCol cols="12" md="2">
-            <VCard variant="outlined" class="text-center">
-                <VCardText>
-                    <div class="text-h6 text-warning">{{ summary.totalLateDays ?? 0 }}</div>
-                    <div class="text-body-2">Late Days</div>
-                </VCardText>
-            </VCard>
-        </VCol>
-        
-        <VCol cols="12" md="2">
-            <VCard variant="outlined" class="text-center">
-                <VCardText>
-                    <div class="text-h6 text-info">{{ summary.avgWorkingHours ?? 0 }}h</div>
-                    <div class="text-body-2">Avg Hours</div>
-                </VCardText>
-            </VCard>
-        </VCol>
-        
-        <VCol cols="12" md="2">
-            <VCard variant="outlined" class="text-center">
-                <VCardText>
-                    <div class="text-h6 text-secondary">{{ totalFiltered }}</div>
-                    <div class="text-body-2">Filtered</div>
+                    <div class="text-h6 text-info">{{ summary.totalHours ?? 0 }}h</div>
+                    <div class="text-body-2">Total Hours</div>
                 </VCardText>
             </VCard>
         </VCol>

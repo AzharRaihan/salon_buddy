@@ -11,7 +11,7 @@
               <div class="features-category">
                 <a 
                   href="#" 
-                  class="btn"
+                  class="btn common-animation-button features-category-btn"
                   :class="{ active: selectedCategory === 'all' }"
                   @click.prevent="filterByCategory('all')"
                 >
@@ -21,7 +21,7 @@
                   v-for="category in serviceCategories" 
                   :key="category.id"
                   href="#" 
-                  class="btn"
+                  class="btn common-animation-button features-category-btn"
                   :class="{ active: selectedCategory === category.id }"
                   @click.prevent="filterByCategory(category.id)"
                 >

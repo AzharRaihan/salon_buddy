@@ -497,9 +497,9 @@ const resetForm = () => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="12" sm="4" md="4" lg="4" class="d-flex align-end justify-space-between mb-2">
+                                                    <VCol cols="12" sm="4" md="4" lg="4" class="d-flex align-end justify-space-between mb-1">
                                                         <div class="d-flex align-center justify-space-between">
-                                                            <span class="font-weight-bold">{{ t('Net Salary') }}:</span>
+                                                            <h3 class="font-weight-bold">{{ t('Net Salary') }}:</h3>
                                                             <span class="text-primary text-h6 ms-2">
                                                                 {{ formatNumberPrecision(item.net_salary) }}
                                                             </span>

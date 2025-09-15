@@ -9,11 +9,14 @@ export function useSalaryReport() {
     // Filter states
     const branchId = ref('')
     const employeeId = ref('')
+    const salaries = ref([])
+    const totalSalaries = ref(0)
+    
 
     const today = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(today.getDate() - 7)
-    const dateFrom = ref(sevenDaysAgo.toISOString().split('T')[0])
+    const dateFrom = ref(today.toISOString().split('T')[0])
     const dateTo = ref(today.toISOString().split('T')[0])
 
     // Filter options
@@ -51,6 +54,10 @@ export function useSalaryReport() {
                 query: queryParams,
             })
             salaryData.value = response.data
+
+            salaries.value = response.data.salaries
+            totalSalaries.value = response.data.total_amount
+
         } catch (error) {
             console.error('Error fetching salary report:', error)
             toast('Failed to load salary report', {
@@ -69,39 +76,6 @@ export function useSalaryReport() {
         fetchSalaryReport()
     }
 
-    const exportReport = async (format = 'pdf') => {
-        const params = {
-            branch_id: branchId.value,
-            employee_id: employeeId.value,
-            date_from: dateFrom.value,
-            date_to: dateTo.value,
-            format,
-        }
-
-        if (format === 'pdf' || format === 'excel' || format === 'csv') {
-            try {
-                const response = await $api('/salary-report-export', {
-                    method: 'GET',
-                    query: params,
-                    responseType: 'blob',
-                })
-                const ext = format === 'pdf' ? 'pdf' : format === 'excel' ? 'xlsx' : 'csv'
-                saveAs(new Blob([response.data]), `salary-report.${ext}`)
-            } catch (error) {
-                toast('Failed to export report', { type: 'error' })
-            }
-        }
-    }
-
-    // Computed properties
-    const salaries = computed(() => salaryData.value?.salaries || [])
-    const totalSalaries = computed(() => salaryData.value?.total_salaries || 0)
-    const summary = computed(() => salaryData.value?.summary || {
-        total_salary: 0,
-        total_paid: 0,
-        total_due: 0,
-        total_employees: 0
-    })
 
     // Watch for changes in filters
     watch([branchId, employeeId, dateFrom, dateTo], () => {
@@ -129,11 +103,9 @@ export function useSalaryReport() {
         fetchFilterOptions,
         fetchSalaryReport,
         resetFilters,
-        exportReport,
-        
+
         // Computed
         salaries,
         totalSalaries,
-        summary,
     }
 }

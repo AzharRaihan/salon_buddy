@@ -19,6 +19,7 @@ use App\Models\SaleDetail;
 use App\Models\AboutusPage;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Str;
+use App\Models\DeliveryArea;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethod;
 use App\Models\WebsiteSetting;
@@ -678,6 +679,9 @@ class FrontendController extends Controller
    
     public function createOrder(Request $request)
     {
+        // dd($request->all());
+        $company = Company::find(1);
+
         $validator = Validator::make($request->all(), [
             'items' => 'required|array|min:1',
             'items.*.id' => 'required|exists:items,id',
@@ -687,6 +691,7 @@ class FrontendController extends Controller
             'subtotal' => 'required|numeric|min:0',
             'tax_amount' => 'required|numeric|min:0',
             'delivery_charge' => 'nullable|numeric|min:0',
+            'delivery_area_id' => 'nullable|exists:delivery_areas,id',
             'total_amount' => 'required|numeric|min:0',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'customer_data' => 'nullable|array',
@@ -724,15 +729,30 @@ class FrontendController extends Controller
             $nextId = $lastSale ? $lastSale->id + 1 : 1;
             $referenceNo = 'SO' . date('Ymd') . str_pad($nextId, 4, '0', STR_PAD_LEFT);
 
+            $tax_type = $company->tax_type;
+            if($tax_type == 'Inclusive'){
+                $grandtotal_with_tax_discount = $validatedData['subtotal'];
+            }else if($tax_type == 'Exclusive'){
+                $grandtotal_with_tax_discount = $validatedData['subtotal'] + $validatedData['tax_amount'];
+            }
+
+
             // Create sale record
             $sale = Sale::create([
                 'reference_no' => $referenceNo,
                 'order_from' => 'Website',
+                'order_date' => now()->format('Y-m-d'),
+                'order_status' => 'Pending',
+                'subtotal_without_tax_discount' => $validatedData['subtotal'],
+                'grandtotal_with_tax_discount' => $grandtotal_with_tax_discount,
+                'discount' => 0,
                 'total_tax' => $validatedData['tax_amount'],
                 'delivery_charge' => $validatedData['delivery_charge'] ?? 0,
+                'delivery_area_id' => $validatedData['delivery_area_id'] ?? null,
                 'total_payable' => $validatedData['total_amount'],
                 'customer_id' => $customerId,
                 'payment_method_id' => $validatedData['payment_method_id'],
+                'branch_id' => 1,
                 'user_id' => 1, // Default user, you can get from auth later
                 'company_id' => 1,
                 'del_status' => 'Live',
@@ -762,6 +782,7 @@ class FrontendController extends Controller
                     'subtotal' => $subtotal,
                     'total_tax' => $itemTax,
                     'total_payable' => $itemTotal,
+                    'branch_id' => 1,
                     'user_id' => 1,
                     'company_id' => 1,
                     'del_status' => 'Live',
@@ -1989,5 +2010,13 @@ class FrontendController extends Controller
         ->orderBy('position', 'asc')
         ->limit(5)->get();
         return $this->successResponse($gallery, 'Gallery fetched successfully');
+    }
+
+    public function getDeliveryAreas()
+    {
+        $deliveryAreas = DeliveryArea::where('del_status', 'Live')
+        ->where('company_id', 1)
+        ->get();
+        return $this->successResponse($deliveryAreas, 'Delivery areas fetched successfully');
     }
 }

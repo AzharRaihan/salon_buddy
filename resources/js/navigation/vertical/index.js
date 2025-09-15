@@ -182,6 +182,10 @@ export default [
     children: [
       { title: "Website Settings", to: { name: "website-settings" }, permission: ["website-settings"] },
       { title: "About Us", to: { name: "website-about-us" }, permission: ["website-aboutus"] },
+      { title: "Add Delivery Area", to: { name: "website-delivery-area-create" }, permission: ["website-delivery_area"] },
+      { title: "List Delivery Area", to: { name: "website-delivery-area" }, permission: ["website-delivery_area"] },
+      { title: "Add Delivery Partner", to: { name: "website-delivery-partner-create" }, permission: ["website-delivery_partner"] },
+      { title: "List Delivery Partner", to: { name: "website-delivery-partner" }, permission: ["website-delivery_partner"] },
       { title: "Add Banner", to: { name: "website-banner-create" }, permission: ["website-banner"] },
       { title: "List Banner", to: { name: "website-banner" }, permission: ["website-banner"] },
       { title: "Add FAQ", to: { name: "website-faq-create" }, permission: ["website-faq"] },

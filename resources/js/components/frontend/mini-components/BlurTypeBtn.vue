@@ -6,7 +6,7 @@ defineProps({
 </script>
 <template>
 <div class="blur-btn-wrapper">
-    <RouterLink :to="link" class="blur-btn">
+    <RouterLink :to="link" class="blur-btn common-animation-button">
       <span>{{ text }}</span>
       <div class="arrow-icon-wrap">
         <VIcon icon="tabler-arrow-narrow-right" class="arrow-icon"/>
@@ -69,5 +69,23 @@ defineProps({
   [dir="rtl"] .arrow-icon-wrap i {
     transform: rotate(210deg);
   }
+
+
+.blur-btn {
+  color: var(--color-white);
+  /* background-color: white !important; */
+}
+.blur-btn::before {
+  background-color: var(--primary-bg-color);
+}
+.blur-btn::after {
+  /* border: 1px solid var(--primary-bg-color); */
+  color: var(--primary-bg-color);
+  background-color: #9f9f9f6b;
+}
+.blur-btn:hover {
+  color: var(--color-white);
+}
+
 
 </style>

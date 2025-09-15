@@ -21,10 +21,12 @@
                 <!-- Commission Table -->
                 <VDataTable
                     :items="commissions"
-                    :headers="headers"
+                    :headers="exportHeaders"
                     class="text-no-wrap"
                     :loading="isLoading"
                     hide-default-footer
+                    :items-per-page="-1"
+
                 >
                     <!-- Loading state -->
                     <template #loading>
@@ -52,6 +54,7 @@
                     <template #item.employee.name="{ item }">
                         <span class="text-high-emphasis">
                             {{ item.employee?.name || 'N/A' }}
+                            {{ item.employee?.phone ? `(${item.employee?.phone})` : '' }}
                         </span>
                     </template>
 
@@ -93,6 +96,49 @@
                             {{ item.order_status }}
                         </VChip>
                     </template>
+
+
+                    <!-- Summary Row -->
+                    <template #bottom>
+                        <VTable>
+                            <thead>
+                                <tr>
+                                    <th colspan="3">
+                                        Summary
+                                    </th>
+                                    <th>
+                                        Subtotal
+                                    </th>
+                                    <th>
+                                        Commission Rate
+                                    </th>
+                                    <th>
+                                        Commission Amount
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="summary-row">
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="3">
+                                        <span class="d-flex align-center">
+                                            <VIcon icon="tabler-calculator" class="me-2" />
+                                            Total Summary
+                                        </span>
+                                    </td>
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
+                                        {{ formatAmount(calculateTotal('subtotal')) }}
+                                    </td>
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
+                                        {{ formatAmount(calculateTotal('commission_rate')) }}
+                                    </td>
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
+                                        {{ formatAmount(calculateTotal('commission_rate')) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </VTable>
+                    </template>
+
                 </VDataTable>
             </VCardText>
         </VCard>
@@ -127,19 +173,14 @@ const props = defineProps({
     isLoading: {
         type: Boolean,
         default: false
+    },
+    exportHeaders: {
+        type: Array,
+        default: () => []
     }
 })
 
-// Table headers
-const headers = [
-    { title: 'Date', key: 'order_date', sortable: true },
-    { title: 'Employee', key: 'employee.name', sortable: false },
-    { title: 'Service/Item', key: 'item.name', sortable: false },
-    { title: 'Subtotal', key: 'subtotal', sortable: true },
-    { title: 'Commission Rate', key: 'commission_rate', sortable: true },
-    { title: 'Commission Amount', key: 'commission_amount', sortable: true },
-    { title: 'Status', key: 'order_status', sortable: false },
-]
+
 
 // Helper functions
 const formatDateRange = (from, to) => {
@@ -162,6 +203,12 @@ const getOrderStatusColor = (status) => {
         default:
             return 'default'
     }
+}
+
+const calculateTotal = (field) => {
+    return props.commissions.reduce((sum, item) => {
+        return sum + (parseFloat(item[field]) || 0)
+    }, 0)
 }
 </script>
 

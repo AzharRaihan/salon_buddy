@@ -18,10 +18,12 @@
                 <!-- Attendance Table -->
                 <VDataTable
                     :items="attendances"
-                    :headers="headers"
+                    :headers="exportHeaders"
                     class="text-no-wrap"
                     :loading="isLoading"
                     hide-default-footer
+                    :items-per-page="-1"
+
                 >
                     <!-- Loading state -->
                     <template #loading>
@@ -51,28 +53,28 @@
                     <!-- Employee name -->
                     <template #item.user.name="{ item }">
                         <span class="text-high-emphasis">
-                            {{ item.user?.name || 'N/A' }}
+                            {{ item.user?.name }}  {{ item.user?.phone ? `(${item.user?.phone})` : '' }}
                         </span>
                     </template>
 
                     <!-- In time -->
                     <template #item.in_time="{ item }">
                         <span class="text-high-emphasis">
-                            {{ formatTime(item.in_time) }}
+                            {{ formatTime(item.in_time) }} 
                         </span>
                     </template>
 
                     <!-- Out time -->
                     <template #item.out_time="{ item }">
                         <span class="text-high-emphasis">
-                            {{ formatTime(item.out_time) }}
+                            {{ formatTime(item.out_time) }} 
                         </span>
                     </template>
 
                     <!-- Total time -->
                     <template #item.total_time="{ item }">
                         <span class="font-weight-medium text-success">
-                            {{ formatTotalTime(item.total_time) }}
+                            {{ formatTotalTime(item.total_time) }} h
                         </span>
                     </template>
 
@@ -93,6 +95,36 @@
                             {{ item.note ? (item.note.length > 50 ? item.note.substring(0, 50) + '...' : item.note) : 'N/A' }}
                         </span>
                     </template>
+
+                    <!-- Summary Row -->
+                    <template #bottom>
+                        <VTable>
+                            <thead>
+                                <tr>
+                                    <th colspan="5">
+                                        Summary
+                                    </th>
+                                    <th>
+                                        Total Time
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="summary-row">
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="5">
+                                        <span class="d-flex align-center">
+                                            <VIcon icon="tabler-calculator" class="me-2" />
+                                            Total Summary
+                                        </span>
+                                    </td>
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
+                                        {{ (calculateTotal('total_time')) }} h
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </VTable>
+                    </template>
+
                 </VDataTable>
             </VCardText>
         </VCard>
@@ -101,7 +133,7 @@
 
 <script setup>
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate } = useCompanyFormatters()
+const { formatDate, formatAmount } = useCompanyFormatters()
 
 const props = defineProps({
     attendances: {
@@ -123,19 +155,13 @@ const props = defineProps({
     isLoading: {
         type: Boolean,
         default: false
+    },
+    exportHeaders: {
+        type: Array,
+        default: () => []
     }
 })
 
-// Table headers
-const headers = [
-    { title: 'Date', key: 'date', sortable: true },
-    { title: 'Employee', key: 'user.name', sortable: false },
-    { title: 'In Time', key: 'in_time', sortable: false },
-    { title: 'Out Time', key: 'out_time', sortable: false },
-    { title: 'Total Time', key: 'total_time', sortable: false },
-    { title: 'Status', key: 'status', sortable: false },
-    { title: 'Note', key: 'note', sortable: false },
-]
 
 // Helper functions
 const formatDateRange = (from, to) => {
@@ -160,6 +186,13 @@ const getAttendanceStatus = (item) => {
     if (item.in_time > '09:00:00') return { text: 'Late', color: 'warning' }
     return { text: 'Present', color: 'success' }
 }
+
+const calculateTotal = (field) => {
+    return props.attendances.reduce((sum, item) => {
+        return sum + (parseFloat(item[field]) || 0)
+    }, 0)
+}
+
 </script>
 
 <style lang="scss" scoped>

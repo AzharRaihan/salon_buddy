@@ -29,7 +29,7 @@
                       <h4 class="offer-name">{{ offer.name }}</h4>
                       <div class="offer-description" v-if="offer.description" v-html="offer.description"></div>
                       <div class="offer-services">
-                        <ul class="services-list">
+                        <ul class="services-list" v-if="offer.services.length > 0">
                           <li v-for="service in offer.services" :key="service.name">
                             <span>
                               {{ service.name }}

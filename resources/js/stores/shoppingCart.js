@@ -3,9 +3,12 @@ import { defineStore } from 'pinia'
 export const useShoppingCartStore = defineStore('shoppingCart', {
   state: () => ({
     items: [],
-    deliveryCharge: 60, // Fixed delivery charge as requested
+    deliveryCharge: 0, // Fixed delivery charge as requested
     companyInfo: null,
-    itemsWithTax: []
+    itemsWithTax: [],
+    deliveryAreas: [],
+    selectedDeliveryArea: null,
+    selectedDeliveryAreaId: null,
   }),
 
   getters: {
@@ -52,7 +55,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
       const subtotal = state.items.reduce((total, item) => {
         return total + (item.price * item.quantity)
       }, 0)
-      
+
       if (!state.companyInfo || state.companyInfo.collect_tax !== 'Yes') {
         return subtotal + state.deliveryCharge
       }
@@ -87,6 +90,12 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         if (companyResponse.success) {
           this.companyInfo = companyResponse.data
         }
+
+        // Fetch delivery area
+        const deliveryAreaResponse = await $api('/get-delivery-areas')
+        if (deliveryAreaResponse.success) {
+          this.deliveryAreas = deliveryAreaResponse.data
+        }
         
         // Fetch items with tax info
         const itemsResponse = await $api('/get-all-type-item-list')
@@ -103,6 +112,21 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         }
       }
     },
+
+
+    setDeliveryArea(areaId) {
+      const area = this.deliveryAreas.find(a => a.id === areaId)
+      if (area) {
+        this.selectedDeliveryArea = area
+        this.selectedDeliveryAreaId = areaId
+        this.deliveryCharge = parseFloat(area.delivery_charge) || 0
+      } else {
+        this.selectedDeliveryArea = null
+        this.selectedDeliveryAreaId = null
+        this.deliveryCharge = 0
+      }
+    },
+    
 
     // Add item to cart
     addItem(item) {
@@ -205,6 +229,8 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         }
       }
     },
+
+    
     
     // Get cart data for checkout
     getCartData() {
@@ -214,7 +240,8 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         taxAmount: this.taxAmount,
         deliveryCharge: this.deliveryCharge,
         total: this.total,
-        itemCount: this.itemCount
+        itemCount: this.itemCount,
+        selectedDeliveryArea: this.selectedDeliveryArea
       }
     }
   }

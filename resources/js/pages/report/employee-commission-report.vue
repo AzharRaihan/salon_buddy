@@ -4,7 +4,7 @@ import { useEmployeeCommissionReport } from '@/composables/useEmployeeCommission
 import EmployeeCommissionReportFilters from '@/components/report/EmployeeCommissionReportFilters.vue'
 import EmployeeCommissionSummaryCards from '@/components/report/EmployeeCommissionSummaryCards.vue'
 import EmployeeCommissionReportTable from '@/components/report/EmployeeCommissionReportTable.vue'
-import ExportTable from '@/components/ExportTable.vue'
+import ExportTableEmployeeCommissionReport from '@/components/ExportTableEmployeeCommissionReport.vue'
 
 // Use the employee commission report composable
 const {
@@ -22,7 +22,6 @@ const {
     fetchFilterOptions,
     fetchCommissionReport,
     resetFilters,
-    exportReport,
     
     // Computed
     commissions,
@@ -46,6 +45,7 @@ const selectedEmployeeName = computed(() => {
 // Export headers for ExportTable component
 const exportHeaders = computed(() => [
     { title: 'Date', key: 'order_date' },
+    { title: 'Invoice No', key: 'reference_no' },
     { title: 'Employee', key: 'employee.name' },
     { title: 'Service/Item', key: 'item.name' },
     { title: 'Subtotal', key: 'subtotal' },
@@ -53,6 +53,11 @@ const exportHeaders = computed(() => [
     { title: 'Commission Amount', key: 'commission_amount' },
     { title: 'Status', key: 'order_status' },
 ])
+
+const handleResetFilters = () => {
+    resetFilters()
+}   
+
 </script>
 
 <template>
@@ -67,8 +72,6 @@ const exportHeaders = computed(() => [
                     v-model:employee-id="employeeId"
                     :branches="branches"
                     :employees="employees"
-                    @reset-filters="resetFilters"
-                    @export-report="exportReport"
                 />
             </VCardText>
         </VCard>
@@ -88,14 +91,15 @@ const exportHeaders = computed(() => [
             <VBtn 
                 prepend-icon="tabler-refresh" 
                 variant="outlined" 
-                @click="resetFilters"
+                @click="handleResetFilters"
             >
                 Reset Filters
             </VBtn>
 
-            <ExportTable 
+            <ExportTableEmployeeCommissionReport 
                 :data="commissions" 
                 :headers="exportHeaders" 
+                :summary-data="summary"
                 filename="employee-commission-report"
                 title="Employee Commission Report"
             />
@@ -109,6 +113,7 @@ const exportHeaders = computed(() => [
             :selected-branch-name="selectedBranchName"
             :selected-employee-name="selectedEmployeeName"
             :is-loading="isLoading"
+            :export-headers="exportHeaders"
         />
     </div>
 </template>

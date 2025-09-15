@@ -10,6 +10,10 @@ export function useEmployeeCommissionReport() {
     const branchId = ref('')
     const employeeId = ref('')
 
+    const commissions = ref([]);
+    const totalCommissions = ref(0);
+    const summary = ref({});
+
     const today = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(today.getDate() - 7)
@@ -50,6 +54,10 @@ export function useEmployeeCommissionReport() {
                 query: queryParams,
             })
             commissionData.value = response.data
+
+            commissions.value = response.data.commissions
+            totalCommissions.value = response.data.total_commissions
+            summary.value = response.data.summary
         } catch (error) {
             console.error('Error fetching commission report:', error)
             toast('Failed to load commission report', {
@@ -68,38 +76,6 @@ export function useEmployeeCommissionReport() {
         fetchCommissionReport()
     }
 
-    const exportReport = async (format = 'pdf') => {
-        const params = {
-            branch_id: branchId.value,
-            employee_id: employeeId.value,
-            date_from: dateFrom.value,
-            date_to: dateTo.value,
-            format,
-        }
-
-        if (format === 'pdf' || format === 'excel' || format === 'csv') {
-            try {
-                const response = await $api('/employee-commission-report-export', {
-                    method: 'GET',
-                    query: params,
-                    responseType: 'blob',
-                })
-                const ext = format === 'pdf' ? 'pdf' : format === 'excel' ? 'xlsx' : 'csv'
-                saveAs(new Blob([response.data]), `employee-commission-report.${ext}`)
-            } catch (error) {
-                toast('Failed to export report', { type: 'error' })
-            }
-        }
-    }
-
-    // Computed properties
-    const commissions = computed(() => commissionData.value?.commissions || [])
-    const totalCommissions = computed(() => commissionData.value?.total_commissions || 0)
-    const summary = computed(() => commissionData.value?.summary || {
-        total_orders: 0,
-        total_commission: 0,
-        average_commission: 0
-    })
 
     // Watch for changes in filters
     watch([branchId, employeeId, dateFrom, dateTo], () => {
@@ -127,7 +103,6 @@ export function useEmployeeCommissionReport() {
         fetchFilterOptions,
         fetchCommissionReport,
         resetFilters,
-        exportReport,
         
         // Computed
         commissions,

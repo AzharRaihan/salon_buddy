@@ -1,12 +1,13 @@
 <script setup>
 defineProps({
   text: String,
-  link: String
+  link: String,
+  disabled: Boolean
 })
 </script>
 <template>
 <div class="booking-small-btn">
-    <RouterLink :to="link" class="btn btn-booking">
+    <RouterLink :to="link" class="btn btn-booking" :disabled="disabled">
       <span>{{ text }}</span>
       <div class="arrow-icon-wrap">
         <VIcon size="22" icon="tabler-arrow-narrow-right" class="arrow-icon"/>

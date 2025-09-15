@@ -199,6 +199,10 @@ const fetchCategoryList = async () => {
         if(form.value.type == 'Service') {
             const res = await $api('/get-service-category-list')
             categoryList.value = res.data
+        
+        } else if(form.value.type == 'Product') {
+            const res = await $api('/get-product-category-list')
+            categoryList.value = res.data
         } else {
             const res = await $api('/get-category-list')
             categoryList.value = res.data

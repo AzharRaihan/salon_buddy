@@ -38,10 +38,10 @@ definePage({
     />
 
     <!-- Animation Div -->
-    <AnimationDiv />
-    <AnimationDiv2 />
-    <AnimatePackage />
-    <AOSExample />
+    <!-- <AnimationDiv /> -->
+    <!-- <AnimationDiv2 /> -->
+    <!-- <AnimatePackage /> -->
+    <!-- <AOSExample /> -->
     
     <!-- Salon Products -->
     <SalonProducts 

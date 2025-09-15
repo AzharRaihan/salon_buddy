@@ -33,6 +33,7 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\DeliveryAreaController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductUsagesController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -40,6 +41,7 @@ use App\Http\Controllers\PaymentGatewayController;
 use App\Http\Controllers\WebsiteSettingController;
 use App\Http\Controllers\WorkingProcessController;
 use App\Http\Controllers\CustomerReceiveController;
+use App\Http\Controllers\DeliveryPartnerController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\SupplierPaymentController;
 
@@ -146,6 +148,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('items', ItemController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('units', UnitController::class);
+    Route::apiResource('delivery-areas', DeliveryAreaController::class);
+    Route::apiResource('delivery-partners', DeliveryPartnerController::class);
     Route::apiResource('branches', BranchController::class);
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('expense-categories', ExpenseCategoryController::class);
@@ -241,6 +245,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('get-unit-list', 'getUnitList');
         Route::get('get-category-list', 'getCategoryList');
         Route::get('get-service-category-list', 'getServiceCategoryList');
+        Route::get('get-product-category-list', 'getProductCategoryList');
         Route::get('get-all-users', 'getAllUsers');
         Route::get('get-all-customers', 'getAllCustomers');
         Route::get('get-all-customers-pos', 'getAllCustomersPos');
@@ -373,6 +378,9 @@ Route::controller(FrontendController::class)->group(function () {
 
     // Gallery API
     Route::get('get-gallery', 'getGallery');
+
+    // Delivery area API
+    Route::get('get-delivery-areas', 'getDeliveryAreas');
  
 
 });

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { useApi } from '@/composables/useApi'
 import { useCustomerAuth } from '@/composables/useCustomerAuth'
 import { useBookingFlow } from '@/composables/useBookingFlow'
@@ -141,6 +141,8 @@ const handleServiceSelection = (serviceId) => {
   selectedService.value = fullService
 }
 
+
+const bookingFormRef = ref(null)
 const addToCart = async () => {
   if (!selectedBranch.value || !selectedService.value || !selectedDate.value || !selectedTime.value) {
     validationErrors.value = {
@@ -158,6 +160,14 @@ const addToCart = async () => {
     
     return
   }
+
+  // ✅ Use nextTick + ref correctly
+  await nextTick()
+  if (bookingFormRef.value) {
+    bookingFormRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+
   
   isAddingToCart.value = true
   validationErrors.value = {}
@@ -498,7 +508,7 @@ definePage({
     <CommonPageBanner :title="t('Appointment Details')" :breadcrumb="t('Appointment Details')" />
 
     <!-- Calendar Section -->
-    <section class="calendar-booking-section default-section-padding-t">
+    <section class="calendar-booking-section default-section-padding-t" ref="bookingFormRef">
       <div class="container">
         <!-- Booking Steps -->
         <div class="row justify-content-center">
@@ -1045,23 +1055,23 @@ definePage({
 @keyframes cartPulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    box-shadow: 0 0 0 0 rgba(9, 141, 156, 1);
   }
   25% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 15px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 0 15px rgba(9, 141, 156, 1);
   }
   50% {
     transform: scale(1.02);
-    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0 10px rgba(9, 141, 156, 1);
   }
   75% {
     transform: scale(1.03);
-    box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 5px rgba(9, 141, 156, 1);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0 0 rgba(9, 141, 156, 1);
   }
 }
 
@@ -1105,23 +1115,23 @@ definePage({
 
 /* Highlight new service row */
 .service-row.highlight {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: rgba(9, 141, 156, 1);
   animation: highlightPulse 1s ease-in-out;
 }
 
 @keyframes highlightPulse {
   0% {
-    background-color: rgba(99, 102, 241, 0.3);
+    background-color: rgba(9, 141, 156, 1);
   }
   100% {
-    background-color: rgba(99, 102, 241, 0.1);
+    background-color: rgba(9, 141, 156, 1);
   }
 }
 
 /* Add to cart button hover effect */
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(9, 141, 156, 1);
   transition: all 0.3s ease;
 }
 
@@ -1145,11 +1155,11 @@ definePage({
 }
 
 .flying-item-content {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #098d9c, #098d9c);
   color: white;
   padding: 8px 12px;
   border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3), 0 0 20px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 12px rgba(9, 141, 156, 1), 0 0 20px rgba(9, 141, 156, 1);
   display: flex;
   align-items: center;
   gap: 6px;
