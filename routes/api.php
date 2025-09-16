@@ -331,6 +331,7 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('get-all-banner', 'getAllBanner');
     Route::get('get-all-faq', 'getAllFaq');
     Route::get('get-package-type-item-list', 'getPackageTypeItemList');
+    Route::get('get-all-payment-methods-frontend', 'getAllPaymentMethodsFrontend');
 
     // api for package with patination
     Route::get('get-package-type-item-list-paginated', 'getPackageTypeItemListPaginated');
@@ -382,6 +383,8 @@ Route::controller(FrontendController::class)->group(function () {
     // Delivery area API
     Route::get('get-delivery-areas', 'getDeliveryAreas');
  
+    // Payment success API
+    Route::get('payment-success', 'paymentSuccess');
 
 });
 
@@ -409,6 +412,7 @@ Route::controller(PaymentGatewayController::class)->group(function () {
     Route::post('create-paypal-order', 'createPaypalOrder');
     Route::post('verify-paypal-payment', 'verifyPaypalPayment');
     Route::post('check-paypal-payment-status', 'checkPaypalPaymentStatus');
+    // Route::get('/payment-success', 'paymentSuccess');
     // Route::get('debug-paypal-config', 'debugPaypalConfig');
     
     // Paytm

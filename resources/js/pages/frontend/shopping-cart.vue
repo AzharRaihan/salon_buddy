@@ -101,6 +101,7 @@ onMounted(async () => {
                       <span>Tax</span>
                       <span class="text-end">{{ cartStore.taxAmount.toFixed(2) }}</span>
                     </li>
+          
                     <!-- Show Delivery Area  list -->
                     <li>
                       <div class="flex-grow-1">
@@ -143,3 +144,22 @@ onMounted(async () => {
     </section>
   </div>
 </template>
+
+<style scoped>
+.tax-breakdown {
+  padding-left: 20px;
+  border-left: 2px solid #e9ecef;
+}
+
+.tax-breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.tax-type {
+  font-weight: 500;
+}
+</style>

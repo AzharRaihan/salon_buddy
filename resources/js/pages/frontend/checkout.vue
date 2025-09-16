@@ -242,6 +242,7 @@ onMounted(async () => {
                             id="street" 
                             v-model="customerForm.street" 
                             placeholder="Enter your street/town"
+                            @input="clearValidationErrors('street')"
                           >
                         </div>
                       </div>

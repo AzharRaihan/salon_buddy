@@ -9,6 +9,10 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
     deliveryAreas: [],
     selectedDeliveryArea: null,
     selectedDeliveryAreaId: null,
+    taxBreakdown: {}, // Store detailed tax breakdown
+    totalPaid: 0, // Total amount paid
+    totalDue: 0, // Total amount due
+    paymentMethodId: null, // Selected payment method
   }),
 
   getters: {
@@ -25,27 +29,33 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
       }, 0)
     },
     
-    // Tax amount using proper tax calculation
+    // Tax amount using proper tax calculation with breakdown
     taxAmount: (state) => {
       if (!state.companyInfo || state.companyInfo.collect_tax !== 'Yes') {
         return 0
       }
       
       let totalTax = 0
+      const taxBreakdown = {}
       const isInclusive = state.companyInfo.tax_type === 'Inclusive'
 
       state.items.forEach(item => {
         const itemSubtotal = item.quantity * item.price
-        const itemTax = calculateItemTax(state, item.id, item.quantity, item.price)
+        const itemTaxResult = calculateItemTaxWithBreakdown(state, item.id, item.quantity, item.price)
         
-        if (isInclusive) {
-          // For inclusive tax, subtotal is price minus tax
-          totalTax += itemTax
-        } else {
-          // For exclusive tax, subtotal is just price
-          totalTax += itemTax
-        }
+        totalTax += itemTaxResult.totalTax
+        
+        // Aggregate tax breakdown
+        Object.keys(itemTaxResult.taxBreakdown).forEach(taxType => {
+          if (!taxBreakdown[taxType]) {
+            taxBreakdown[taxType] = 0
+          }
+          taxBreakdown[taxType] += itemTaxResult.taxBreakdown[taxType]
+        })
       })
+
+      // Update tax breakdown in state
+      state.taxBreakdown = taxBreakdown
 
       return totalTax
     },
@@ -70,6 +80,16 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         // For exclusive tax, total is subtotal + tax + delivery charge
         return subtotal + taxAmount + state.deliveryCharge
       }
+    },
+
+    // Total paid amount
+    totalPaidAmount: (state) => {
+      return state.totalPaid
+    },
+
+    // Total due amount
+    totalDueAmount: (state) => {
+      return Math.max(0, state.total - state.totalPaid)
     },
     
     // Format currency helper
@@ -232,34 +252,47 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
 
     
     
+    // Set payment amount
+    setPaymentAmount(amount) {
+      this.totalPaid = parseFloat(amount) || 0
+      this.totalDue = Math.max(0, this.total - this.totalPaid)
+    },
+
+    // Set payment method
+    setPaymentMethod(methodId) {
+      this.paymentMethodId = methodId
+    },
+
     // Get cart data for checkout
     getCartData() {
       return {
         items: this.items,
         subtotal: this.subtotal,
         taxAmount: this.taxAmount,
+        taxBreakdown: this.taxBreakdown,
         deliveryCharge: this.deliveryCharge,
         total: this.total,
+        totalPaid: this.totalPaid,
+        totalDue: this.totalDue,
         itemCount: this.itemCount,
-        selectedDeliveryArea: this.selectedDeliveryArea
+        selectedDeliveryArea: this.selectedDeliveryArea,
+        paymentMethodId: this.paymentMethodId
       }
     }
   }
 })
 
-// Helper function to calculate tax for a single item
-function calculateItemTax(state, itemId, quantity, price, customerState = null) {
-
+// Helper function to calculate tax for a single item with breakdown
+function calculateItemTaxWithBreakdown(state, itemId, quantity, price, customerState = null) {
   if (!state.companyInfo || state.companyInfo.collect_tax !== 'Yes') {
-    return 0
+    return { totalTax: 0, taxBreakdown: {} }
   }
 
   const item = state.itemsWithTax.find(item => item.id === itemId)
   if (!item || !item.tax_information) {
-    return 0
+    return { totalTax: 0, taxBreakdown: {} }
   }
 
-  let taxAmount = 0
   const subtotal = quantity * price
 
   try {
@@ -268,22 +301,27 @@ function calculateItemTax(state, itemId, quantity, price, customerState = null) 
     
     if (state.companyInfo.tax_is_gst === 'Yes') {
       // GST calculation (Indian tax system)
-      taxAmount = calculateGSTTax(taxInfo, subtotal, isInclusive, customerState)
+      return calculateGSTTaxWithBreakdown(taxInfo, subtotal, isInclusive, customerState)
     } else {
       // Regular tax calculation
-      taxAmount = calculateRegularTax(taxInfo, subtotal, isInclusive)
+      return calculateRegularTaxWithBreakdown(taxInfo, subtotal, isInclusive)
     }
   } catch (error) {
     console.error('Error parsing tax information:', error)
-    return 0
+    return { totalTax: 0, taxBreakdown: {} }
   }
-
-  return taxAmount
 }
 
-// Calculate GST tax (Indian tax system)
-function calculateGSTTax(taxInfo, subtotal, isInclusive, customerState = null) {
+// Helper function to calculate tax for a single item (legacy)
+function calculateItemTax(state, itemId, quantity, price, customerState = null) {
+  const result = calculateItemTaxWithBreakdown(state, itemId, quantity, price, customerState)
+  return result.totalTax
+}
+
+// Calculate GST tax with breakdown (Indian tax system)
+function calculateGSTTaxWithBreakdown(taxInfo, subtotal, isInclusive, customerState = null) {
   let totalTaxAmount = 0
+  const taxBreakdown = {}
   
   // Determine if customer is in same state or different state
   const isSameState = customerState === 'Same'
@@ -308,21 +346,36 @@ function calculateGSTTax(taxInfo, subtotal, isInclusive, customerState = null) {
     const grossAmount = subtotal
     const netAmount = grossAmount / (1 + (totalTaxRate / 100))
     totalTaxAmount = grossAmount - netAmount
+    
+    // Calculate individual tax amounts proportionally
+    applicableTaxInfo.forEach(tax => {
+      const taxRate = parseFloat(tax.tax_rate) || 0
+      const taxAmount = (totalTaxAmount * taxRate) / totalTaxRate
+      taxBreakdown[tax.tax] = parseFloat(taxAmount.toFixed(2))
+    })
   } else {
     // For exclusive tax, calculate forward from subtotal
     applicableTaxInfo.forEach(tax => {
       const taxRate = parseFloat(tax.tax_rate) || 0
       const taxAmount = (subtotal * taxRate) / 100
       totalTaxAmount += taxAmount
+      taxBreakdown[tax.tax] = parseFloat(taxAmount.toFixed(2))
     })
   }
 
-  return totalTaxAmount
+  return { totalTax: totalTaxAmount, taxBreakdown }
 }
 
-// Calculate regular tax
-function calculateRegularTax(taxInfo, subtotal, isInclusive) {
+// Calculate GST tax (Indian tax system) - legacy function
+function calculateGSTTax(taxInfo, subtotal, isInclusive, customerState = null) {
+  const result = calculateGSTTaxWithBreakdown(taxInfo, subtotal, isInclusive, customerState)
+  return result.totalTax
+}
+
+// Calculate regular tax with breakdown
+function calculateRegularTaxWithBreakdown(taxInfo, subtotal, isInclusive) {
   let totalTaxAmount = 0
+  const taxBreakdown = {}
   const totalTaxRate = taxInfo.reduce((sum, tax) => sum + (parseFloat(tax.tax_rate) || 0), 0)
 
   if (isInclusive) {
@@ -330,14 +383,28 @@ function calculateRegularTax(taxInfo, subtotal, isInclusive) {
     const grossAmount = subtotal
     const netAmount = grossAmount / (1 + (totalTaxRate / 100))
     totalTaxAmount = grossAmount - netAmount
+    
+    // Calculate individual tax amounts proportionally
+    taxInfo.forEach(tax => {
+      const taxRate = parseFloat(tax.tax_rate) || 0
+      const taxAmount = (totalTaxAmount * taxRate) / totalTaxRate
+      taxBreakdown[tax.tax] = parseFloat(taxAmount.toFixed(2))
+    })
   } else {
     // For exclusive tax, calculate forward from subtotal
     taxInfo.forEach(tax => {
       const taxRate = parseFloat(tax.tax_rate) || 0
       const taxAmount = (subtotal * taxRate) / 100
       totalTaxAmount += taxAmount
+      taxBreakdown[tax.tax] = parseFloat(taxAmount.toFixed(2))
     })
   }
 
-  return totalTaxAmount
+  return { totalTax: totalTaxAmount, taxBreakdown }
+}
+
+// Calculate regular tax - legacy function
+function calculateRegularTax(taxInfo, subtotal, isInclusive) {
+  const result = calculateRegularTaxWithBreakdown(taxInfo, subtotal, isInclusive)
+  return result.totalTax
 } 

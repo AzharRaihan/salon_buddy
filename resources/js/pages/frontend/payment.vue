@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 import { useCustomerAuth } from '@/composables/useCustomerAuth'
 import { useAuthState } from '@/composables/useAuthState'
+import { usePOSPayment } from '@/composables/pos/usePOSPayment'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import LoginModal from '@/components/auth/LoginModal.vue'
+import { toast } from 'vue3-toastify';
 
 definePage({
   meta: {
@@ -21,8 +23,12 @@ const cartStore = useShoppingCartStore()
 const { isCustomerAuthenticated, getCurrentCustomer } = useCustomerAuth()
 const { customerAuthState } = useAuthState()
 
+// Payment Processing
+const { isProcessingPayment, paymentError, processPOSPayment, resetPaymentState } = usePOSPayment()
+
 const paymentMethods = ref([])
 const selectedPaymentMethod = ref('')
+const paidAmount = ref(0)
 const isLoading = ref(false)
 const customerData = ref(null)
 const showLoginModal = ref(false)
@@ -45,73 +51,109 @@ const fetchPaymentMethods = async () => {
 }
 
 const processPayment = async () => {
+
   if (!isAuthenticated.value) {
     showLoginModal.value = true
     return
   }
   
   if (!selectedPaymentMethod.value) {
-    alert('Please select a payment method')
+    toast('Please select a payment method', { type: 'error' })
     return
   }
   
   if (!cartStore.hasItems) {
-    alert('Your cart is empty')
+    toast('Your cart is empty', { type: 'error' })
     return
   }
   
   try {
     isLoading.value = true
+
+    // Set payment amount in cart store
+    cartStore.setPaymentAmount(paidAmount.value || cartStore.total)
+    cartStore.setPaymentMethod(selectedPaymentMethod.value)
     
-    // Create order data
+    // Create order data with tax breakdown
     const orderData = {
-      items: cartStore.items,
+      items: cartStore.items.map(item => ({
+        id: item.id,
+        qty: item.quantity,
+        price: item.price,
+        employee_id: null,
+        is_free: 'No',
+        promotion_id: null,
+        promotion_discount: 0
+      })),
       subtotal: cartStore.subtotal,
-      tax_amount: cartStore.taxAmount,
+      tax: cartStore.taxAmount,
+      tax_breakdown: cartStore.taxBreakdown,
+      discount: 0,
+      promotionDiscount: 0,
+      total: cartStore.total,
+      payment_method_id: selectedPaymentMethod.value,
+      payment_amount: cartStore.totalPaid,
+      due_amount: cartStore.totalDue,
       delivery_charge: cartStore.deliveryCharge,
       delivery_area_id: cartStore.selectedDeliveryAreaId,
-      total_amount: cartStore.total,
-      payment_method_id: selectedPaymentMethod.value,
+      customer_id: customerData.value?.id || null,
+      user_id: 1, // Default user ID for frontend orders
+      branch_id: 1, // Default branch ID
+      order_date: new Date().toISOString().split('T')[0],
       customer_data: customerData.value
     }
     
-    // Create order in database
-    const response = await $api('/create-order', {
-      method: 'POST',
-      body: JSON.stringify(orderData),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    // Process payment first (if not cash)
+    let paymentResult = { success: true }
+    if (selectedPaymentMethod.value) {
+      paymentResult = await processPOSPayment(
+        selectedPaymentMethod.value,
+        cartStore.total,
+        orderData
+      )
+    }
     
-    if (response.success) {
-      // Order created successfully
-      console.log('Order created:', response.data)
-      
-      // Here you would integrate with actual payment processing
-      // For now, we'll simulate a successful payment
-      
-      // Clear the cart after successful payment
-      cartStore.clearCart()
-      
-      // Clear customer data from localStorage
-      localStorage.removeItem('checkout_customer_data')
-      
-      // Redirect to success page with order info
-      router.push({
-        path: '/frontend/payment-success',
-        query: { 
-          order: response.data.reference_no,
-          amount: response.data.total_amount 
-        }
+    if (paymentResult.success) {
+      // Create order in database
+      const response = await $api('/create-order', {
+        method: 'POST',
+        body: JSON.stringify(orderData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
+      
+      if (response.success) {
+        // Order created successfully
+        console.log('Order created:', response.data)
+        
+        // Clear the cart after successful payment
+        cartStore.clearCart()
+        
+        // Clear customer data from localStorage
+        localStorage.removeItem('checkout_customer_data')
+        
+        // Reset payment state
+        resetPaymentState()
+        
+        // Redirect to success page with order info
+        router.push({
+          path: '/frontend/payment-success',
+          query: { 
+            order: response.data.reference_no,
+            amount: response.data.total_amount 
+          }
+        })
+      } else {
+        throw new Error(response.message || 'Failed to create order')
+      }
     } else {
-      throw new Error(response.message || 'Failed to create order')
+      throw new Error(paymentResult.message || 'Payment processing failed')
     }
     
   } catch (error) {
     console.error('Payment processing error:', error)
-    alert('Payment failed. Please try again.')
+    toast(error.message || 'Payment failed. Please try again.', { type: 'error' })
   } finally {
     isLoading.value = false
   }
@@ -135,6 +177,9 @@ onMounted(async () => {
   cartStore.loadFromStorage()
   await cartStore.initializeTaxSettings()
   await fetchPaymentMethods()
+  
+  // Initialize payment amount to total
+  paidAmount.value = cartStore.total
   
   // Check if customer is authenticated
   if (!isAuthenticated.value) {
@@ -205,6 +250,7 @@ onMounted(async () => {
                         <span>Tax</span>
                         <span class="text-end">{{ cartStore.taxAmount.toFixed(2) }}</span>
                       </li>
+                      
                       <li>
                         <span>Delivery Charge</span>
                         <span class="text-end">{{ cartStore.deliveryCharge.toFixed(2) }}</span>
@@ -212,6 +258,26 @@ onMounted(async () => {
                       <li class="total">
                         <span>Total</span>
                         <span class="text-end">{{ cartStore.total.toFixed(2) }}</span>
+                      </li>
+                      <!-- Payment Amount Input -->
+                      <li class="payment-amount">
+                        <div class="payment-amount-input">
+                          <label for="paid-amount">Amount to Pay</label>
+                          <input 
+                            id="paid-amount"
+                            v-model="paidAmount" 
+                            type="number" 
+                            step="0.01" 
+                            min="0" 
+                            :max="cartStore.total"
+                            class="form-control"
+                            @input="cartStore.setPaymentAmount(paidAmount)"
+                          />
+                        </div>
+                      </li>
+                      <li v-if="cartStore.totalDue > 0" class="due-amount">
+                        <span>Due Amount</span>
+                        <span class="text-end text-danger">{{ cartStore.totalDue.toFixed(2) }}</span>
                       </li>
                   </ul>
                 </div>
@@ -225,9 +291,9 @@ onMounted(async () => {
                   <button 
                     class="btn btn-next" 
                     @click="processPayment"
-                    :disabled="isLoading || !selectedPaymentMethod"
+                    :disabled="isLoading || isProcessingPayment || !selectedPaymentMethod"
                   >
-                    {{ isLoading ? 'Processing...' : 'Pay Now' }}
+                    {{ (isLoading || isProcessingPayment) ? 'Processing...' : 'Pay Now' }}
                     <span><VIcon size="22" icon="tabler-arrow-right" /></span>
                   </button>
                 </div>
@@ -247,3 +313,64 @@ onMounted(async () => {
     />
   </div>
 </template>
+
+<style scoped>
+.tax-breakdown {
+  padding-left: 20px;
+  border-left: 2px solid #e9ecef;
+}
+
+.tax-breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.tax-type {
+  font-weight: 500;
+}
+
+.payment-amount {
+  border-top: 1px solid #e9ecef;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.payment-amount-input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.payment-amount-input label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 5px;
+}
+
+.payment-amount-input input {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 16px;
+}
+
+.due-amount {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+
+.due-amount span:first-child {
+  font-weight: 600;
+  color: #856404;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+</style>

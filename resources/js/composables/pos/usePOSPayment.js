@@ -6,18 +6,28 @@ export const usePOSPayment = () => {
     const isProcessingPayment = ref(false)
     const paymentError = ref(null)
     const paymentSuccess = ref(false)
+    const userData = useCookie("userData").value;
 
     // Process payment for POS orders
     const processPOSPayment = async (paymentMethodId, amount, orderData) => {
         isProcessingPayment.value = true
         paymentError.value = null
         paymentSuccess.value = false
+        let paymentMethodResponse = null
 
         try {
-            // Get payment method details
-            const paymentMethodResponse = await $api('/get-all-payment-methods-pos', {
-                method: 'GET'
-            })
+
+            if(userData){
+                // Get payment method details
+                paymentMethodResponse = await $api('/get-all-payment-methods-pos', {
+                    method: 'GET'
+                })
+            } else  {
+                // Get payment method details
+                paymentMethodResponse = await $api('/get-all-payment-methods-frontend', {
+                    method: 'GET'
+                })
+            }
 
             if (!paymentMethodResponse.success) {
                 throw new Error('Failed to fetch payment methods')
@@ -146,6 +156,7 @@ export const usePOSPayment = () => {
 
     // Stripe Integration - Using embedded form instead of redirect
     const processStripePayment = async (amount, orderData, paymentMethodId) => {
+        console.log('processStripePayment', amount, orderData, paymentMethodId)
         try {
             // Create Stripe payment intent
             const intentResponse = await $api('/create-stripe-payment-intent', {
@@ -156,6 +167,8 @@ export const usePOSPayment = () => {
                     ...orderData
                 }
             })
+
+            console.log('intentResponse', intentResponse)
 
             if (!intentResponse.success) {
                 throw new Error(intentResponse.message || 'Failed to create Stripe payment intent')

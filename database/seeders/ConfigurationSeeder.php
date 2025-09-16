@@ -84,10 +84,13 @@ class ConfigurationSeeder extends Seeder
             ['name' => 'Paypal', 'account_type' => 'Paypal', 'payment_method_icon' => 'payment-method/paypal.png'],
             ['name' => 'Stripe', 'account_type' => 'Stripe', 'payment_method_icon' => 'payment-method/stripe.png'],
             ['name' => 'Loyalty Point', 'account_type' => 'Loyalty Point', 'payment_method_icon' => 'payment-method/cash.png'],
-            ['name' => 'Razorpay', 'account_type' => 'Payment Gateway', 'payment_method_icon' => 'payment-method/razorpay.png'],
-            ['name' => 'Paytm', 'account_type' => 'Payment Gateway', 'payment_method_icon' => 'payment-method/paytm.png'],
+            ['name' => 'Razorpay', 'account_type' => 'Razorpay', 'payment_method_icon' => 'payment-method/razorpay.png'],
+            ['name' => 'Paytm', 'account_type' => 'Paytm', 'payment_method_icon' => 'payment-method/paytm.png'],
+            ['name' => 'Paystack', 'account_type' => 'Paystack', 'payment_method_icon' => 'payment-method/paytm.png'],
+            ['name' => 'Mobile Banking', 'account_type' => 'Mobile Banking', 'payment_method_icon' => 'payment-method/cash.png'],
 
         ];
+
         
         foreach ($paymentMethods as $index => $method) {
             PaymentMethod::create([

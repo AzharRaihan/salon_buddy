@@ -80,6 +80,19 @@ class FrontendController extends Controller
         return $this->successResponse($paymentMethods, 'Payment methods fetched successfully');
     }
 
+    public function getAllPaymentMethodsFrontend()
+    {
+        $paymentMethods = PaymentMethod::where('status', 'Enable')
+            ->where('use_in_website', 'Yes')
+            ->where('status', 'Enable')
+            ->where('company_id', 1)
+            ->where('account_type', '!=', 'Loyalty Point')
+            ->where('del_status', 'Live')
+            ->orderBy('sort_id', 'ASC')
+            ->get();
+        return $this->successResponse($paymentMethods, 'Payment methods fetched successfully');
+    }
+
     public function getAllCategories()
     {
         $categories = Category::where('company_id', 1)->where('del_status', 'Live')->get();
@@ -685,14 +698,17 @@ class FrontendController extends Controller
         $validator = Validator::make($request->all(), [
             'items' => 'required|array|min:1',
             'items.*.id' => 'required|exists:items,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.qty' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric|min:0',
-            'items.*.type' => 'required|in:Product,Package',
+            // 'items.*.type' => 'required|in:Product,Package',
             'subtotal' => 'required|numeric|min:0',
-            'tax_amount' => 'required|numeric|min:0',
+            'tax' => 'required|numeric|min:0',
+            'tax_breakdown' => 'nullable|array',
             'delivery_charge' => 'nullable|numeric|min:0',
             'delivery_area_id' => 'nullable|exists:delivery_areas,id',
-            'total_amount' => 'required|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+            'payment_amount' => 'required|numeric|min:0',
+            'due_amount' => 'required|numeric|min:0',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'customer_data' => 'nullable|array',
         ]);
@@ -733,7 +749,7 @@ class FrontendController extends Controller
             if($tax_type == 'Inclusive'){
                 $grandtotal_with_tax_discount = $validatedData['subtotal'];
             }else if($tax_type == 'Exclusive'){
-                $grandtotal_with_tax_discount = $validatedData['subtotal'] + $validatedData['tax_amount'];
+                $grandtotal_with_tax_discount = $validatedData['subtotal'] + $validatedData['tax'];
             }
 
 
@@ -746,10 +762,13 @@ class FrontendController extends Controller
                 'subtotal_without_tax_discount' => $validatedData['subtotal'],
                 'grandtotal_with_tax_discount' => $grandtotal_with_tax_discount,
                 'discount' => 0,
-                'total_tax' => $validatedData['tax_amount'],
+                'total_tax' => $validatedData['tax'],
+                'tax_breakdown' => !empty($validatedData['tax_breakdown']) ? json_encode($validatedData['tax_breakdown']) : null,
                 'delivery_charge' => $validatedData['delivery_charge'] ?? 0,
                 'delivery_area_id' => $validatedData['delivery_area_id'] ?? null,
-                'total_payable' => $validatedData['total_amount'],
+                'total_payable' => $validatedData['total'],
+                'total_paid' => $validatedData['payment_amount'],
+                'total_due' => $validatedData['due_amount'],
                 'customer_id' => $customerId,
                 'payment_method_id' => $validatedData['payment_method_id'],
                 'branch_id' => 1,
@@ -767,11 +786,11 @@ class FrontendController extends Controller
                 }
 
                 $unitPrice = $item['price']; // Use the price from cart
-                $quantity = $item['quantity'];
+                $quantity = $item['qty'];
                 $subtotal = $unitPrice * $quantity;
                 
                 // Calculate tax for this item (proportional to subtotal)
-                $itemTax = ($subtotal / $validatedData['subtotal']) * $validatedData['tax_amount'];
+                $itemTax = ($subtotal / $validatedData['subtotal']) * $validatedData['tax'];
                 $itemTotal = $subtotal + $itemTax;
 
                 SaleDetail::create([
@@ -794,7 +813,7 @@ class FrontendController extends Controller
             return $this->successResponse([
                 'order_id' => $sale->id,
                 'reference_no' => $referenceNo,
-                'total_amount' => $validatedData['total_amount']
+                'total_amount' => $validatedData['total']
             ], 'Order created successfully');
 
         } catch (\Exception $e) {
@@ -2018,5 +2037,11 @@ class FrontendController extends Controller
         ->where('company_id', 1)
         ->get();
         return $this->successResponse($deliveryAreas, 'Delivery areas fetched successfully');
+    }
+
+
+    public function paymentSuccess(Request $request)
+    {
+        return $this->successResponse(['success' => true], 'Payment successful');
     }
 }

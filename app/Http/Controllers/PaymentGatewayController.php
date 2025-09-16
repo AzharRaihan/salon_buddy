@@ -2,27 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Razorpay\Api\Api;
-use PayPal\Rest\ApiContext;
-use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Api\Amount;
 use PayPal\Api\Payer;
+use Razorpay\Api\Api;
+use PayPal\Api\Amount;
+use App\Models\Setting;
 use PayPal\Api\Payment;
-use PayPal\Api\RedirectUrls;
-use PayPal\Api\Transaction;
 use App\Traits\ApiResponse;
+use PayPal\Api\Transaction;
+use PayPal\Rest\ApiContext;
+use Illuminate\Http\Request;
+use PayPal\Api\RedirectUrls;
+use Illuminate\Support\Facades\Auth;
+use PayPal\Auth\OAuthTokenCredential;
 
 class PaymentGatewayController extends Controller
 {
     use ApiResponse;
 
+    public $companyPaymentConfig;
+
+    public function __construct()
+    {
+        $this->companyPaymentConfig = $this->getCompanyPaymentConfig();
+    }
+
+
+    public function getCompanyPaymentConfig()
+    {
+        $settings = [
+            'paypal_enabled'       => Setting::getSetting('paypal_enabled', false),
+            'paypal_mode'          => Setting::getSetting('paypal_mode', 'sandbox'),
+            'paypal_client_id'     => Setting::getSetting('paypal_client_id'),
+            'paypal_client_secret' => Setting::getSetting('paypal_client_secret'),
+            'stripe_enabled'       => Setting::getSetting('stripe_enabled', false),
+            'stripe_mode'          => Setting::getSetting('stripe_mode', 'sandbox'),
+            'stripe_key'           => Setting::getSetting('stripe_key'),
+            'stripe_secret'        => Setting::getSetting('stripe_secret'),
+            'razorpay_enabled'     => Setting::getSetting('razorpay_enabled', false),
+            'razorpay_key'         => Setting::getSetting('razorpay_key'),
+            'razorpay_secret'      => Setting::getSetting('razorpay_secret'),
+            'paytm_enabled'        => Setting::getSetting('paytm_enabled', false),
+            'paytm_key'            => Setting::getSetting('paytm_key'),
+            'paytm_secret'         => Setting::getSetting('paytm_secret'),
+            'paystack_enabled'     => Setting::getSetting('paystack_enabled', false),
+            'paystack_key'         => Setting::getSetting('paystack_key'),
+        ];
+        return $settings;
+    }
+
+
     public function createRazorpayOrder(Request $request)
     {
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+        $api = new Api($this->companyPaymentConfig['razorpay_key'], $this->companyPaymentConfig['razorpay_secret']);
         $orderData = [
             'receipt'         => 'order_rcptid_' . uniqid(),
-            'amount'          => $request->amount, // amount in paise (e.g., 100 INR = 10000)
+            'amount'          => (int)$request->amount, // amount in paise (e.g., 100 INR = 10000)
             'currency'        => $request->currency ?? 'INR',
             'payment_capture' => 1 // auto capture
         ];
@@ -40,7 +74,7 @@ class PaymentGatewayController extends Controller
         $orderId   = $request->razorpay_order_id;
         $paymentId = $request->razorpay_payment_id;
 
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+        $api = new Api($this->companyPaymentConfig['razorpay_key'], $this->companyPaymentConfig['razorpay_secret']);
 
         try {
             $attributes = [
@@ -61,11 +95,10 @@ class PaymentGatewayController extends Controller
     // Stripe - Create Payment Intent (for embedded form)
     public function createStripePaymentIntent(Request $request)
     {
-        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-        
+        \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
         try {
             $paymentIntent = \Stripe\PaymentIntent::create([
-                'amount' => $request->amount, // in cents
+                'amount' => (int)$request->payment_amount, // in cents
                 'currency' => $request->currency ?? 'usd',
                 'metadata' => [
                     'order_id' => $request->order_id ?? 'pos_order_' . uniqid(),
@@ -85,7 +118,8 @@ class PaymentGatewayController extends Controller
     // Stripe - Create Session (for redirect - keeping for compatibility)
     public function createStripeSession(Request $request)
     {
-        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
+
         $session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
@@ -94,7 +128,7 @@ class PaymentGatewayController extends Controller
                     'product_data' => [
                         'name' => 'POS Payment',
                     ],
-                    'unit_amount' => $request->amount, // in cents
+                    'unit_amount' => (int)$request->amount, // in cents
                 ],
                 'quantity' => 1,
             ]],
@@ -108,7 +142,7 @@ class PaymentGatewayController extends Controller
 
     public function verifyStripePayment(Request $request)
     {
-        \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+        \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
         
         try {
             if ($request->payment_intent_id) {
@@ -138,20 +172,23 @@ class PaymentGatewayController extends Controller
     // PayPal
     public function createPaypalOrder(Request $request)
     {
+        // dd($request->all());
+        
         try {
             $apiContext = new ApiContext(
                 new OAuthTokenCredential(
-                    config('services.paypal.client_id'),
-                    config('services.paypal.secret')
+                    $this->companyPaymentConfig['paypal_client_id'],
+                    $this->companyPaymentConfig['paypal_client_secret']
                 )
             );
-            $apiContext->setConfig(['mode' => config('services.paypal.mode')]);
+            $apiContext->setConfig(['mode' => $this->companyPaymentConfig['paypal_mode']]);
 
             $payer = new Payer();
             $payer->setPaymentMethod('paypal');
 
             $amount = new Amount();
-            $amount->setTotal(number_format($request->amount, 2, '.', ''));
+            $amount->setTotal(number_format((float)$request->payment_amount, 2, '.', ''));
+            
             $amount->setCurrency($request->currency ?? 'USD');
 
             $transaction = new Transaction();
@@ -184,11 +221,11 @@ class PaymentGatewayController extends Controller
         try {
             $apiContext = new ApiContext(
                 new OAuthTokenCredential(
-                    config('services.paypal.client_id'),
-                    config('services.paypal.secret')
+                    $this->companyPaymentConfig['paypal_client_id'],
+                    $this->companyPaymentConfig['paypal_client_secret']
                 )
             );
-            $apiContext->setConfig(['mode' => config('services.paypal.mode')]);
+            $apiContext->setConfig(['mode' => $this->companyPaymentConfig['paypal_mode']]);
 
             $paymentId = $request->paymentId;
             $payerId = $request->PayerID;
@@ -234,15 +271,19 @@ class PaymentGatewayController extends Controller
         }
     }
 
+    public function paymentSuccess(Request $request)
+    {
+        return $this->successResponse(['success' => true], 'Payment successful');
+    }
+
     // Debug method to check PayPal configuration
     public function debugPaypalConfig()
     {
         try {
             $config = [
-                'client_id' => config('services.paypal.client_id'),
-                'secret' => config('services.paypal.secret') ? 'SET' : 'NOT SET',
-                'mode' => config('services.paypal.mode'),
-                // 'sdk_available' => class_exists('\PayPal\Rest\ApiContext'),
+                'client_id' => $this->companyPaymentConfig['paypal_client_id'],
+                'secret' => $this->companyPaymentConfig['paypal_client_secret'] ? 'SET' : 'NOT SET',
+                'mode' => $this->companyPaymentConfig['paypal_mode'],
             ];
 
             return $this->successResponse($config, 'PayPal configuration debug info');

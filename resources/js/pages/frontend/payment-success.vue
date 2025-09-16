@@ -3,6 +3,7 @@ import { onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
+import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 
 definePage({
   meta: {
@@ -13,7 +14,7 @@ definePage({
 
 const route = useRoute()
 const cartStore = useShoppingCartStore()
-
+const { formatAmount } = useCompanyFormatters()
 // Get order info from query parameters
 const orderReference = computed(() => route.query.order)
 const orderAmount = computed(() => route.query.amount)
@@ -54,7 +55,7 @@ onMounted(() => {
                     </div>
                     <div class="col-md-6" v-if="orderAmount">
                       <h6 class="mb-1">Total Amount</h6>
-                      <p class="mb-0 fw-bold text-success">${{ parseFloat(orderAmount).toFixed(2) }}</p>
+                      <p class="mb-0 fw-bold text-success">{{ formatAmount(orderAmount) }}</p>
                     </div>
                   </div>
                 </div>
@@ -104,24 +105,24 @@ onMounted(() => {
 
 <style scoped>
 .payment-success-section {
-  padding-bottom: 350px;
+  padding-bottom: 350px !important;
 }
 
 .success-title {
-  color: var(--title-color, #333);
-  font-size: 2.5rem;
-  font-weight: 600;
+  color: var(--title-color, #333) !important;
+  font-size: 2.5rem !important;
+  font-weight: 600 !important;
 }
 
 .success-message {
-  color: var(--text-color, #666);
-  font-size: 1.1rem;
-  line-height: 1.6;
+  color: var(--text-color, #666) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
 }
 
 .success-details .card {
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef !important;
+  border-radius: 12px !important ;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
 </style> 
