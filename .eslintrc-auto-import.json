@@ -443,6 +443,8 @@
     "useSaleReport": true,
     "useSalaryReport": true,
     "getAnimationType": true,
-    "getStaggeredDelay": true
+    "getStaggeredDelay": true,
+    "useCheckoutForm": true,
+    "useServiceManagement": true
   }
 }

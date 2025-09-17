@@ -8,6 +8,7 @@ import { usePOSPayment } from '@/composables/pos/usePOSPayment'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import LoginModal from '@/components/auth/LoginModal.vue'
 import { toast } from 'vue3-toastify';
+import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 
 definePage({
   meta: {
@@ -18,6 +19,7 @@ definePage({
 
 const router = useRouter()
 const cartStore = useShoppingCartStore()
+const { formatAmount, formatNumberPrecision } = useCompanyFormatters()
 
 // Customer Authentication
 const { isCustomerAuthenticated, getCurrentCustomer } = useCustomerAuth()
@@ -39,7 +41,7 @@ const isAuthenticated = computed(() => customerAuthState.value.isAuthenticated)
 const fetchPaymentMethods = async () => {
   try {
     isLoading.value = true
-    const response = await $api('/get-payment-methods')
+    const response = await $api('/get-all-payment-getway-frontend')
     if (response.success) {
       paymentMethods.value = response.data
     }
@@ -196,6 +198,12 @@ onMounted(async () => {
     }
   }
 })
+
+// format padAmount
+const paymentAmount = computed(() => {
+  return formatNumberPrecision(paidAmount.value)
+})
+
 </script>
 
 <template>
@@ -204,17 +212,15 @@ onMounted(async () => {
     <CommonPageBanner title="Payment" breadcrumb="Payment" />
 
     <!-- Payment Section -->
-    <section class="payment-section default-section-padding-t">
+    <section class="payment-section default-section-padding">
       <div class="container">
         <div class="payment-form">
           <div class="row payment-section">
             <div class="col-lg-5">
               <div class="payment-details">
                 <h3 class="payment-method-title">Payment Method</h3>
-                <div v-if="isLoading" class="text-center py-4">
-                  <p>Loading payment methods...</p>
-                </div>
-                <ul v-else class="payment-methods">
+                
+                <ul class="payment-methods">
                   <li v-for="method in paymentMethods" :key="method.id" class="payment-method-li">
                     <label class="payment-method-item" :for="`payment_${method.id}`">
                       <div class="method-select">
@@ -244,20 +250,20 @@ onMounted(async () => {
                   <ul class="table">
                       <li>
                         <span>Subtotal</span>
-                        <span class="text-end">{{ cartStore.subtotal.toFixed(2) }}</span>
+                        <span class="text-end">{{ formatAmount(cartStore.subtotal) }}</span>
                       </li>
                       <li>
                         <span>Tax</span>
-                        <span class="text-end">{{ cartStore.taxAmount.toFixed(2) }}</span>
+                        <span class="text-end">{{ formatAmount(cartStore.taxAmount) }}</span>
                       </li>
                       
                       <li>
                         <span>Delivery Charge</span>
-                        <span class="text-end">{{ cartStore.deliveryCharge.toFixed(2) }}</span>
+                        <span class="text-end">{{ formatAmount(cartStore.deliveryCharge) }}</span>
                       </li>
                       <li class="total">
                         <span>Total</span>
-                        <span class="text-end">{{ cartStore.total.toFixed(2) }}</span>
+                        <span class="text-end">{{ formatAmount(cartStore.total) }}</span>
                       </li>
                       <!-- Payment Amount Input -->
                       <li class="payment-amount">
@@ -265,7 +271,7 @@ onMounted(async () => {
                           <label for="paid-amount">Amount to Pay</label>
                           <input 
                             id="paid-amount"
-                            v-model="paidAmount" 
+                            v-model="paymentAmount" 
                             type="number" 
                             step="0.01" 
                             min="0" 
@@ -342,6 +348,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex-grow: 1;
 }
 
 .payment-amount-input label {

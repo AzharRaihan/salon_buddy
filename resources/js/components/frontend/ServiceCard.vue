@@ -34,7 +34,7 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n()
 const { formatAmount } = useCompanyFormatters()
-defineProps({
+const props = defineProps({
   service: {
     type: Object,
     required: true,
@@ -60,9 +60,11 @@ defineProps({
 const emit = defineEmits(['book-service', 'image-error'])
 
 const handleImageError = (event) => {
-  // Set fallback image
-  event.target.src = '/assets/images/system-config/default-picture.png'
-  emit('image-error', props.service)
+  // Prevent infinite loop by checking if we're already showing fallback
+  if (!event.target.src.includes('default-picture.png')) {
+    event.target.src = '/assets/images/system-config/default-picture.png'
+    emit('image-error', props.service)
+  }
 }
 
 </script>

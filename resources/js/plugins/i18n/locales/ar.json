@@ -1336,7 +1336,69 @@
   "Select over sale": "اختر البيع الزائد",
   "Printer Format": "طباعة الفاتورة",
   "Select printer format": "اختر طباعة الفاتورة",
-  "Invoice Logo": "شعار الفاتورة",
+  "Invoice Logo": "شعار الفاتورة",  
+  "If an item is selected, the discount will apply only to that item, otherwise the discount will be applied to all items.": "إذا تم تحديد عنصر معين، فسيتم تطبيق الخصم فقط على ذلك العنصر، وإلا فسيتم تطبيق الخصم على جميع العناصر.",
+  "Back to POS": "العودة إلى النقطة",
+  "Advance Paid to Supplier": "دفع مقدما للمورد",
+  "Payment to Supplier": "دفع للمورد",
+  "Advance Paid by Customer": "دفع مقدما من قبل العميل",
+  "Receive from Customer": "استلام من العميل",
+  "Overtime Hour Rate": "سعر ساعة العمل الإضافي",
+  "Enter Overtime Hour Rate": "أدخل سعر ساعة العمل الإضافي",
+  "Delivery Area": "المنطقة الدفعية",
+  "Delivery Charge": "الرسوم الدفعية",
+  "Delivery Area Name": "اسم المنطقة",
+  "Delivery Area Name is required": "اسم المنطقة مطلوب",
+  "Delivery Charge is required": "الرسوم الدفعية مطلوبة",
+  "Delivery Area Description": "وصف المنطقة الدفعية",
+  "Delivery Area Description is required": "وصف المنطقة الدفعية مطلوب",
+  "No delivery areas found": "لا يوجد مناطق دفعية",
+  "Add Delivery Area": "إضافة منطقة دفعية",
+  "List Delivery Area": "قائمة المناطق الدفعية",
+  "Search Delivery Area": "بحث عن منطقة دفعية",
+  "Delivery Area has been deleted successfully.": "تم حذف المنطقة الدفعية بنجاح",
+  "Delivery Area Deletion Cancelled!": "إلغاء حذف المنطقة الدفعية",
+  "Are you sure you want to delete this delivery area?": "هل أنت متأكد من رغبتك في إلغاء هذا المنطقة الدفعية؟",
+  "Delivery Partner": "الشريك الدفعي",
+  "Delivery Partner Name": "اسم الشريك الدفعي",
+  "Delivery Partner Name is required": "اسم الشريك الدفعي مطلوب",
+  "Delivery Partner Description": "وصف الشريك الدفعي",
+  "Delivery Partner Description is required": "وصف الشريك الدفعي مطلوب",
+  "No delivery partners found": "لا يوجد شركاء دفعية",
+  "Add Delivery Partner": "إضافة شريك دفعي",
+  "List Delivery Partner": "قائمة الشركاء الدفعية",
+  "Search Delivery Partner": "بحث عن شريك دفعي",
+  "Delivery Partner has been deleted successfully.": "تم حذف الشريك الدفعي بنجاح",
+  "Delivery Partner Deletion Cancelled!": "إلغاء حذف الشريك الدفعي",
+  "Are you sure you want to delete this delivery partner?": "هل أنت متأكد من رغبتك في إلغاء هذا الشريك الدفعي؟",
+  "Continue Shopping": "استمرار التسوق",
+  "Proceed to checkout": "المتابعة إلى الدفع",
+  "Return To Shop": "العودة إلى المتجر",
+  "Shopping Cart": "سلة التسوق",
+  "Contact Information": "معلومات الاتصال",
+  "Delivery Information": "معلومات التوصيل",
+  "Street/Town": "الشارع/المدينة",
+  "Zip Code": "الرمز البريدي",
+  "Notes": "الملاحظات",
+  "Enter your street/town": "أدخل الشارع/المدينة",
+  "Enter your zip code": "أدخل الرمز البريدي",
+  "Enter your notes": "أدخل الملاحظات",
+  "is required": "مطلوب",
+  "Please enter a valid phone number": "أدخل رقم هاتف صالح",
+  "must be at least": "يجب أن يكون على الأقل",
+  "must not exceed": "يجب أن يكون على الأكثر",
+  "characters": "حروف",
+  "Enter your email address": "أدخل البريد الإلكتروني",
+
+
+
+
+
+
+
+
+
+
 
 
 

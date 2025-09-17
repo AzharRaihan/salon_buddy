@@ -336,6 +336,7 @@ onMounted(() => {
                                         'Paystack',
                                         'Paytm',
                                         'Mobile Banking',
+                                        'Cash On Delivery',
                                     ]"
                                     :placeholder="$t('Select account type')"
                                     :error-messages="accountTypeError"

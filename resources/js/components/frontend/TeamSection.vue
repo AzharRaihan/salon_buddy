@@ -20,33 +20,35 @@
                   :key="member.id"
                   :class="`${!isHome ? 'col-xl-3 col-lg-4 col-md-6 col-sm-6 team-card-item' : 'swiper-slide'}`"
                 >
-                  <div class="team-card">
-                    <div class="team-content">
-                      <RouterLink :to="`/frontend/team-details?member_id=${encryptId(member.id)}`" class="team-name">{{ member.name }}</RouterLink>
-                      <p v-if="member.designation" class="team-position">{{ member.designation }}</p>
-                      <div v-if="member.parsedSocialMedia.length > 0" class="social-links">
-                        <a 
-                          v-for="social in member.parsedSocialMedia" 
-                          :key="social.name"
-                          :href="social.url"
-                          v-show="social.is_active" 
-                          class="social-link"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <VIcon :icon="getSocialIcon(social.name)" />
-                        </a>
+                  <RouterLink :to="`/frontend/team-details?member_id=${encryptId(member.id)}`">
+                    <div class="team-card">
+                      <div class="team-content">
+                        <h5 class="team-name">{{ member.name }}</h5>
+                        <p v-if="member.designation" class="team-position">{{ member.designation }}</p>
+                        <div v-if="member.parsedSocialMedia.length > 0" class="social-links">
+                          <a 
+                            v-for="social in member.parsedSocialMedia" 
+                            :key="social.name"
+                            :href="social.url"
+                            v-show="social.is_active" 
+                            class="social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <VIcon :icon="getSocialIcon(social.name)" />
+                          </a>
+                        </div>
                       </div>
-                    </div>
-                    <div class="team-image-wrapper">
-                      <div class="team-image">
-                        <img :src="member.photo_url" class="img-fluid" :alt="member.name">
-                        <div class="view-more">
-                          <BlurTypeBtn :link="`/frontend/team-details?member_id=${encryptId(member.id)}`" :text="t('Read More')" />
+                      <div class="team-image-wrapper">
+                        <div class="team-image">
+                          <img :src="member.photo_url" class="img-fluid" :alt="member.name">
+                          <div class="view-more">
+                            <BlurTypeBtn :link="`/frontend/team-details?member_id=${encryptId(member.id)}`" :text="t('Read More')" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </RouterLink>
                 </div>
               </div>
             </div>

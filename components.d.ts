@@ -7,8 +7,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    2: typeof import('./resources/js/components/frontend/SalonProducts copy 2.vue')['default']
-    3: typeof import('./resources/js/components/frontend/FeaturedServices copy 3.vue')['default']
     AboutSection: typeof import('./resources/js/components/frontend/AboutSection.vue')['default']
     AddEditCustomerModal: typeof import('./resources/js/components/pos/modals/AddEditCustomerModal.vue')['default']
     AnimatePackage: typeof import('./resources/js/components/frontend/AnimatePackage.vue')['default']
@@ -57,7 +55,6 @@ declare module 'vue' {
     CommonPageBanner: typeof import('./resources/js/components/frontend/CommonPageBanner.vue')['default']
     ConfirmationModal: typeof import('./resources/js/components/pos/modals/ConfirmationModal.vue')['default']
     ConfirmDialog: typeof import('./resources/js/components/dialogs/ConfirmDialog.vue')['default']
-    copy: typeof import('./resources/js/components/frontend/SalonProducts copy.vue')['default']
     CustomCheckboxes: typeof import('./resources/js/@core/components/app-form-elements/CustomCheckboxes.vue')['default']
     CustomCheckboxesWithIcon: typeof import('./resources/js/@core/components/app-form-elements/CustomCheckboxesWithIcon.vue')['default']
     CustomCheckboxesWithImage: typeof import('./resources/js/@core/components/app-form-elements/CustomCheckboxesWithImage.vue')['default']

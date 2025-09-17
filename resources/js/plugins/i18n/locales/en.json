@@ -1371,11 +1371,30 @@
   "Delivery Partner has been deleted successfully.": "Delivery Partner has been deleted successfully.",
   "Delivery Partner Deletion Cancelled!": "Delivery Partner Deletion Cancelled!",
   "Are you sure you want to delete this delivery partner?": "Are you sure you want to delete this delivery partner?",
+  "Continue Shopping": "Continue Shopping",
+  "Proceed to checkout": "Proceed to checkout",
+  "Return To Shop": "Return To Shop",
+  "Shopping Cart": "Shopping Cart",
+  "Contact Information": "Contact Information",
+  "Delivery Information": "Delivery Information",
+  "Street/Town": "Street/Town",
+  "Zip Code": "Zip Code",
+  "Notes": "Notes",
+  "Enter your street/town": "Enter your street/town",
+  "Enter your zip code": "Enter your zip code",
+  "Enter your notes": "Enter your notes",
+  "is required": "is required",
+  "Please enter a valid phone number": "Please enter a valid phone number",
+  "must be at least": "must be at least",
+  "must not exceed": "must not exceed",
+  "characters": "characters",
+  "Enter your email address": "Enter your email address",
+  
 
 
 
 
-
+  
 
   "AI Generated Key will be started from here": "AI Generated Key will be started from here", 
   

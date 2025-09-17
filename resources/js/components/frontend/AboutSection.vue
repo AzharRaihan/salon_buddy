@@ -110,20 +110,20 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 
 // Animation
-const visible = ref(false)
-const aboutSection = ref(null)
-onMounted(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          visible.value = true
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.2 }
-    )
-    observer.observe(aboutSection.value)
-  })
+// const visible = ref(false)
+// const aboutSection = ref(null)
+// onMounted(() => {
+//     const observer = new IntersectionObserver(
+//       (entries) => {
+//         if (entries[0].isIntersecting) {
+//           visible.value = true
+//           observer.disconnect()
+//         }
+//       },
+//       { threshold: 0.2 }
+//     )
+//     observer.observe(aboutSection.value)
+//   })
 // Animation End
 
 // Define props

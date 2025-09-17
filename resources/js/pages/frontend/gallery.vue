@@ -7,6 +7,7 @@
         <div class="row">
           <div v-for="(item, index) in gallery" :key="item.id" :class="(index == 0 || index == 1) ? 'col-md-6' : 'col-md-4'">
             <div class="gallery-image-wrap" @click="showImage(item)">
+              <div class="light-shadow"></div>
               <div class="view-image">
                 <VIcon icon="tabler-eye" />
               </div>

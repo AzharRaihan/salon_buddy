@@ -4,7 +4,7 @@ import { useProductOrders } from '@/composables/useProductOrders'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
-const { formatDate, formatNumber } = useCompanyFormatters()
+const { formatDate, formatNumber, formatAmount } = useCompanyFormatters()
 // Props
 const props = defineProps({
   isOpen: {
@@ -223,8 +223,8 @@ const getStatusClass = (status) => {
                     {{ product.name }}
                   </td>
                   <td class="text-center">{{ formatNumber(product.quantity) }}</td>
-                  <td class="text-center">${{ formatPrice(product.unit_price) }}</td>
-                  <td class="text-center">${{ formatPrice(product.subtotal) }}</td>
+                  <td class="text-center">{{ formatPrice(product.unit_price) }}</td>
+                  <td class="text-center">{{ formatPrice(product.subtotal) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -241,16 +241,19 @@ const getStatusClass = (status) => {
               <span class="label">{{ t('Total Tax') }}:</span>
               <span class="value">{{ formatPrice(orderDetails.total_tax) }}</span>
             </div>
+            <div class="summary-row">
+              <span class="label">{{ t('Delivery Charge') }}:</span>
+              <span class="value">{{ formatPrice(orderDetails.delivery_charge) }}</span>
+            </div>
             <div class="summary-row total">
               <span class="label">{{ t('Total Amount') }}:</span>
-              <span class="value">{{ formatPrice(orderDetails.total_payable) }}</span>
+              <span class="value">{{ formatAmount(orderDetails.total_payable) }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <!-- Test PDF button -->
+      <!-- <div class="modal-footer">
         <button 
           type="button" 
           class="btn btn-success" 
@@ -261,7 +264,7 @@ const getStatusClass = (status) => {
           Test PDF
         </button>
         
-        <!-- Debug buttons for troubleshooting -->
+
         <button 
           type="button" 
           class="btn btn-warning" 
@@ -273,8 +276,8 @@ const getStatusClass = (status) => {
           Debug Invoice
         </button>
         
-        <!-- Temporary test button for debugging -->
-        <!-- <button 
+
+        <button 
           type="button" 
           class="btn btn-info" 
           @click="testApiRoute"
@@ -282,9 +285,9 @@ const getStatusClass = (status) => {
         >
           <VIcon icon="tabler-bug" size="16" />
           Test API
-        </button> -->
+        </button>
         
-        <!-- <button 
+        <button 
           type="button" 
           class="btn btn-primary" 
           @click="downloadInvoice"
@@ -292,9 +295,9 @@ const getStatusClass = (status) => {
         >
           <VIcon icon="tabler-download" size="16" />
           {{ isDownloading ? 'Downloading...' : 'Download Invoice' }}
-        </button> -->
+        </button>
         <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

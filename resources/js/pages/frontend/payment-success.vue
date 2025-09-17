@@ -31,7 +31,7 @@ onMounted(() => {
     <CommonPageBanner title="Payment Successful" breadcrumb="Payment Success" />
 
     <!-- Success Section -->
-    <section class="payment-success-section default-section-padding-t">
+    <section class="payment-success-section default-section-padding">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-8 text-center">
@@ -84,12 +84,12 @@ onMounted(() => {
               <div class="success-actions">
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <RouterLink to="/frontend/product" class="btn btn-primary w-100">
+                    <RouterLink to="/frontend/product" class="btn btn-primary w-100 common-animation-button large-btn">
                       Continue Shopping
                     </RouterLink>
                   </div>
                   <div class="col-md-6">
-                    <RouterLink to="/" class="btn btn-primary w-100">
+                    <RouterLink to="/" class="btn btn-primary w-100 common-animation-button large-btn">
                       Back to Home
                     </RouterLink>
                   </div>
@@ -104,10 +104,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.payment-success-section {
-  padding-bottom: 350px !important;
-}
-
 .success-title {
   color: var(--title-color, #333) !important;
   font-size: 2.5rem !important;
@@ -125,4 +121,27 @@ onMounted(() => {
   border-radius: 12px !important ;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
+
+
+
+.large-btn {
+  text-align: center;
+  padding: 7px 20px;
+  color: #ffffff;
+  background-color: var(--primary-bg-color) !important;
+  height: 46px;
+  justify-content: center;
+  align-items: center;
+}
+.large-btn::before {
+  background-color: var(--primary-bg-hover-color);
+}
+.large-btn::after {
+  color: white;
+  background-color: var(--primary-bg-color);
+}
+.large-btn:hover {
+  color: var(--color-white);
+}
+
 </style> 

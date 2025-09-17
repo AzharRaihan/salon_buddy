@@ -179,7 +179,6 @@
       
       <!-- Cart Items -->
       <ul v-else>
-
         <li v-for="item in cartStore.items" :key="`${item.id}-${item.type}`">
           <div class="cart-item-wrap">
             <div class="img-wrap">
@@ -226,7 +225,7 @@
           <span>{{ formatAmount(cartStore.total) }}</span>
         </li>
       </ul>
-      <BookPackageBtn link="/frontend/shopping-cart" :text="'Checkout'" data-bs-dismiss="offcanvas" aria-label="Close" @click="enableScroll();" />
+      <BookPackageBtn link="/frontend/shopping-cart" :text="t('Checkout')" data-bs-dismiss="offcanvas" aria-label="Close" @click="enableScroll();" />
     </div>
   </div>
 

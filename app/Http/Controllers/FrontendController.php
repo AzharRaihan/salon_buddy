@@ -80,13 +80,15 @@ class FrontendController extends Controller
         return $this->successResponse($paymentMethods, 'Payment methods fetched successfully');
     }
 
-    public function getAllPaymentMethodsFrontend()
+    public function getAllPaymentGetwayFrontend()
     {
         $paymentMethods = PaymentMethod::where('status', 'Enable')
             ->where('use_in_website', 'Yes')
-            ->where('status', 'Enable')
-            ->where('company_id', 1)
+            ->where('account_type', '!=', 'Cash')
+            ->where('account_type', '!=', 'Bank Account')
+            ->where('account_type', '!=', 'Mobile Banking')
             ->where('account_type', '!=', 'Loyalty Point')
+            ->where('company_id', 1)
             ->where('del_status', 'Live')
             ->orderBy('sort_id', 'ASC')
             ->get();
@@ -493,6 +495,83 @@ class FrontendController extends Controller
         });
 
         return $this->successResponse($services, 'Featured services fetched successfully');
+    }
+
+    public function getFeaturedServicesPaginated(Request $request)
+    {
+        $categoryIds = $request->get('category_ids');
+        $perPage = $request->get('per_page', 9);
+        $page = $request->get('page', 1);
+        $sort = $request->get('sort', 'price_asc');
+        
+        $query = Item::with(['category', 'ratings'])
+            ->where('company_id', 1)
+            ->where('del_status', 'Live')
+            ->where('status', 'Enable')
+            ->where('type', 'Service');
+
+        // Filter by categories if provided
+        if ($categoryIds && is_array($categoryIds) && count($categoryIds) > 0) {
+            $query->whereIn('category_id', $categoryIds);
+        }
+
+        // Apply sorting
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('sale_price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('sale_price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'rating_desc':
+                // For rating sorting, we'll need to calculate average rating
+                $query->leftJoin('rattings', function($join) {
+                    $join->on('items.id', '=', 'rattings.item_id')
+                         ->where('rattings.del_status', '=', 'Live');
+                })
+                ->selectRaw('items.*, COALESCE(AVG(rattings.rating), 0) as avg_rating')
+                ->groupBy('items.id')
+                ->orderBy('avg_rating', 'desc');
+                break;
+            default:
+                $query->orderBy('sale_price', 'asc');
+                break;
+        }
+
+        $services = $query->paginate($perPage, ['*'], 'page', $page);
+
+        // Transform the data
+        $transformedServices = collect($services->items())->map(function ($service) {
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+                'price' => $service->sale_price,
+                'duration' => $service->duration ?? '',
+                'duration_type' => $service->duration_type ?? '',
+                'rating' => round($service->averageRating(), 1),
+                'reviews' => $service->totalReviews(),
+                'category_id' => $service->category_id,
+                'category_name' => $service->category ? $service->category->name : '',
+                'category_image' => $service->category ? $service->category->photo_url : asset('assets/images/system-config/default-picture.png'),
+                'image' => $service->category ? $service->category->photo_url : asset('assets/images/system-config/default-picture.png'),
+            ];
+        });
+
+        return $this->successResponse([
+            'data' => $transformedServices->toArray(),
+            'current_page' => $services->currentPage(),
+            'per_page' => $services->perPage(),
+            'total' => $services->total(),
+            'last_page' => $services->lastPage(),
+            'from' => $services->firstItem(),
+            'to' => $services->lastItem(),
+        ], 'Featured services fetched successfully');
     }
 
     public function getServicesByCategory(Request $request)
@@ -1160,6 +1239,7 @@ class FrontendController extends Controller
                 'payment_method' => $paymentMethod ? $paymentMethod->name : 'N/A',
                 'total_tax' => $sale->total_tax ?? 0,
                 'subtotal_without_tax_discount' => $sale->subtotal_without_tax_discount ?? 0,
+                'delivery_charge' => $sale->delivery_charge ?? 0,
                 'total_payable' => $sale->total_payable ?? 0,
                 'created_at' => $sale->created_at->format('Y-m-d H:i:s'),
                 'products' => $saleDetails->map(function ($detail) {

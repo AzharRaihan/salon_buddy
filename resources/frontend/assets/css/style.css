@@ -1595,6 +1595,9 @@ nav.navbar{
 .team-section .team-card:hover .team-name {
   border-bottom: 2px solid black;
 }
+.team-slider-container a {
+  text-decoration: none;
+}
 
 .team-section .team-position {
   font-size: 18px;
@@ -1626,16 +1629,18 @@ nav.navbar{
   transform: translateY(-2px);
 }
 .team-section .team-card:hover .blur-btn-wrapper .blur-btn {
-  background: #088fa7bd;
+  /* background: #088fa7bd; */
   transition: all 0.3s ease;
 }
 .team-section .team-card:hover .blur-btn-wrapper .blur-btn .arrow-icon-wrap {
-  background: #098D9C;
+  /* background: #098D9C; */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 }
 .team-section .team-card:hover .blur-btn-wrapper .blur-btn .arrow-icon-wrap i{
-  color: white;
+  /* background: #098D9C; */
+  
+  /* color: white; */
 }
 /* Navigation Arrows */
 .team-section .team-nav-prev,
@@ -2114,6 +2119,40 @@ nav.navbar{
   font-size: 24px;
   color: var(--primary-bg-color);
 }
+
+
+/* Circle Animation */
+.about-use-video-section .circle1,
+.about-use-video-section .circle2,
+.about-use-video-section .circle3 {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.about-use-video-section .circle2 {
+  animation-delay: 0.4s;
+}
+
+.about-use-video-section .circle3 {
+  animation-delay: 0.8s;
+}
+
+/* Keyframes for animation */
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+
 /* ==============#  About Us Section Styles End #============== */
 
 
@@ -2413,6 +2452,57 @@ nav.navbar{
 
 
 /* ==============#  Gallery Section Styles #============== */
+
+.gallery-section .gallery-image-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.gallery-section .gallery-image-wrap .light-shadow {
+  position: absolute;
+  top: 0;
+  left: -100%; /* start outside left */
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Hover animation */
+.gallery-section .gallery-image-wrap:hover .light-shadow {
+  animation: shine 0.7s forwards;
+  opacity: 1;
+}
+
+/* Keyframes for left-to-right sweep */
+@keyframes shine {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+.gallery-image-wrap {
+  overflow: hidden;
+  border-radius: 16px;
+  position: relative;
+}
 .gallery-wrapper {
   padding-bottom: 350px;
 }
@@ -2524,6 +2614,19 @@ nav.navbar{
   background: rgba(0, 0, 0, 0.5);
   padding: 5px 10px;
   border-radius: 4px;
+}
+.light-shadow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 100%);
+  pointer-events: none;
+  transition: transform 0.5s 
+ease-in-out;
+  transform: skewX(-20deg);
+  opacity: 0;
 }
 /* ==============#  Gallery Section Styles End #============== */
 
@@ -3394,6 +3497,10 @@ transition: 0.3s;
 .customer-panel-sidebar-wrapper ul li a i{
   margin-right: 10px;
 }
+[dir="rtl"] .customer-panel-sidebar-wrapper ul li a i{
+  margin-right: 0px;
+  margin-left: 10px;
+}
 
 .customer-product-order-wrapper .package-order-title {
   font-size: 22px;
@@ -4237,6 +4344,27 @@ transition: 0.3s;
   margin-right: 1rem;
   flex-shrink: 0;
   border-radius: 8px;
+}
+.feature-item {
+  transform: translateY(0px);
+  transition: all 0.3s ease;
+}
+.feature-item:hover {
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+
+.feature-item:hover .feature-icon {
+  background: rgba(9, 141, 156, 0.315);
+}
+.feature-item .feature-icon img{
+  transform: rotate(0deg);
+  transition: all 0.3s ease;
+}
+.feature-item:hover .feature-icon img{
+  transform: rotate(15deg);
+  transition: all 0.3s ease;
 }
 
 [dir="rtl"] .about-section .feature-icon {

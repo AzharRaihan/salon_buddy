@@ -49,17 +49,17 @@ onMounted(() => {
 </script>
   
   <style>
-  .product-grid {
+  /* .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin: 100px 0;
-  }
+  } */
   
-  .card {
+  /* .card {
     background: #740000 !important;
     padding: 20px !important;
     border-radius: 10px !important;
     text-align: center !important;
-  }
+  } */
   </style>

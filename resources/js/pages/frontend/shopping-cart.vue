@@ -26,7 +26,7 @@ onMounted(async () => {
 <template>
   <div>
     <!-- Common Page Banner -->
-    <CommonPageBanner title="Shopping Cart" breadcrumb="Shopping Cart" />
+    <CommonPageBanner :title="t('Shopping Cart')" :breadcrumb="t('Shopping Cart')" />
 
     <!-- Shopping Cart Section -->
     <section class="shopping-cart-section default-section-padding-t">
@@ -37,11 +37,11 @@ onMounted(async () => {
               <div class="shopping-cart-details">
                 <div class="shopping-cart-header">
                   <ul>
-                    <li>SN</li>
-                    <li>Product</li>
-                    <li>Price</li>
-                    <li>Quantity</li>
-                    <li>Sub Total</li>
+                    <li>{{ t('SN') }}</li>
+                    <li>{{ t('Product') }}</li>
+                    <li>{{ t('Price') }}</li>
+                    <li>{{ t('Quantity') }}</li>
+                    <li>{{ t('Subtotal') }}</li>
                   </ul>
                 </div>
                 <div class="shopping-cart-body">
@@ -49,8 +49,8 @@ onMounted(async () => {
                   <!-- Empty Cart State -->
                   <div v-if="!cartStore.hasItems" class="empty-cart-message text-center py-4">
                     <VIcon size="48" icon="tabler-shopping-cart-x" class="text-muted mb-3" />
-                    <p class="text-muted">Your cart is empty</p>
-                    <RouterLink to="/frontend/product" class="btn btn-primary">Continue Shopping</RouterLink>
+                    <p class="text-muted">{{ t('Your cart is empty') }}</p>
+                    <RouterLink to="/frontend/product" class="btn btn-primary">{{ t('Continue Shopping') }}</RouterLink>
                   </div>
 
                   
@@ -83,29 +83,29 @@ onMounted(async () => {
                 </div>
                 <div class="shopping-cart-footer" v-if="cartStore.hasItems">
                   <div class="d-flex justify-content-between">
-                    <RouterLink :to="`/frontend/product`" class="btn btn-default btn-rounded">Return To Shop</RouterLink>
+                    <RouterLink :to="`/frontend/product`" class="btn btn-default btn-rounded">{{ t('Return To Shop') }}</RouterLink>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col-lg-4">
               <div class="order-summary-section" v-if="cartStore.hasItems">
-                <h3>Order Summary</h3>
+                <h3>{{ t('Order Summary') }}</h3>
                 <div class="order-summary-table">
                   <ul>
                     <li>
-                      <span>Subtotal</span>
+                      <span>{{ t('Subtotal') }}</span>
                       <span class="text-end">{{ cartStore.subtotal.toFixed(2) }}</span>
                     </li>
                     <li>
-                      <span>Tax</span>
+                      <span>{{ t('Tax') }}</span>
                       <span class="text-end">{{ cartStore.taxAmount.toFixed(2) }}</span>
                     </li>
           
                     <!-- Show Delivery Area  list -->
                     <li>
                       <div class="flex-grow-1">
-                        <label>Delivery Area</label>
+                        <label>{{ t('Delivery Area') }}</label>
                         <AppAutocomplete 
                           class="delivery-area-selection" 
                           :items="cartStore.deliveryAreas"
@@ -118,22 +118,22 @@ onMounted(async () => {
                       </div>
                     </li>
                     <li>
-                      <span>Delivery Charge</span>
+                      <span>{{ t('Delivery Charge') }}</span>
                       <span class="text-end">
                         {{ cartStore.deliveryCharge.toFixed(2) }} 
                         <template v-if="cartStore.selectedDeliveryArea?.name">({{ cartStore.selectedDeliveryArea?.name }})</template>
                       </span>
                     </li>
                     <li class="total">
-                      <span>Total</span>
+                      <span>{{ t('Total') }}</span>
                       <span class="text-end">{{ cartStore.total.toFixed(2) }}</span>
                     </li>
                   </ul>
                   <div class="d-flex justify-content-center order-summary-button-group" v-if="cartStore.selectedDeliveryAreaId">
-                    <BookingSamllBtn :link="'/frontend/checkout'" :text="'Proceed to checkout'" />
+                    <BookingSamllBtn :link="'/frontend/checkout'" :text="t('Proceed to checkout')" />
                   </div>
                   <div class="d-flex justify-content-center order-summary-button-group" v-else>
-                    <BookingSamllBtn2 :disabled="true" :text="'Proceed to checkout'" />
+                    <BookingSamllBtn2 :disabled="true" :text="t('Proceed to checkout')" />
                   </div>
                 </div>
               </div>

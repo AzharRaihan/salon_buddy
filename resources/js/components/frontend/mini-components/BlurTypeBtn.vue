@@ -86,6 +86,13 @@ defineProps({
 .blur-btn:hover {
   color: var(--color-white);
 }
+.blur-btn-wrapper .blur-btn:hover .arrow-icon-wrap {
+  background: var(--primary-bg-color);
+  transition: all 0.3s ease;
+}
+.blur-btn-wrapper .blur-btn:hover .arrow-icon-wrap i{
+  color: white !important;
+}
 
 
 </style>

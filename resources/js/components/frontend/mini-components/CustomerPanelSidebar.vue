@@ -77,3 +77,7 @@ const handleLogout = async () => {
   }
 }
 </script>
+
+<style scoped>
+
+</style>

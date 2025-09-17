@@ -32,6 +32,25 @@ export function useAuthState() {
     customerAuthState.value.customerData = customerData
   }
 
+  // Clear conflicting auth states when switching between admin and customer
+  const clearConflictingAuth = (isCustomer = false) => {
+    if (isCustomer) {
+      // Clear admin auth when logging in as customer
+      const accessTokenCookie = useCookie('accessToken')
+      const userDataCookie = useCookie('userData')
+      accessTokenCookie.value = null
+      userDataCookie.value = null
+      updateAuthState()
+    } else {
+      // Clear customer auth when logging in as admin
+      const customerAccessTokenCookie = useCookie('customerAccessToken')
+      const customerDataCookie = useCookie('customerData')
+      customerAccessTokenCookie.value = null
+      customerDataCookie.value = null
+      updateCustomerAuthState()
+    }
+  }
+
   // Initialize state
   updateAuthState()
   updateCustomerAuthState()
@@ -40,6 +59,7 @@ export function useAuthState() {
     authState: computed(() => authState.value),
     customerAuthState: computed(() => customerAuthState.value),
     updateAuthState,
-    updateCustomerAuthState
+    updateCustomerAuthState,
+    clearConflictingAuth
   }
 }

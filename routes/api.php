@@ -331,7 +331,7 @@ Route::controller(FrontendController::class)->group(function () {
     Route::get('get-all-banner', 'getAllBanner');
     Route::get('get-all-faq', 'getAllFaq');
     Route::get('get-package-type-item-list', 'getPackageTypeItemList');
-    Route::get('get-all-payment-methods-frontend', 'getAllPaymentMethodsFrontend');
+    Route::get('get-all-payment-getway-frontend', 'getAllPaymentGetwayFrontend');
 
     // api for package with patination
     Route::get('get-package-type-item-list-paginated', 'getPackageTypeItemListPaginated');
@@ -343,6 +343,7 @@ Route::controller(FrontendController::class)->group(function () {
     // Services API for Featured Services
     Route::get('get-service-categories', 'getServiceCategories');
     Route::get('get-featured-services', 'getFeaturedServices');
+    Route::get('get-featured-services-paginated', 'getFeaturedServicesPaginated');
 
     // About us API
     Route::get('get-about-us', 'getAboutUs');

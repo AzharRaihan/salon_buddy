@@ -71,11 +71,40 @@ export function useServiceApi() {
       const queryParams = new URLSearchParams({
         page: params.page || 1,
         per_page: params.perPage || 9,
-        category_id: params.categoryId || '',
         sort: params.sort || 'price_asc'
-      }).toString()
+      })
       
-      const response = await $api(`/get-featured-services-paginated?${queryParams}`)
+      // Handle multiple category IDs
+      if (params.categoryIds && Array.isArray(params.categoryIds) && params.categoryIds.length > 0) {
+        params.categoryIds.forEach(categoryId => {
+          queryParams.append('category_ids[]', categoryId)
+        })
+      }
+      
+      const queryString = queryParams.toString()
+      
+      // Try paginated endpoint first, fallback to regular endpoint
+      let response
+      try {
+        response = await $api(`/get-featured-services-paginated?${queryString}`)
+      } catch (paginatedError) {
+        console.warn('Paginated endpoint not available, using regular endpoint:', paginatedError)
+        // Fallback to regular endpoint with manual pagination
+        response = await $api('/get-featured-services')
+        if (response.success && response.data) {
+          // Manual pagination for fallback
+          const startIndex = (params.page - 1) * params.perPage
+          const endIndex = startIndex + params.perPage
+          const paginatedData = response.data.slice(startIndex, endIndex)
+          
+          return {
+            data: paginatedData,
+            total: response.data.length,
+            current_page: params.page,
+            last_page: Math.ceil(response.data.length / params.perPage)
+          }
+        }
+      }
       
       if (response.success) {
         return response.data

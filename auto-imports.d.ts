@@ -227,6 +227,7 @@ declare global {
   const useCalendar: typeof import('./resources/js/composables/useCalendar.js')['useCalendar']
   const useCartAnimation: typeof import('./resources/js/composables/useCartAnimation.js')['useCartAnimation']
   const useCeil: typeof import('@vueuse/math')['useCeil']
+  const useCheckoutForm: typeof import('./resources/js/composables/useCheckoutForm.js')['useCheckoutForm']
   const useClamp: typeof import('@vueuse/math')['useClamp']
   const useClipboard: typeof import('@vueuse/core')['useClipboard']
   const useClipboardItems: typeof import('@vueuse/core')['useClipboardItems']
@@ -367,6 +368,7 @@ declare global {
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
   const useServiceApi: typeof import('./resources/js/composables/useServiceApi.js')['useServiceApi']
   const useServiceFiltering: typeof import('./resources/js/composables/useServiceFiltering.js')['useServiceFiltering']
+  const useServiceManagement: typeof import('./resources/js/composables/useServiceManagement.js')['useServiceManagement']
   const useServiceOrders: typeof import('./resources/js/composables/useServiceOrders.js')['useServiceOrders']
   const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
   const useShare: typeof import('@vueuse/core')['useShare']
@@ -580,7 +582,6 @@ declare module 'vue' {
     readonly passwordValidator: UnwrapRef<typeof import('./resources/js/@core/utils/validators.js')['passwordValidator']>
     readonly pathPermissionMap: UnwrapRef<typeof import('./resources/js/utils/routePermissions.js')['pathPermissionMap']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
-    readonly posValidationPresets: UnwrapRef<typeof import('./resources/js/composables/useFormValidation.js')['posValidationPresets']>
     readonly prefixWithPlus: UnwrapRef<typeof import('./resources/js/@core/utils/formatters.js')['prefixWithPlus']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
@@ -676,6 +677,7 @@ declare module 'vue' {
     readonly useCalendar: UnwrapRef<typeof import('./resources/js/composables/useCalendar.js')['useCalendar']>
     readonly useCartAnimation: UnwrapRef<typeof import('./resources/js/composables/useCartAnimation.js')['useCartAnimation']>
     readonly useCeil: UnwrapRef<typeof import('@vueuse/math')['useCeil']>
+    readonly useCheckoutForm: UnwrapRef<typeof import('./resources/js/composables/useCheckoutForm.js')['useCheckoutForm']>
     readonly useClamp: UnwrapRef<typeof import('@vueuse/math')['useClamp']>
     readonly useClipboard: UnwrapRef<typeof import('@vueuse/core')['useClipboard']>
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>
@@ -810,7 +812,7 @@ declare module 'vue' {
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
     readonly useServiceApi: UnwrapRef<typeof import('./resources/js/composables/useServiceApi.js')['useServiceApi']>
-    readonly useServiceFiltering: UnwrapRef<typeof import('./resources/js/composables/useServiceFiltering.js')['useServiceFiltering']>
+    readonly useServiceManagement: UnwrapRef<typeof import('./resources/js/composables/useServiceManagement.js')['useServiceManagement']>
     readonly useServiceOrders: UnwrapRef<typeof import('./resources/js/composables/useServiceOrders.js')['useServiceOrders']>
     readonly useSessionStorage: UnwrapRef<typeof import('@vueuse/core')['useSessionStorage']>
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>

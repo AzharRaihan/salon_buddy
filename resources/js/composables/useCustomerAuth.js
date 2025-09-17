@@ -40,6 +40,10 @@ export function useCustomerAuth() {
       })
 
       if (response.success) {
+        // Clear any conflicting admin authentication
+        const { clearConflictingAuth } = useAuthState()
+        clearConflictingAuth(true)
+
         // Store tokens and customer data
         const customerAccessTokenCookie = useCookie('customerAccessToken', { httpOnly: false })
         const customerDataCookie = useCookie('customerData', { httpOnly: false })
@@ -74,6 +78,10 @@ export function useCustomerAuth() {
       })
 
       if (response.success) {
+        // Clear any conflicting admin authentication
+        const { clearConflictingAuth } = useAuthState()
+        clearConflictingAuth(true)
+
         // Store tokens and customer data
         const customerAccessTokenCookie = useCookie('customerAccessToken', { httpOnly: false })
         const customerDataCookie = useCookie('customerData', { httpOnly: false })
@@ -199,6 +207,10 @@ export function useCustomerAuth() {
     const customerInfo = urlParams.get('customer')
 
     if (status === 'success' && token) {
+      // Clear any conflicting admin authentication
+      const { clearConflictingAuth } = useAuthState()
+      clearConflictingAuth(true)
+
       // Store token and customer data
       const customerAccessTokenCookie = useCookie('customerAccessToken', { httpOnly: false })
       const customerDataCookie = useCookie('customerData', { httpOnly: false })

@@ -24,7 +24,7 @@ export const usePOSPayment = () => {
                 })
             } else  {
                 // Get payment method details
-                paymentMethodResponse = await $api('/get-all-payment-methods-frontend', {
+                paymentMethodResponse = await $api('/get-all-payment-getway-frontend', {
                     method: 'GET'
                 })
             }

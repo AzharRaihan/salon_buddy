@@ -1,11 +1,12 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import ServiceCard from '@/components/frontend/ServiceCard.vue'
 import CategoryFilter from '@/components/frontend/CategoryFilter.vue'
-import { useServiceFiltering } from '@/composables/useServiceFiltering'
+import { useServiceManagement } from '@/composables/useServiceManagement'
 import { useServiceApi } from '@/composables/useServiceApi'
-import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n'
+
 const { t } = useI18n()
 // Define page meta
 definePage({
@@ -17,42 +18,34 @@ definePage({
 
 // Use composables
 const {
+  serviceCategories,
+  loading: apiLoading,
+  error,
+  fetchServiceCategories,
+  fetchServicesPaginated
+} = useServiceApi()
+
+const {
   allServices,
   selectedCategories,
   sortBy,
   currentPage,
   perPage,
   loading,
-  sortOptions,
-  filteredAndSortedServices,
-  paginatedServices,
   totalPages,
   totalResults,
-  handleCategoryChange,
-  handleSortChange,
-  goToPage,
-  resetFilters
-} = useServiceFiltering()
-
-const {
-  serviceCategories,
-  loading: apiLoading,
-  error,
-  fetchServiceCategories,
-  fetchFeaturedServices
-} = useServiceApi()
+  sortOptions,
+  paginatedServices,
+  handleCategoryChange: handleCategoryChangeBase,
+  handleSortChange: handleSortChangeBase,
+  goToPage: goToPageBase,
+  resetFilters: resetFiltersBase,
+  initializeServices: initializeServicesBase
+} = useServiceManagement()
 
 // Initialize services data
 const initializeServices = async () => {
-  try {
-    loading.value = true
-    const services = await fetchFeaturedServices()
-    allServices.value = services
-  } catch (error) {
-    console.error('Error initializing services:', error)
-  } finally {
-    loading.value = false
-  }
+  await initializeServicesBase(fetchServicesPaginated)
 }
 
 // Event handlers
@@ -64,13 +57,25 @@ const handleBookService = (service) => {
 
 const handleImageError = (service) => {
   console.log('Image error for service:', service)
-  // Handle image error if needed
+  // Handle image error if needed - no infinite loop risk as ServiceCard handles fallback
 }
 
-// Watchers for reactive updates
-watch([selectedCategories, sortBy], () => {
-  // Auto-refresh when filters change if needed
-})
+// Event handlers for filtering
+const handleCategoryChange = async (categoryId) => {
+  await handleCategoryChangeBase(categoryId, fetchServicesPaginated)
+}
+
+const handleSortChange = async (newSortBy) => {
+  await handleSortChangeBase(newSortBy, fetchServicesPaginated)
+}
+
+const goToPage = async (page) => {
+  await goToPageBase(page, fetchServicesPaginated)
+}
+
+const resetFilters = async () => {
+  await resetFiltersBase(fetchServicesPaginated)
+}
 
 // Lifecycle
 onMounted(async () => {

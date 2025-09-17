@@ -14,6 +14,8 @@
           <div v-for="(item, index) in gallery" :key="item.id" :class="(index === 0 || index == 1) ? 'col-md-6' : 'col-md-4'">
             <div class="gallery-image-wrap">
               <img :src="item.photo_url" alt="">
+              <div class="light-shadow"></div>
+
               <div class="gallery-image-content">
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.description }}</p>

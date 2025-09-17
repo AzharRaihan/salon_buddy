@@ -115,6 +115,8 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         const deliveryAreaResponse = await $api('/get-delivery-areas')
         if (deliveryAreaResponse.success) {
           this.deliveryAreas = deliveryAreaResponse.data
+          // Load saved delivery area selection after fetching areas
+          this.loadDeliveryAreaFromStorage()
         }
         
         // Fetch items with tax info
@@ -145,6 +147,8 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         this.selectedDeliveryAreaId = null
         this.deliveryCharge = 0
       }
+      // Save delivery area selection to localStorage
+      this.saveDeliveryAreaToStorage()
     },
     
 
@@ -229,7 +233,12 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
     // Clear entire cart
     clearCart() {
       this.items = []
+      this.selectedDeliveryArea = null
+      this.selectedDeliveryAreaId = null
+      this.deliveryCharge = 0
       this.saveToStorage()
+      // Clear delivery area from localStorage
+      localStorage.removeItem('shopping_cart_delivery')
     },
     
     // Save cart to localStorage
@@ -246,6 +255,34 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         } catch (error) {
           console.error('Error loading cart from storage:', error)
           this.items = []
+        }
+      }
+    },
+
+    // Save delivery area selection to localStorage
+    saveDeliveryAreaToStorage() {
+      const deliveryData = {
+        selectedDeliveryAreaId: this.selectedDeliveryAreaId,
+        selectedDeliveryArea: this.selectedDeliveryArea,
+        deliveryCharge: this.deliveryCharge
+      }
+      localStorage.setItem('shopping_cart_delivery', JSON.stringify(deliveryData))
+    },
+
+    // Load delivery area selection from localStorage
+    loadDeliveryAreaFromStorage() {
+      const saved = localStorage.getItem('shopping_cart_delivery')
+      if (saved) {
+        try {
+          const deliveryData = JSON.parse(saved)
+          this.selectedDeliveryAreaId = deliveryData.selectedDeliveryAreaId
+          this.selectedDeliveryArea = deliveryData.selectedDeliveryArea
+          this.deliveryCharge = deliveryData.deliveryCharge || 0
+        } catch (error) {
+          console.error('Error loading delivery area from storage:', error)
+          this.selectedDeliveryAreaId = null
+          this.selectedDeliveryArea = null
+          this.deliveryCharge = 0
         }
       }
     },
