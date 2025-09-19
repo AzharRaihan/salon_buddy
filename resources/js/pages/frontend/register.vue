@@ -3,11 +3,15 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCustomerAuth } from '@/composables/useCustomerAuth'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
+import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const router = useRouter()
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+const websiteStore = useWebsiteSettingsStore()
+
+console.log('This is websiteStore', websiteStore)
 
 // Use customer authentication composable
 const { 
@@ -96,6 +100,10 @@ const submitRegistration = async () => {
 const handleSocialLogin = (provider) => {
   customerSocialLogin(provider, '/frontend/register')
 }
+
+onMounted(() => {
+  websiteStore.fetchSettings()
+})
 
 definePage({
   meta: {
@@ -319,7 +327,7 @@ definePage({
           <div class="d-md-done d-lg-block col-lg-1"></div>
           <div class="d-md-none d-lg-block col-lg-6">
             <div class="login-image">
-              <img src="../../@frontend/images/login-card.png" alt="Login Image">
+              <img :src="websiteStore.getLoginImage" alt="Login Image">
             </div>
           </div>
         </div>

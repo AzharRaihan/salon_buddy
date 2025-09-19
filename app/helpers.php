@@ -3,6 +3,15 @@
 use Illuminate\Support\Facades\Log;
 
 /**
+ * Get the system config
+ * @demoCheck
+ */
+function demoCheck()
+{
+    return true;
+}
+
+/**
  * Get the site settings
  * @return array
  */

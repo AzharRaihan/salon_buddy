@@ -59,6 +59,12 @@
 .w-100 {
   width: 100%;
 }
+.mt-17-px {
+  margin-top: 17px;
+}
+.mt-minus-4-px {
+  margin-top: -4px;
+}
 .cursor-dot, .cursor-ring { display: none; }
 
 .repeter-form .v-field__input {
@@ -93,6 +99,12 @@
   color: red !important;
   font-size: 14px !important;
   font-weight: 600 !important;
+}
+.required-star {
+  color: red !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-left: 5px !important;
 }
 .v-align-top {
   vertical-align: top;
@@ -134,4 +146,7 @@
 .modal-card.modal-card-lg .v-card-text {
   max-height: calc(100vh - 200px);
   overflow-y: auto;
+}
+.company-logo .v-img__img--cover{
+  object-fit: contain !important;
 }

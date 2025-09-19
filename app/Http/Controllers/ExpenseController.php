@@ -135,7 +135,7 @@ class ExpenseController extends Controller
             $validatedData = $validator->validated();
             // Add user and company information
             $validatedData['user_id'] = Auth::id();
-            $validatedData['note'] = $request->note == null ? NULL : $request->note;
+            $validatedData['note'] = $request->note == null ? '' : $request->note;
             $validatedData['branch_id'] = $request->branch_id;
             $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['updated_at'] = now();

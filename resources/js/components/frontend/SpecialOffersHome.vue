@@ -238,7 +238,7 @@ const paginationPages = computed(() => {
 // Methods
 const fetchPackages = async () => {
   try {
-    const response = await $api('/get-package-type-item-list')
+    const response = await $api('/get-package-type-item-list-frontend')
     if (response.success) {
       transformApiData(response.data)
     }
@@ -283,7 +283,7 @@ const transformApiData = (data) => {
       duration: item.duration,
       duration_type: item.duration_type,
       services: item.item_details?.map(detail => ({
-        name: detail.item.name,
+        name: detail.items.name,
         quantity: detail.quantity
       })) || [],
       regularPrice: regularPrice,

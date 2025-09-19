@@ -14,6 +14,7 @@ export const useWebsiteSettingsStore = defineStore("websiteSettings", {
     getAddress: (state) => state.settings?.address || "123 Beauty Street, Style City, SC 12345",
     getHeaderLogo: (state) => state.settings?.header_logo_url ? `${state.settings.header_logo_url}` : '',
     getCommonBannerImage: (state) => state.settings?.common_banner_image_url ? `${state.settings.common_banner_image_url}` : '',
+    getLoginImage: (state) => state.settings?.login_image_url ? `${state.settings.login_image_url}` : '',
     getFooterLogo: (state) => state.settings?.footer_logo_url ? `${state.settings.footer_logo_url}` : '',
     // getFavicon: (state) => state.settings?.fav_icon_url ? `${state.settings.fav_icon_url}` : '',
     getFooterCopyright: (state) => state.settings?.footer_copyright || `© ${new Date().getFullYear()} Salon Buddy. All rights reserved.`,

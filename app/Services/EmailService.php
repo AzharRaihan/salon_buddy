@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
 use App\Http\Controllers\PackageController;
-
+use App\Services\Demo;
 class EmailService
 {
     /**
@@ -51,16 +51,30 @@ class EmailService
             }
             
             // Get mail settings from database
-            $mailType = Setting::getSetting('mail_type') ?: 'smtp';
-            $hostAddress = Setting::getSetting('host_address');
-            $mailPort = Setting::getSetting('mail_port');
-            $encryption = Setting::getSetting('encryption') ?: 'tls';
-            $mailUsername = Setting::getSetting('mail_username');
-            $mailPassword = Setting::getSetting('mail_password');
-            $mailFromEmail = Setting::getSetting('mail_from');
-            $mailFromName = Setting::getSetting('mail_from_name');
-            $mailApiKey = Setting::getSetting('mail_api_key');
-
+            if(demoCheck()) {
+                $demo = new Demo();
+                $credentials = $demo->mailCredential();
+                $mailType = $credentials['mail_type'];
+                $hostAddress = $credentials['host_address'];
+                $mailPort = $credentials['mail_port'];
+                $encryption = $credentials['encryption'];
+                $mailUsername = $credentials['mail_username'];
+                $mailPassword = $credentials['mail_password'];
+                $mailFromEmail = $credentials['mail_from'];
+                $mailFromName = $credentials['mail_from_name'];
+                $mailApiKey = $credentials['mail_api_key'];
+            } else {
+                $mailType = Setting::getSetting('mail_type') ?: 'smtp';
+                $hostAddress = Setting::getSetting('host_address');
+                $mailPort = Setting::getSetting('mail_port');
+                $encryption = Setting::getSetting('encryption') ?: 'tls';
+                $mailUsername = Setting::getSetting('mail_username');
+                $mailPassword = Setting::getSetting('mail_password');
+                $mailFromEmail = Setting::getSetting('mail_from');
+                $mailFromName = Setting::getSetting('mail_from_name');
+                $mailApiKey = Setting::getSetting('mail_api_key');
+            }
+            
             $config = [
                 'host' => $hostAddress,
                 'port' => $mailPort,

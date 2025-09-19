@@ -67,7 +67,7 @@ const headers = [
     },
     {
         title: PurchasePrice,
-        key: 'last_purchase_price',
+        key: 'last_three_purchase_avg',
         sortable: true,
     },
     {
@@ -246,14 +246,14 @@ onMounted(async () => {
                     <VCol cols="12" sm="6" md="4" lg="3">
                         <!-- Show supplier name with phone number -->
                         <AppAutocomplete
-  v-model="supplierId"
-  :items="suppliers"
-  :item-title="item => item.phone ? item.name + ' (' + item.phone + ')' : item.name"
-  item-value="id"
-  :label="t('Supplier')"
-  :placeholder="t('Select Supplier')"
-  clearable
-/>
+                            v-model="supplierId"
+                            :items="suppliers"
+                            :item-title="item => item.phone ? item.name + ' (' + item.phone + ')' : item.name"
+                            item-value="id"
+                            :label="t('Supplier')"
+                            :placeholder="t('Select Supplier')"
+                            clearable
+                            />
                     </VCol>
                     <VCol cols="12" sm="6" md="4" lg="3">
                         <AppAutocomplete
@@ -318,7 +318,7 @@ onMounted(async () => {
                     </VChip>
                 </template>
 
-                <template #header.last_purchase_price="{ column }">
+                <template #header.last_three_purchase_avg="{ column }">
                     <div class="d-flex align-center">
                         <span>{{ column.title }}</span>
                         <VTooltip location="top">
@@ -331,17 +331,17 @@ onMounted(async () => {
                                 class="ms-1"
                                 />
                             </template>
-                            <span>{{ t('This is the last recorded purchase price of the product.') }}</span>
+                            <span>{{ t('This is the last three purchase average price of the product.') }}</span>
                         </VTooltip>
                     </div>
                 </template>
 
-                <template #item.last_purchase_price="{ item }">
-                    {{ formatAmount(item?.last_purchase_price) || formatAmount(0) }}
+                <template #item.last_three_purchase_avg="{ item }">
+                    {{ formatAmount(item?.last_three_purchase_avg) || formatAmount(0) }}
                 </template>
 
                 <template #item.total_price="{ item }">
-                    {{ formatAmount(item?.last_purchase_price * item.stock) || formatAmount(0) }}
+                    {{ formatAmount(item?.last_three_purchase_avg * item.stock) || formatAmount(0) }}
                 </template>
                 
                 

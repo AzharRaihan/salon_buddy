@@ -4,6 +4,8 @@ import { toast } from 'vue3-toastify'
 import { useI18n } from 'vue-i18n'
 import defaultAvater from '@images/system-config/default-picture.png';
 
+const baseUrl = import.meta.env.VITE_APP_URL
+
 const { t } = useI18n()
 
 const form = ref({
@@ -44,16 +46,39 @@ const resetForm = () => {
     }
 }
 
+const checkImage = (url, fallback) => {
+    return new Promise((resolve) => {
+        if (!url) {
+            resolve(fallback)
+            return
+        }
+
+        const img = new Image()
+        img.src = url
+
+        img.onload = () => resolve(url)       // file exists
+        img.onerror = () => resolve(fallback) // fallback if missing
+    })
+}
+
 const getWhiteLabelSettings = async () => {
     try {
         const res = await $api('/white-label', {
             method: 'GET'
         })
 
-        if (res.success == true) {
+        if (res.success === true) {
             form.value = res.data
-            previewFav.value = res.data.favicon_url
-            previewLogo.value = res.data.logo_url
+
+            previewFav.value = await checkImage(
+                res.data.favicon_url,
+                baseUrl + '/public/assets/images/system-config/default-picture.png'
+            )
+
+            previewLogo.value = await checkImage(
+                res.data.logo_url,
+                baseUrl + '/public/assets/images/system-config/default-picture.png'
+            )
         }
     } catch (err) {
         console.error(err)
@@ -204,7 +229,9 @@ onMounted(() => {
                                 <!-- <DropZone v-model="form.logo" :image_url="form.logo_url" title="Drag and drop logo here"
                                     :subtitle="t('or')" :buttonText="t('Browse Logo')" /> -->
                                 <VCardText class="d-flex">
-                                    <VAvatar rounded size="100" class="me-6" :image="previewLogo" />
+                                    <div class="company-logo">
+                                        <VAvatar rounded size="100" class="me-6" :image="previewLogo" />
+                                    </div>
                                     <form class="d-flex flex-column justify-center gap-4">
                                         <div class="d-flex flex-wrap gap-4">
                                             <VBtn color="primary" size="small" @click="refInputElLogo?.click()">

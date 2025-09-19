@@ -59,15 +59,39 @@ const toggleFaq = (index) => {
   activeFaq.value = activeFaq.value === index ? null : index
 }
 
+// const fetchFaqs = async () => {
+//   try {
+//     loading.value = true
+//     const response = await $api('/get-all-faq', {
+//       method: 'GET'
+//     })
+    
+//     if (response.data && Array.isArray(response.data)) {
+//       faqs.value = response.data
+//     } else {
+//       console.error('Invalid FAQ data format:', response)
+//       faqs.value = []
+//     }
+//   } catch (err) {
+//     console.error('Error fetching FAQs:', err)
+//     error.value = 'Failed to load FAQs'
+//     faqs.value = []
+//   } finally {
+//     loading.value = false
+//   }
+// }
+
 const fetchFaqs = async () => {
   try {
     loading.value = true
-    const response = await $api('/get-all-faq', {
-      method: 'GET'
-    })
+    const response = await $api('/get-all-faq', { method: 'GET' })
     
     if (response.data && Array.isArray(response.data)) {
       faqs.value = response.data
+      // expand index 1 if it exists
+      if (faqs.value.length > 1) {
+        activeFaq.value = 0
+      }
     } else {
       console.error('Invalid FAQ data format:', response)
       faqs.value = []
@@ -80,6 +104,8 @@ const fetchFaqs = async () => {
     loading.value = false
   }
 }
+
+
 
 onMounted(() => {
   fetchFaqs()

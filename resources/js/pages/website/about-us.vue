@@ -89,12 +89,13 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextField
                                             v-model="form.section_1_heading"
-                                            :label="t('Hero Heading') + '*'"
+                                            :label="t('Hero Heading')"
                                             :placeholder="t('Enter main heading for hero section')"
                                             :error-messages="getFieldError('section_1_heading')"
                                             :disabled="loadings"
                                             counter="100"
                                             maxlength="100"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -102,12 +103,13 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextField
                                             v-model="form.section_1_experience"
-                                            :label="t('Experience Text') + '*'"
+                                            :label="t('Experience Text')"
                                             :placeholder="t('e.g., \'10+ Years Experience\'')"
                                             :error-messages="getFieldError('section_1_experience')"
                                             :disabled="loadings"
                                             counter="100"
                                             maxlength="100"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -115,13 +117,14 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12">
                                         <AppTextarea
                                             v-model="form.section_1_description"
-                                            :label="t('Hero Description') + '*'"
+                                            :label="t('Hero Description')"
                                             :placeholder="t('Enter detailed description for hero section')"
                                             :error-messages="getFieldError('section_1_description')"
                                             :disabled="loadings"
                                             rows="4"
                                             counter="250"
                                             maxlength="250"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -151,11 +154,12 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextField
                                             v-model="form.section_1_btn_link"
-                                            :label="t('Button Link') + '*'"
+                                            :label="t('Button Link')"
                                             :placeholder="t('Enter URL for hero button')"
                                             :error-messages="getFieldError('section_1_btn_link')"
                                             :disabled="loadings"
                                             type="url"
+                                            :required="true"
                                         />
                                     </VCol>
                                 </VRow>
@@ -171,12 +175,13 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextField
                                             v-model="form.section_play_title"
-                                            :label="t('Video Section Title') + '*'"
+                                            :label="t('Video Section Title')"
                                             :placeholder="t('Enter title for video section')"
                                             :error-messages="getFieldError('section_play_title')"
                                             :disabled="loadings"
                                             counter="100"
                                             maxlength="100"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -184,11 +189,12 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextField
                                             v-model="form.section_play_link"
-                                            :label="t('Video/Link URL') + '*'"
+                                            :label="t('Video/Link URL')"
                                             :placeholder="t('Enter video or content URL')"
                                             :error-messages="getFieldError('section_play_link')"
                                             :disabled="loadings"
                                             type="url"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -215,12 +221,13 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextField
                                             v-model="form.section_discover_heading"
-                                            :label="t('Discover Heading') + '*'"
+                                            :label="t('Discover Heading')"
                                             :placeholder="t('Enter heading for discover section')"
                                             :error-messages="getFieldError('section_discover_heading')"
                                             :disabled="loadings"
                                             counter="100"
                                             maxlength="100"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -228,13 +235,14 @@ watch(() => form.processing, (processing) => {
                                     <VCol cols="12" md="6">
                                         <AppTextarea
                                             v-model="form.section_discover_description"
-                                            :label="t('Discover Description') + '*'"
+                                            :label="t('Discover Description')"
                                             :placeholder="t('Enter description for discover section')"
                                             :error-messages="getFieldError('section_discover_description')"
                                             :disabled="loadings"
                                             rows="3"
                                             counter="250"
                                             maxlength="250"
+                                            :required="true"
                                         />
                                     </VCol>
 
@@ -284,7 +292,7 @@ watch(() => form.processing, (processing) => {
                                                         <VCol cols="12" md="6">
                                                             <AppTextField
                                                                 v-model="form[`section_discover_item_${itemIndex}_heading`]"
-                                                                :label="`${t('Item')} ${itemIndex} ${t('Heading')} *`"
+                                                                :label="`${t('Item')} ${itemIndex} ${t('Heading')}`" :required="true"
                                                                 :placeholder="`${t('Enter heading for item')} ${itemIndex}`"
                                                                 :error-messages="getFieldError(`section_discover_item_${itemIndex}_heading`)"
                                                                 :disabled="loadings"
@@ -297,7 +305,8 @@ watch(() => form.processing, (processing) => {
                                                         <VCol cols="12" md="6">
                                                             <AppTextarea
                                                                 v-model="form[`section_discover_item_${itemIndex}_description`]"
-                                                                :label="`${t('Item')} ${itemIndex} ${t('Description')} *`"
+                                                                :label="`${t('Item')} ${itemIndex} ${t('Description')}`"
+                                                                :required="true"
                                                                 :placeholder="`${t('Enter description for item')} ${itemIndex}`"
                                                                 :error-messages="getFieldError(`section_discover_item_${itemIndex}_description`)"
                                                                 :disabled="loadings"

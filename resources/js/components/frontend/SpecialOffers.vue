@@ -97,7 +97,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
-
+import { toast } from 'vue3-toastify';
 import SectionMoreBtn from './mini-components/SectionMoreBtn.vue'
 import BookNowBtn from './mini-components/BookNowBtn.vue'
 import { useI18n } from 'vue-i18n';
@@ -224,7 +224,7 @@ const transformApiData = (data) => {
       duration: item.duration,
       duration_type: item.duration_type,
       services: item.item_details?.map(detail => ({
-        name: detail.item.name,
+        name: detail.items.name,
         quantity: detail.quantity
       })) || [],
       regularPrice: regularPrice,
@@ -258,7 +258,7 @@ const addToCart = (offer) => {
   })
   
   // Optional: Show toast notification
-  // toast('Package added to cart!', { type: 'success' })
+  toast('Package added to cart!', { type: 'success' })
 }
 
 onMounted(async () => {

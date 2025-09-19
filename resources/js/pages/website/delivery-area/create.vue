@@ -99,7 +99,7 @@ const createDeliveryArea = async () => {
             type: "success",
         })
         loadings.value = false
-        router.push({ name: 'delivery-area' })
+        router.push({ name: 'website-delivery-area' })
     }
     catch (err) {
         if (err.errors) {

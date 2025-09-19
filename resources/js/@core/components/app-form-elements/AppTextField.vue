@@ -34,15 +34,16 @@ const labelWithAsterisk = computed(() => {
     :class="$attrs.class"
   >
 
-    <VLabel
-      v-if="label"
-      :for="elementId"
-      class="mb-1 text-body-2 text-wrap"
-      style="line-height: 15px;"
-    >
-      <span v-html="labelWithAsterisk" />
-    </VLabel>
-
+    <div class="d-flex align-items-center justify-content-between">
+      <VLabel
+        v-if="label"
+        :for="elementId"
+        class="mb-1 text-body-2 text-wrap"
+        style="line-height: 15px;"
+      >
+        <span v-html="labelWithAsterisk" />
+      </VLabel>
+    </div>
     <VTextField
       v-bind="{
         ...$attrs,

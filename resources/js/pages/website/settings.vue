@@ -13,7 +13,6 @@ const refInputEl = ref()
 const headerLogoPreviewImage = ref(defaultBanner)
 const footerLogoPreviewImage = ref(defaultBanner)
 const favIconPreviewImage = ref(defaultBanner)
-const testimonialPreviewImage = ref(defaultBanner)
 const commonBannerPreviewImage = ref(defaultBanner)
 const loginPreviewImage = ref(defaultBanner)
 const googleMapPreviewImage = ref(defaultBanner)
@@ -50,7 +49,6 @@ const form = ref({
     })),
     testimonial_title: '',
     testimonial_heading: '',
-    testimonial_image: defaultBanner,
     common_banner_image: defaultBanner,
     login_image: defaultBanner,
     google_map_url: '',
@@ -74,7 +72,6 @@ const errors = ref({
     social_media: Array(socialMediaPlatforms.length).fill(''),
     testimonial_title: '',
     testimonial_heading: '',
-    testimonial_image: '',
     common_banner_image: '',
     login_image: '',
     google_map_url: '',
@@ -125,7 +122,6 @@ const fetchSettings = async () => {
                 }),
                 testimonial_title: data.testimonial_title || '',
                 testimonial_heading: data.testimonial_heading || '',
-                testimonial_image: data.testimonial_image || defaultBanner,
                 common_banner_image: data.common_banner_image || defaultBanner,
                 login_image: data.login_image || defaultBanner,
                 google_map_url: data.google_map_url || '',
@@ -136,17 +132,16 @@ const fetchSettings = async () => {
                 site_title: data.site_title || '',
                 footer_copyright: data.footer_copyright || '',
                 footer_mini_description: data.footer_mini_description || '',
-                header_logo: data.header_logo || defaultBanner,
-                footer_logo: data.footer_logo || defaultBanner,
-                fav_icon: data.fav_icon || defaultBanner,
+                header_logo: data.header_logo_url || defaultBanner,
+                footer_logo: data.footer_logo_url || defaultBanner,
+                fav_icon: data.fav_icon_url || defaultBanner,
             }
 
-            testimonialPreviewImage.value = data.testimonial_image || defaultBanner
-            commonBannerPreviewImage.value = data.common_banner_image || defaultBanner  
-            loginPreviewImage.value = data.login_image || defaultBanner
-            headerLogoPreviewImage.value = data.header_logo || defaultBanner
-            footerLogoPreviewImage.value = data.footer_logo || defaultBanner
-            favIconPreviewImage.value = data.fav_icon || defaultBanner
+            commonBannerPreviewImage.value = data.common_banner_image_url || defaultBanner  
+            loginPreviewImage.value = data.login_image_url || defaultBanner
+            headerLogoPreviewImage.value = data.header_logo_url || defaultBanner
+            footerLogoPreviewImage.value = data.footer_logo_url || defaultBanner
+            favIconPreviewImage.value = data.fav_icon_url || defaultBanner
         }
     } catch (err) {
         console.error('Error fetching settings:', err)
@@ -156,17 +151,6 @@ const fetchSettings = async () => {
     }
 }
 
-const changeTestimonialImage = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-        const reader = new FileReader()
-        reader.onload = e => {
-            testimonialPreviewImage.value = e.target.result
-            form.value.testimonial_image = file
-        }
-        reader.readAsDataURL(file)
-    }
-}
 
 const changeCommonBannerImage = (event) => {
     const file = event.target.files[0]
@@ -192,13 +176,7 @@ const changeLoginImage = (event) => {
     }
 }
 
-const resetTestimonialImage = () => {
-    form.value.testimonial_image = defaultBanner
-    testimonialPreviewImage.value = defaultBanner
-    if (refInputEl.value) {
-        refInputEl.value.value = ''
-    }
-}
+
 
 const resetCommonBannerImage = () => {
     form.value.common_banner_image = defaultBanner
@@ -292,7 +270,6 @@ const validateForm = () => {
         social_media: Array(socialMediaPlatforms.length).fill(''),
         testimonial_title: '',
         testimonial_heading: '',
-        testimonial_image: '',
         common_banner_image: '',
         login_image: ''
     }
@@ -344,10 +321,6 @@ const validateForm = () => {
         isValid = false
     }
 
-    if (!form.value.testimonial_image) {
-        errors.value.testimonial_image = 'Testimonial image is required'
-        isValid = false
-    }
 
     return isValid
 }
@@ -366,7 +339,7 @@ const saveSettings = async () => {
         
         // Append form fields
         Object.keys(form.value).forEach(key => {
-            if (['testimonial_image', 'common_banner_image', 'login_image', 'header_logo', 'footer_logo', 'fav_icon'].includes(key)) {
+            if (['common_banner_image', 'login_image', 'header_logo', 'footer_logo', 'fav_icon'].includes(key)) {
                 if (form.value[key] instanceof File) {
                     formData.append(key, form.value[key])
                 }
@@ -417,7 +390,6 @@ const resetForm = () => {
         social_media: Array(socialMediaPlatforms.length).fill(''),
         testimonial_title: '',
         testimonial_heading: '',
-        testimonial_image: '',
         common_banner_image: '',
         login_image: '',
         google_map_url: '',
@@ -451,10 +423,11 @@ const resetForm = () => {
                             <VCol cols="12" md="6" lg="4">
                                 <AppTextField 
                                     v-model="form.email"
-                                    :label="t('Email Address') + '*'"
+                                    :label="t('Email Address')"
                                     type="email"
                                     :placeholder="t('Enter email address')"
                                     :error-messages="errors.email"
+                                    :required="true"
                                 />
                             </VCol>
 
@@ -462,10 +435,11 @@ const resetForm = () => {
                             <VCol cols="12" md="6" lg="4">
                                 <AppTextField 
                                     v-model="form.phone"
-                                    :label="t('Phone Number') + '*'"
+                                    :label="t('Phone Number')"
                                     type="text"
                                     :placeholder="t('Enter phone number')"
                                     :error-messages="errors.phone"
+                                    :required="true"
                                 />
                             </VCol>
 
@@ -473,10 +447,11 @@ const resetForm = () => {
                             <VCol cols="12" md="6" lg="4">
                                 <AppTextarea
                                     v-model="form.address"
-                                    :label="t('Address') + '*'"
+                                    :label="t('Address')"
                                     :placeholder="t('Enter full address')"
                                     :error-messages="errors.address"
                                     rows="3"
+                                    :required="true"
                                 />
                             </VCol>
 
@@ -485,10 +460,11 @@ const resetForm = () => {
                                 <VSelect
                                     v-model="form.languages"
                                     :items="languageOptions"
-                                    :label="t('Languages') + '*'"
+                                    :label="t('Languages')"
                                     multiple
                                     chips
                                     :error-messages="errors.languages"
+                                    :required="true"
                                 />
                             </VCol>
 
@@ -497,24 +473,21 @@ const resetForm = () => {
                                 <h6 class="text-h6 mb-4">{{ t('Social Media Links') }}</h6>
                                 <VRow>
                                     <VCol md="4" v-for="(social, index) in form.social_media" :key="social.name" class="mb-4">
-                                        <div class="d-flex align-center gap-4">
-                                            
-                                            <AppTextField
-                                                v-model="social.url"
-                                                :label="`${social.name} ${t('URL')}`"
-                                                type="url"
-                                                :placeholder="`${t('Enter')} ${social.name} ${t('profile URL')}`"
-                                                :disabled="!social.is_active"
-                                                :error-messages="errors.social_media[index]"
-                                                class="flex-grow-1"
-                                            />
-                                            <VSwitch
-                                                v-model="social.is_active"
-                                                :label="social.name"
-                                                color="primary"
-                                                class="flex-grow-0 mt-5"
-                                            />
-                                        </div>
+                                        <AppTextField
+                                            v-model="social.url"
+                                            :label="`${social.name} ${t('URL')}`"
+                                            type="url"
+                                            :placeholder="`${t('Enter')} ${social.name} ${t('profile URL')}`"
+                                            :disabled="!social.is_active"
+                                            :error-messages="errors.social_media[index]"
+                                            class="flex-grow-1"
+                                        />
+                                        <VSwitch
+                                            v-model="social.is_active"
+                                            :label="social.name"
+                                            color="primary"
+                                            class="flex-grow-0"
+                                        />
                                     </VCol>
                                 </VRow>
                             </VCol>
@@ -604,7 +577,9 @@ const resetForm = () => {
 
                             <VCol cols="12" md="6" lg="4" class="mb-4">
                                 <VCardText class="d-flex">
-                                    <VAvatar rounded size="100" class="me-6" :image="headerLogoPreviewImage" />
+                                    <div class="company-logo">
+                                        <VAvatar rounded size="100" class="me-6" :image="headerLogoPreviewImage" />
+                                    </div>
                                     <form class="d-flex flex-column justify-center gap-4">
                                         <div class="d-flex flex-wrap gap-4">
                                             <VBtn color="primary" size="small" @click="$refs.headerLogoInput?.click()">
@@ -627,7 +602,9 @@ const resetForm = () => {
                             </VCol>
                             <VCol cols="12" md="6" lg="4" class="mb-4">
                                 <VCardText class="d-flex">
-                                    <VAvatar rounded size="100" class="me-6" :image="footerLogoPreviewImage" />
+                                    <div class="company-logo">
+                                        <VAvatar rounded size="100" class="me-6" :image="footerLogoPreviewImage" />
+                                    </div>
                                     <form class="d-flex flex-column justify-center gap-4">
                                         <div class="d-flex flex-wrap gap-4">
                                             <VBtn color="primary" size="small" @click="$refs.footerLogoInput?.click()">
@@ -672,30 +649,7 @@ const resetForm = () => {
                                     :error-messages="errors.testimonial_heading"
                                 />
                             </VCol>
-                            <VCol cols="12" md="6" lg="4" class="mb-4">
-                                <VCardText class="d-flex">
-                                    <VAvatar rounded size="100" class="me-6" :image="testimonialPreviewImage" />
-                                    <form class="d-flex flex-column justify-center gap-4">
-                                        <div class="d-flex flex-wrap gap-4">
-                                            <VBtn color="primary" size="small" @click="$refs.testimonialInput?.click()">
-                                                <VIcon icon="tabler-cloud-upload" class="d-sm-none" />
-                                                <span class="d-none d-sm-block">{{ t('Upload Image') }}</span>
-                                            </VBtn>
-
-                                            <input ref="testimonialInput" type="file" accept=".jpeg,.png,.jpg,GIF" hidden @input="changeTestimonialImage">
-
-                                            <VBtn type="reset" size="small" color="secondary" variant="tonal" @click="resetTestimonialImage">
-                                                <span class="d-none d-sm-block">{{ t('Reset') }}</span>
-                                                <VIcon icon="tabler-refresh" class="d-sm-none" />
-                                            </VBtn>
-                                        </div>
-                                        <p class="text-body-1 mb-0">
-                                            {{ t('Allowed JPG, GIF or PNG. Max size of 2 MB') }}
-                                        </p>
-                                    </form>
-                                </VCardText>
-                            </VCol>
-
+                            
                             <!-- Common Banner -->
                             <VCol cols="12">
                                 <h5 class="text-h5 mb-4 devider-title">{{ t('Common Banner') }}</h5>

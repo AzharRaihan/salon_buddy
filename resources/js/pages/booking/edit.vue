@@ -189,15 +189,15 @@ const validateForm = () => {
             }
 
             // Validate time range
-            if (detail.start_time && detail.end_time) {
-                const start = new Date(`2000/01/01 ${detail.start_time}`)
-                const end = new Date(`2000/01/01 ${detail.end_time}`)
+            // if (detail.start_time && detail.end_time) {
+            //     const start = new Date(`2000/01/01 ${detail.start_time}`)
+            //     const end = new Date(`2000/01/01 ${detail.end_time}`)
                 
-                if (end <= start) {
-                    errors.value.booking_details[index].end_time = t('End time must be after start time')
-                    isValid = false
-                }
-            }
+            //     if (end <= start) {
+            //         errors.value.booking_details[index].end_time = t('End time must be after start time')
+            //         isValid = false
+            //     }
+            // }
         })
     }
 
@@ -430,7 +430,7 @@ const addCustomer = async () => {
                                     :error-messages="errors.customer_id"
                                     clearable
                                 />
-                                <VBtn icon size="small" color="primary" :class="['ms-2', errors.customer_id ? 'mt-0' : 'mt-5']" @click="showCustomerModal = true">
+                                <VBtn icon size="small" color="primary" :class="['ms-2', errors.customer_id ? 'mt-0' : 'mt-17-px']" @click="showCustomerModal = true">
                                     <VIcon icon="tabler-plus" />
                                 </VBtn>
                             </VCol>

@@ -135,61 +135,61 @@ onMounted(() => {
                         <VRow>
                             <!-- Mail Type -->
                             <VCol cols="12" md="6">
-                                <AppSelect v-model="form.mail_type" :label="t('Email Type') + '*'" :items="[
+                                <AppAutocomplete v-model="form.mail_type" :label="t('Email Type')" :items="[
                                     { title: 'SMTP', value: 'SMTP' },
                                     { title: 'Mailgun', value: 'Mailgun' },
                                     { title: 'Sendinblue', value: 'Sendinblue' }
-                                ]" :error-messages="errors.mail_type" :placeholder="t('Select email type')" />
+                                ]" :error-messages="errors.mail_type" :required="true" :placeholder="t('Select email type')" />
                             </VCol>
 
                             <!-- Host Address -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.host_address" :label="t('Host Address') + '*'"
-                                    :error-messages="errors.host_address" :placeholder="t('Enter host address')" />
+                                <AppTextField v-model="form.host_address" :label="t('Host Address')"
+                                    :error-messages="errors.host_address" :placeholder="t('Enter host address')" :required="true" />
                             </VCol>
 
                             <!-- Port -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.mail_port" :label="t('Port') + '*'"
-                                    :error-messages="errors.mail_port" :placeholder="t('Enter port')" />
+                                <AppTextField v-model="form.mail_port" :label="t('Port')"
+                                    :error-messages="errors.mail_port" :placeholder="t('Enter port')" :required="true" />
                             </VCol>
 
                             <!-- Encryption -->
                             <VCol cols="12" md="6">
-                                <AppSelect v-model="form.encryption" :label="t('Encryption') + '*'" :items="[
+                                <AppAutocomplete v-model="form.encryption" :label="t('Encryption')" :items="[
                                     { title: 'TLS', value: 'tls' },
                                     { title: 'SSL', value: 'ssl' }
-                                ]" :error-messages="errors.encryption" :placeholder="t('Select encryption')" />
+                                ]" :error-messages="errors.encryption" :placeholder="t('Select encryption')" :required="true" />
                             </VCol>
 
                             <!-- Mail Username -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.mail_username" :label="t('Username') + '*'"
-                                    :error-messages="errors.mail_username" :placeholder="t('Enter username')" />
+                                <AppTextField v-model="form.mail_username" :label="t('Username')"
+                                    :error-messages="errors.mail_username" :placeholder="t('Enter username')" :required="true" />
                             </VCol>
 
                             <!-- Mail Password -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.mail_password" :label="t('Password') + '*'" type="password"
-                                    :error-messages="errors.mail_password" :placeholder="t('Enter password')" />
+                                <AppTextField v-model="form.mail_password" :label="t('Password')" type="password"
+                                    :error-messages="errors.mail_password" :placeholder="t('Enter password')" :required="true" />
                             </VCol>
 
                             <!-- Mail From -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.mail_from" :label="t('From Email') + '*'"
-                                    :error-messages="errors.mail_from" :placeholder="t('Enter from email')" />
+                                <AppTextField v-model="form.mail_from" :label="t('From Email')"
+                                    :error-messages="errors.mail_from" :placeholder="t('Enter from email')" :required="true" />
                             </VCol>
 
                             <!-- Mail From Name -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.mail_from_name" :label="t('From Name') + '*'"
-                                    :error-messages="errors.mail_from_name" :placeholder="t('Enter from name')" />
+                                <AppTextField v-model="form.mail_from_name" :label="t('From Name')"
+                                    :error-messages="errors.mail_from_name" :placeholder="t('Enter from name')" :required="true" />
                             </VCol>
 
                             <!-- Mail API Key (only for Mailgun) -->
                             <VCol v-if="form.mail_type == 'Mailgun' || form.mail_type == 'Sendinblue'" cols="12" md="6">
-                                <AppTextField v-model="form.mail_api_key" :label="t('API Key') + '*'"
-                                    :error-messages="errors.mail_api_key" :placeholder="t('Enter API key')" />
+                                <AppTextField v-model="form.mail_api_key" :label="t('API Key')"
+                                    :error-messages="errors.mail_api_key" :placeholder="t('Enter API key')" :required="true" />
                             </VCol>
 
                             <!-- Form Actions -->

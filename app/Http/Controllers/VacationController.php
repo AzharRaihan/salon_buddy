@@ -131,6 +131,8 @@ class VacationController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $validator->validated();
+            $validatedData['mail_subject'] = $request->mail_subject ?? '';
+            $validatedData['mail_body'] = $request->mail_body ?? '';
             $validatedData['user_id'] = Auth::id();
             $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['updated_at'] = now();

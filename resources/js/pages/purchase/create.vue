@@ -498,7 +498,7 @@ const addSupplier = async () => {
                                     />
                                 </div>
                                 <div>
-                                    <VBtn icon size="small" color="primary" :class="['ms-2', supplierIdError ? 'mt-0' : 'mt-6']" @click="showSupplierModal = true">
+                                    <VBtn icon size="small" color="primary" :class="['ms-2', supplierIdError ? 'mt-minus-4-px' : 'mt-17-px']" @click="showSupplierModal = true">
                                         <VIcon icon="tabler-plus" />
                                     </VBtn>
                                 </div>

@@ -66,7 +66,7 @@ const headers = [
     },
     {
         title: PurchasePrice,
-        key: 'last_purchase_price',
+        key: 'last_three_purchase_avg',
         sortable: true,
     },
     {
@@ -239,7 +239,7 @@ onMounted(async () => {
                     </VChip>
                 </template>
 
-                <template #header.last_purchase_price="{ column }">
+                <template #header.last_three_purchase_avg="{ column }">
                     <div class="d-flex align-center">
                         <span>{{ column.title }}</span>
                         <VTooltip location="top">
@@ -252,13 +252,13 @@ onMounted(async () => {
                             class="ms-1"
                             />
                         </template>
-                        <span>{{ t('This is the last recorded purchase price of the product.') }}</span>
+                        <span>{{ t('This is the last three purchase average price of the product.') }}</span>
                         </VTooltip>
                     </div>
                 </template>
 
                 <template #item.total_price="{ item }">
-                    {{ formatAmount(item?.last_purchase_price * item.stock) || formatAmount(0) }}
+                    {{ formatAmount(item?.last_three_purchase_avg * item.stock) || formatAmount(0) }}
                 </template>
                 
                 

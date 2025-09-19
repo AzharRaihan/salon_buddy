@@ -49,18 +49,20 @@ onMounted(() => {
                                 <VCol cols="12" md="6">
                                     <AppTextField 
                                         v-model="form.whatsapp_app_key" 
-                                        :label="t('App Key') + '*'"
+                                        :label="t('App Key')"
                                         :error-messages="errors.whatsapp_app_key" 
                                         :placeholder="t('Enter app key')" 
+                                        :required="true"
                                     />
                                 </VCol>
                                 <VCol cols="12" md="6">
                                     <AppTextField 
                                         v-model="form.whatsapp_auth_key" 
-                                        :label="t('Auth Key') + '*'" 
+                                        :label="t('Auth Key')" 
                                         type="password"
                                         :error-messages="errors.whatsapp_auth_key" 
                                         :placeholder="t('Enter auth key')" 
+                                        :required="true"
                                     />
                                 </VCol>
                             </template>
@@ -70,26 +72,29 @@ onMounted(() => {
                                 <VCol cols="12" md="6">
                                     <AppTextField 
                                         v-model="form.whatsapp_account_sid" 
-                                        :label="t('Account SID') + '*'"
+                                        :label="t('Account SID')"
                                         :error-messages="errors.whatsapp_account_sid" 
                                         :placeholder="t('Enter account SID')" 
+                                        :required="true"
                                     />
                                 </VCol>
                                 <VCol cols="12" md="6">
                                     <AppTextField 
                                         v-model="form.whatsapp_auth_token" 
-                                        :label="t('Auth Token') + '*'" 
+                                        :label="t('Auth Token')" 
                                         type="password"
                                         :error-messages="errors.whatsapp_auth_token" 
                                         :placeholder="t('Enter auth token')" 
+                                        :required="true"
                                     />
                                 </VCol>
                                 <VCol cols="12" md="6">
                                     <AppTextField 
                                         v-model="form.whatsapp_from_number" 
-                                        :label="t('From Phone Number') + '*'" 
+                                        :label="t('From Phone Number')" 
                                         :error-messages="errors.whatsapp_from_number" 
                                         :placeholder="t('Enter from phone number (e.g., +1234567890)')" 
+                                        :required="true"
                                     />
                                 </VCol>
                             </template>

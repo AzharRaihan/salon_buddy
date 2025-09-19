@@ -813,7 +813,7 @@ const addSupplier = async () => {
                                     />
                                 </div>
                                 <div>
-                                    <VBtn icon size="small" color="primary" :class="['ms-2', categoryError ? 'mt-0' : 'mt-6']" @click="showCategoryModal = true">
+                                    <VBtn icon size="small" color="primary" :class="['ms-2', categoryError ? 'mt-minus-4-px' : 'mt-17-px']" @click="showCategoryModal = true">
                                         <VIcon icon="tabler-plus" />
                                     </VBtn>
                                 </div>
@@ -832,7 +832,7 @@ const addSupplier = async () => {
                                     />
                                 </div>
                                 <div>
-                                    <VBtn icon size="small" color="primary" class="ms-2 mt-6" @click="showSupplierModal = true">
+                                    <VBtn icon size="small" color="primary" class="ms-2 mt-17-px" @click="showSupplierModal = true">
                                         <VIcon icon="tabler-plus" />
                                     </VBtn>
                                 </div>
@@ -850,7 +850,7 @@ const addSupplier = async () => {
                                     @update:model-value="unitError"
                                     clearable
                                 />
-                                <VBtn icon size="small" color="primary" :class="['ms-2', unitError ? 'mt-0' : 'mt-6']" @click="showUnitModal = true">
+                                <VBtn icon size="small" color="primary" :class="['ms-2', unitError ? 'mt-minus-4-px' : 'mt-17-px']" @click="showUnitModal = true">
                                     <VIcon icon="tabler-plus" />
                                 </VBtn>
                             </VCol>

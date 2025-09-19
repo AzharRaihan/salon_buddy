@@ -683,8 +683,13 @@ html {
 .mobile-header-icon .cart-wrapper-mobile {
   margin-right: 10px;
   background: var(--primary-bg-color);
-
 }
+
+[dir="rtl"] .mobile-header-icon .cart-wrapper-mobile {
+  margin-right: 0px;
+  margin-left: 10px;
+}
+
 .mobile-header-icon .cart-wrapper-mobile i{
   color: var(--color-white);
 }
@@ -732,7 +737,7 @@ nav.navbar{
 .guest-auth-buttons {
   display: flex;
 }
-.btn-login, .btn-outlet{
+.btn-login, .btn-outlet, .btn-register{
   height: 42px;
   font-size: 16px;
   font-weight: 400;
@@ -754,6 +759,7 @@ nav.navbar{
 .btn-login::after {
   color: var(--primary-bg-color);
   background-color: var(--primary-bg-color);
+  border: 1px
 }
 .btn-login:hover {
   color: var(--color-white);
@@ -762,17 +768,19 @@ nav.navbar{
 .btn-register {
   background-color: var(--color-white);
   border-radius: 25px;
-  border: 1px solid var(--primary-bg-color);
 }
 .btn-register::before {
   background-color: var(--primary-bg-color);
+  
 }
 .btn-register::after {
   color: var(--primary-bg-color);
   background-color: var(--color-white);
+  /* border: 1px solid var(--primary-bg-color); */
 }
 .btn-register:hover {
   color: var(--color-white);
+
 }
 
 
@@ -821,7 +829,9 @@ nav.navbar{
   overflow-y: auto;
 }
 
-
+[dir="rtl"] .topbar-right-sidebar .dropdown-menu.show {
+  transform: translate3d(3px, 31.6364px, 0px) !important;
+}
 
 .topbar-right-sidebar {
   /* width: 565px; */
@@ -2084,6 +2094,10 @@ nav.navbar{
   width: 100px;
   height: 100px;
 }
+.about-use-video-section .play-container a {
+  line-height: 1px;
+}
+
 
 .about-use-video-section .circle {
   position: absolute;
@@ -3044,7 +3058,20 @@ ease-in-out;
 .service-wrapper .service-card-inner .service-content {
   padding: 40px;
 }
-
+.service-card-inner {
+  transition: all 0.3s ease;
+}
+.service-card-inner:hover {
+  transform: translateY(-6px);
+  transition: all 0.3s ease;
+}
+.featured-services-swiper .service-card {
+  transition: all 0.3s ease;
+}
+.featured-services-swiper .service-card:hover {
+  transform: translateY(-6px);
+  transition: all 0.3s ease;
+}
 .service-wrapper .service-card-inner .service-content .service-name {
   font-size: 22px;
   font-weight: 600;

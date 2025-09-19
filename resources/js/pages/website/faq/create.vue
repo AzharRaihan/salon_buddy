@@ -130,22 +130,22 @@ const createFaq = async () => {
                         <VRow>
                             <!-- Name -->
                             <VCol cols="12" md="6" lg="4">
-                                <AppTextField v-model="form.title" :label="t('FAQ Question') + '*'" type="text" :placeholder="t('Enter FAQ Question')"
-                                    :error-messages="titleError" @input="validateTitle($event.target.value)" />
+                                <AppTextField v-model="form.title" :label="t('FAQ Question')" type="text" :placeholder="t('Enter FAQ Question')"
+                                    :error-messages="titleError" @input="validateTitle($event.target.value)" :required="true" />
                             </VCol>
 
                             <!-- Description -->
                             <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description" :label="t('FAQ Answer') + '*'" type="text"
+                                <AppTextarea v-model="form.description" :label="t('FAQ Answer')" type="text"
                                     :placeholder="t('Enter FAQ Answer')" :error-messages="descriptionError" 
-                                    @input="validateDescription($event.target.value)" />
+                                    @input="validateDescription($event.target.value)" :required="true" />
                             </VCol>
 
                             <!-- Status -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete
                                     v-model="form.status"
-                                    :label="t('FAQ Status') + '*'"
+                                    :label="t('FAQ Status')"
                                     :items="[
                                         { title: t('Enabled'), value: 'Enabled' },
                                         { title: t('Disabled'), value: 'Disabled' }
@@ -154,6 +154,7 @@ const createFaq = async () => {
                                     :error-messages="statusError"
                                     @update:modelValue="validateStatus"
                                     clearable
+                                    :required="true"
                                 />
                             </VCol>
 

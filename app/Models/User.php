@@ -73,7 +73,7 @@ class User extends Authenticatable
             return asset('assets/images/' . $this->photo);
         }
 
-        return asset('assets/images/avatar.png');
+        return asset('assets/images/default-images/avatar.png');
     }
 
     public function getRoleSNameAttribute(): string

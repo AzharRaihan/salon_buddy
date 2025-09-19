@@ -574,7 +574,7 @@ const addSupplier = async () => {
                                     />
                                 </div>
                                 <div>
-                                    <VBtn icon size="small" color="primary" :class="['ms-2', supplierIdError ? 'mt-0' : 'mt-6']" @click="showSupplierModal = true">
+                                    <VBtn icon size="small" color="primary" :class="['ms-2', supplierIdError ? 'mt-minus-4-px' : 'mt-17-px']" @click="showSupplierModal = true">
                                         <VIcon icon="tabler-plus" />
                                     </VBtn>
                                 </div>
@@ -605,7 +605,7 @@ const addSupplier = async () => {
                                     :error-messages="attachmentError"
                                 />
                             </VCol>
-                            <VCol cols="12" md="6" lg="4" v-if="form.attachment" class="mt-6">
+                            <VCol cols="12" md="6" lg="4" v-if="form.attachment" class="mt-17-px">
                                 <VBtn color="primary" @click="previewAttachment">
                                     {{ $t('View Attachment') }}
                                 </VBtn>

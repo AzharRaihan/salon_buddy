@@ -199,7 +199,7 @@ onMounted(async () => {
 
             <template #item.action="{ item }">
               <div class="d-flex justify-center gap-1">
-                <VBtn icon variant="text" color="default" size="small" @click="openConfirmDialog(item.id)">
+                <VBtn icon variant="text" color="error" size="small" @click="openConfirmDialog(item.id)">
                   <VIcon size="22" icon="tabler-trash" />
                 </VBtn>
               </div>

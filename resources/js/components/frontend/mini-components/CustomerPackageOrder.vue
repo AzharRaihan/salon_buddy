@@ -126,7 +126,7 @@ onMounted(async () => {
                     <th>{{ t('Amount') }}</th>
                     <th>{{ t('Branch') }}</th>
                     <th>{{ t('Status') }}</th>
-                    <th>{{ t('Action') }}</th>
+                    <th class="text-center">{{ t('Action') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,7 +140,7 @@ onMounted(async () => {
                     <td>
                         <span class="status" :class="getStatusClass(order.status)">{{ order.status }}</span>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <a href="#" class="action-view" @click.prevent="viewPackageDetails(order)">
                             <VIcon icon="tabler-eye" />
                         </a>

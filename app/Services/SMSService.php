@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
-
+use App\Services\Demo;
 class SMSService
 {
     /**
@@ -17,13 +17,23 @@ class SMSService
     public function sendSMS($to, $message)
     {
         try {
-            // Get SMS settings from database
-            $smsType = Setting::getSetting('sms_type') ? : 'mobishastra';
-            $smsApiKey = Setting::getSetting('sms_api_key');
-            $smsApiSecret = Setting::getSetting('sms_api_secret');
-            $smsSenderId = Setting::getSetting('sms_sender_id');
-            $smsUsername = Setting::getSetting('sms_username');
-            $smsPassword = Setting::getSetting('sms_password');
+            if(demoCheck()) {
+                $demo = new Demo();
+                $credentials = $demo->smsCredential();
+                $smsType = $credentials['sms_type'];
+                $smsApiKey = $credentials['sms_api_key'];
+                $smsApiSecret = $credentials['sms_api_secret'];
+                $smsSenderId = $credentials['sms_sender_id'];
+                $smsUsername = $credentials['sms_username'];
+                $smsPassword = $credentials['sms_password'];
+            }else {
+                $smsType = Setting::getSetting('sms_type') ? : 'mobishastra';
+                $smsApiKey = Setting::getSetting('sms_api_key');
+                $smsApiSecret = Setting::getSetting('sms_api_secret');
+                $smsSenderId = Setting::getSetting('sms_sender_id');
+                $smsUsername = Setting::getSetting('sms_username');
+                $smsPassword = Setting::getSetting('sms_password');
+            }
 
             switch ($smsType) {
                 case 'mobishastra':

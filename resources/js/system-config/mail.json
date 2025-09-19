@@ -1,0 +1,11 @@
+{
+    "mail_type": "SMTP",
+    "host_address": "",
+    "mail_port": "",
+    "encryption": "tls",
+    "mail_username": "",
+    "mail_password": "",
+    "mail_from": "",
+    "mail_from_name": "",
+    "mail_api_key": ""
+}

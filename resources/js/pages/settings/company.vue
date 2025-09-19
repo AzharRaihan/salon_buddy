@@ -88,6 +88,22 @@ const getTimezones = async () => {
     }
 }
 
+const checkImage = (url, fallback) => {
+    return new Promise((resolve) => {
+        if (!url) {
+            resolve(fallback)
+            return
+        }
+
+        const img = new Image()
+        img.src = url
+
+        img.onload = () => resolve(url)       // file exists
+        img.onerror = () => resolve(fallback) // fallback if missing
+    })
+}
+
+
 const getCompanySettings = async () => {
     try {
         const res = await $api('/get-company-info')
@@ -112,7 +128,10 @@ const getCompanySettings = async () => {
             }
 
             // Set preview image
-            previewImage.value = res.data.logo_url || defaultAvater
+            previewImage.value = await checkImage(
+                res.data.logo_url,
+                defaultAvater
+            )
         }
     } catch (err) {
         console.error(err)
@@ -306,7 +325,11 @@ onMounted(() => {
                             </VCol>
 
                             <VCol cols="12" md="4">
-                                <AppAutocomplete v-model="form.over_sale" :label="t('Over Sale')" :required="true"
+                                <!-- write a guide for over sale -->
+                                <AppAutocomplete 
+                                :tooltipShow="true"
+                                :tooltipTitle="$t('Over Sale Yes means that allows you to sell products that are not in stock')"
+                                v-model="form.over_sale" :label="t('Over Sale')" :required="true"
                                     :items="[
                                         { title: 'Yes', value: 'Yes' },
                                         { title: 'No', value: 'No' }

@@ -202,7 +202,7 @@ class FrontendController extends Controller
 
     public function getPackageTypeItemList()
     {
-        $itemList = Item::where('company_id', 1)
+        $itemList = Item::with('itemDetails:id,item_relation_id,item_id,quantity,price,discount,total_price', 'itemDetails.items:id,name')->where('company_id', 1)
             ->where('del_status', 'Live')
             ->where('status', 'Enable')
             ->where('type', 'Package')
@@ -216,7 +216,7 @@ class FrontendController extends Controller
         $perPage = $request->get('per_page', 6);
         $page = $request->get('page', 1);
 
-        $itemList = Item::where('company_id', 1)
+        $itemList = Item::with('itemDetails:id,item_relation_id,item_id,quantity,price,discount,total_price', 'itemDetails.items:id,name')->where('company_id', 1)
             ->where('del_status', 'Live')
             ->where('status', 'Enable')
             ->where('type', 'Package')

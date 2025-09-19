@@ -120,7 +120,7 @@ onMounted(async () => {
                     <th>{{ t('Branch') }}</th>
                     <th class="text-center">{{ t('Date') }}</th>
                     <th class="text-center">{{ t('Status') }}</th>
-                    <th>{{ t('Action') }}</th>
+                    <th class="text-center">{{ t('Action') }}</th>
                 </tr>
             </thead>
             <tbody>

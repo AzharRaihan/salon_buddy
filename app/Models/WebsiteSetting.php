@@ -48,6 +48,8 @@ class WebsiteSetting extends Model
         'footer_logo_url',
         'testimonial_image_url',
         'common_banner_image_url',
+        'login_image_url',
+        'fav_icon_url',
     ];
 
     public function getHeaderLogoUrlAttribute(): string
@@ -67,6 +69,22 @@ class WebsiteSetting extends Model
 
         return asset('assets/images/default-images/footer_logo.png');
     } 
+
+    public function getFavIconUrlAttribute(): string
+    {
+        if ($this->fav_icon) {
+            return asset('assets/images/' . $this->fav_icon);
+        }
+        return asset('assets/images/default-images/favicon.ico');
+    }
+
+    public function getLoginImageUrlAttribute(): string
+    {
+        if ($this->login_image) {
+            return asset('assets/images/' . $this->login_image);
+        }
+        return asset('assets/images/system-config/login-card.png');
+    }
 
     
 

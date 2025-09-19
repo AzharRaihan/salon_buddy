@@ -1,7 +1,7 @@
 <script setup>
 import { VerticalNav } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
-
+import version from '../../system-config/version.json'
 const props = defineProps({
   navItems: {
     type: null,
@@ -93,9 +93,12 @@ const verticalNavAttrs = computed(() => {
           <slot />
         </div>
       </main>
-      <footer class="layout-footer">
+      <footer class="layout-footer d-flex align-center justify-space-between">
         <div class="footer-content-container">
           <slot name="footer" />
+        </div>
+        <div class="version">
+          <span>Version {{ version.version }}</span>
         </div>
       </footer>
     </div>

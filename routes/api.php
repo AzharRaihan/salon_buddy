@@ -330,7 +330,7 @@ Route::controller(FrontendController::class)->group(function () {
     Route::post('send-contact-us-message', 'sendContactUsMessage');
     Route::get('get-all-banner', 'getAllBanner');
     Route::get('get-all-faq', 'getAllFaq');
-    Route::get('get-package-type-item-list', 'getPackageTypeItemList');
+    Route::get('get-package-type-item-list-frontend', 'getPackageTypeItemList');
     Route::get('get-all-payment-getway-frontend', 'getAllPaymentGetwayFrontend');
 
     // api for package with patination

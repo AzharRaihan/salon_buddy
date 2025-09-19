@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import DemoEditorCustomEditor from '@core/components/editor/DemoEditorCustomEditor.vue';
 import { useI18n } from 'vue-i18n';
@@ -102,8 +102,8 @@ const fetchVacation = async () => {
             start_date: vacation.start_date,
             end_date: vacation.end_date,
             auto_response: vacation.auto_response,
-            mail_subject: vacation.mail_subject,
-            mail_body: vacation.mail_body
+            mail_subject: vacation.mail_subject || '',
+            mail_body: vacation.mail_body || ''
         }
         editorContent.value = vacation.mail_body || ''
     } catch (err) {
@@ -168,7 +168,12 @@ const updateVacation = async () => {
         return
     }
 }
-
+watch(() => form.value.auto_response, (newVal) => {
+  if (newVal === 'No') {
+    form.value.mail_body = ''
+    editorContent.value = ''
+  }
+})
 onMounted(() => {
     if (route.query.id) {
         fetchVacation()

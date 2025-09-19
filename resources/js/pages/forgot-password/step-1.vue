@@ -57,7 +57,6 @@ const forgotPassword = async () => {
       },
       onResponseError({ response }) {
         emailError.value = response._data.message
-        form.value.email = ''
         loadings.value = false
         return Promise.reject(response._data)
       },

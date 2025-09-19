@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-
+use App\Services\Demo;
 class ItemController extends Controller
 {
     use ApiResponse;
@@ -156,8 +156,8 @@ class ItemController extends Controller
                 'photo' => $validatedData['photo'] ?? null,
                 'description' => $request->description,
                 'purchase_price' => $request->purchase_price ?? 0,
-                'last_purchase_price' => $request->last_purchase_price ?? 0,
-                'last_three_purchase_avg' => $request->last_three_purchase_avg ?? 0,
+                'last_purchase_price' => $request->purchase_price ?? 0,
+                'last_three_purchase_avg' => $request->purchase_price ?? 0,
                 'sale_price' => $request->sale_price ?? 0,
                 'unit_id' => (int)$request->unit_id,
                 'supplier_id' => (int)$request->supplier_id,

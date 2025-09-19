@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\Demo;
 
 class WhatsappService
 {
@@ -18,13 +19,25 @@ class WhatsappService
     public function sendWhatsapp($to, $message)
     {
         try {
+
             // Get WhatsApp settings from database
-            $whatsappType = Setting::getSetting('whatsapp_type') ?: 'RC Soft';
-            $whatsappAppKey = Setting::getSetting('whatsapp_app_key');
-            $whatsappAuthKey = Setting::getSetting('whatsapp_auth_key');
-            $whatsappAccountSid = Setting::getSetting('whatsapp_account_sid');
-            $whatsappAuthToken = Setting::getSetting('whatsapp_auth_token');
-            $whatsappFromNumber = Setting::getSetting('whatsapp_from_number');
+            if(demoCheck()) {
+                $demo = new Demo();
+                $credentials = $demo->whatsappCredential();
+                $whatsappType = $credentials['whatsapp_type'];
+                $whatsappAppKey = $credentials['whatsapp_app_key'];
+                $whatsappAuthKey = $credentials['whatsapp_auth_key'];
+                $whatsappAccountSid = $credentials['whatsapp_account_sid'];
+                $whatsappAuthToken = $credentials['whatsapp_auth_token'];
+                $whatsappFromNumber = $credentials['whatsapp_from_number'];
+            }else {
+                $whatsappType = Setting::getSetting('whatsapp_type') ?: 'RC Soft';
+                $whatsappAppKey = Setting::getSetting('whatsapp_app_key');
+                $whatsappAuthKey = Setting::getSetting('whatsapp_auth_key');
+                $whatsappAccountSid = Setting::getSetting('whatsapp_account_sid');
+                $whatsappAuthToken = Setting::getSetting('whatsapp_auth_token');
+                $whatsappFromNumber = Setting::getSetting('whatsapp_from_number');
+            }
 
             switch ($whatsappType) {
                 case 'RC Soft':

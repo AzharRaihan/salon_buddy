@@ -218,7 +218,7 @@ onMounted(() => {
                         <VRow>
                             <!-- Collect Tax -->
                             <VCol cols="12" md="6">
-                                <VLabel>{{ t('Collect Tax') }} *</VLabel>
+                                <VLabel>{{ t('Collect Tax') }} <span class="required-star"> *</span></VLabel>
                                 <VRadioGroup v-model="form.collect_tax" inline>
                                     <VRadio :label="t('Yes')" value="Yes" />
                                     <VRadio :label="t('No')" value="No" />
@@ -232,7 +232,7 @@ onMounted(() => {
                                 <VRow>
                                     <!-- Tax Type -->
                                     <VCol cols="12" md="4">
-                                        <VLabel>{{ t('Tax Type') }} *</VLabel>
+                                        <VLabel>{{ t('Tax Type') }}  <span class="required-star"> *</span></VLabel>
                                         <VRadioGroup v-model="form.tax_type" inline>
                                             <VRadio :label="t('Inclusive')" value="Inclusive" />
                                             <VRadio :label="t('Exclusive')" value="Exclusive" />
@@ -266,7 +266,7 @@ onMounted(() => {
 
                                     <!-- Is GST -->
                                     <VCol cols="12" md="6">
-                                        <VLabel>{{ t('My Tax Is GST') }} *</VLabel>
+                                        <VLabel>{{ t('My Tax Is GST') }} <span class="required-star"> *</span></VLabel>
                                         <VRadioGroup v-model="form.tax_is_gst" inline @change="handleTaxIsGstChange">
                                             <VRadio :label="t('Yes')" value="Yes" />
                                             <VRadio :label="t('No')" value="No" />
@@ -284,7 +284,7 @@ onMounted(() => {
                                 <VRow class="mt-4">
                                     <VCol cols="12">
                                         <div class="d-flex justify-space-between align-center mb-4">
-                                            <h3 class="text-h6">{{ t('Tax Rates') }} *</h3>
+                                            <h3 class="text-h6">{{ t('Tax Rates') }} <span class="required-star"> *</span></h3>
                                             <VBtn color="primary" @click="addTaxRate">
                                                 <VIcon start icon="tabler-plus" />
                                                 {{ t('Add Tax Rate') }}
