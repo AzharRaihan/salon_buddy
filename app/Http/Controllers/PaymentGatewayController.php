@@ -64,7 +64,9 @@ class PaymentGatewayController extends Controller
         return $this->successResponse([
             'order_id' => $razorpayOrder['id'],
             'amount'   => $razorpayOrder['amount'],
-            'currency' => $razorpayOrder['currency']
+            'currency' => $razorpayOrder['currency'],
+            'rk' => $this->companyPaymentConfig['razorpay_key'],
+            'rs' => $this->companyPaymentConfig['razorpay_secret']
         ], 'Razorpay order created');
     }
 
@@ -96,6 +98,7 @@ class PaymentGatewayController extends Controller
     public function createStripePaymentIntent(Request $request)
     {
         \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
+
         try {
             $paymentIntent = \Stripe\PaymentIntent::create([
                 'amount' => (int)$request->payment_amount, // in cents
@@ -105,10 +108,10 @@ class PaymentGatewayController extends Controller
                     'customer_name' => $request->customer_name ?? 'POS Customer'
                 ]
             ]);
-
             return $this->successResponse([
                 'client_secret' => $paymentIntent->client_secret,
-                'payment_intent_id' => $paymentIntent->id
+                'payment_intent_id' => $paymentIntent->id,
+                'window_open_id' => $this->companyPaymentConfig['stripe_key']
             ], 'Stripe payment intent created');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to create payment intent: ' . $e->getMessage());
@@ -128,7 +131,7 @@ class PaymentGatewayController extends Controller
                     'product_data' => [
                         'name' => 'POS Payment',
                     ],
-                    'unit_amount' => (int)$request->amount, // in cents
+                    'unit_amount' => (int)$request->payment_amount, // in cents
                 ],
                 'quantity' => 1,
             ]],

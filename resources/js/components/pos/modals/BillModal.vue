@@ -45,6 +45,7 @@
           <div v-if="order.total_paid"><span>{{ t('Paid') }}:</span> <span>{{ formatNumberInvoice(order.total_paid) }}</span></div>
           <div v-if="order.total_due > 0"><span>{{ t('Due') }}:</span> <span>{{ formatNumberInvoice(order.total_due) }}</span></div>
           <div v-if="order.payment_method_name"><span>{{ t('Payment') }}:</span> <span>{{ order.payment_method_name }}</span></div>
+          <div v-if="order.transaction_id"><span>{{ t('Transaction ID') }}:</span> <span class="transaction-id">{{ order.transaction_id }}</span></div>
         </div>
         <div class="devider"></div>
         <div class="center print-btns no-print">
@@ -182,6 +183,10 @@ const parseTaxBreakdown = (taxBreakdown) => {
             .items tbody td {
               vertical-align: sub !important;
             }
+            .transaction-id {
+              word-break: break-all;
+              padding-left: 5px;
+            }
           </style>
         </head>
         <body>
@@ -274,5 +279,9 @@ const parseTaxBreakdown = (taxBreakdown) => {
   }
   .items tbody td {
     vertical-align: sub !important;
+  }
+  .transaction-id {
+    word-break: break-all;
+    padding-left: 5px;
   }
 </style>

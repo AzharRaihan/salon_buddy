@@ -28,6 +28,7 @@ class Sale extends Model
         'promotion_discount',
         'customer_id',
         'payment_method_id',
+        'transaction_id',
         'branch_id',
         'user_id',
         'company_id',

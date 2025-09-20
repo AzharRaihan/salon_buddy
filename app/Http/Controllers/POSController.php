@@ -82,6 +82,7 @@ class POSController extends Controller
             'due_amount' => 'nullable|numeric',
             'branch_id' => 'required|exists:branches,id',
             'order_date' => 'nullable|date', // Add order_date validation
+            'transaction_id' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -154,6 +155,7 @@ class POSController extends Controller
                 'total_due' => $validatedData['due_amount'],
                 'customer_id' => $request->customer_id ?? null, // Use customer_id from request
                 'payment_method_id' => $validatedData['payment_method_id'] ?? null,
+                'transaction_id' => $validatedData['transaction_id'] ?? null,
                 'branch_id' => $validatedData['branch_id'],
                 'user_id' => $request->user_id ?? Auth::id(), // Use user_id from request or fallback
                 'company_id' => Auth::user()->company_id,

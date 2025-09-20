@@ -536,7 +536,14 @@ const handleConfirm = async () => {
                     success: true,
                 };
             }
+
             if (paymentResult.success) {
+
+                // Add transaction_id to orderData if available
+                if (paymentResult.transaction_id) {
+                    orderData.transaction_id = paymentResult.transaction_id
+                }
+
                 // Save order to sales and sale_details tables
                 const response = await $api('/save-order', {
                     method: 'POST',

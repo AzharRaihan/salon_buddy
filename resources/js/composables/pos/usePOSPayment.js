@@ -101,7 +101,7 @@ export const usePOSPayment = () => {
 
             return await new Promise((resolve, reject) => {
                 const options = {
-                    key: import.meta.env.VITE_RAZORPAY_KEY,
+                    key: orderResponse.data?.rk,
                     amount: amount * 100,
                     currency: 'INR',
                     name: 'Salon Buddy',
@@ -115,7 +115,7 @@ export const usePOSPayment = () => {
                             razorpay_signature: response.razorpay_signature
                         })
                         if (verifiedResult.success) {
-                            resolve({ success: true, message: 'Razorpay payment successful', data: verifiedResult.data });
+                            resolve({ success: true, message: 'Razorpay payment successful', data: verifiedResult.data, transaction_id: response.razorpay_payment_id });
                         } else {
                             reject({ success: false, message: 'Payment verification failed', error: verifiedResult.error });
                         }
@@ -156,7 +156,6 @@ export const usePOSPayment = () => {
 
     // Stripe Integration - Using embedded form instead of redirect
     const processStripePayment = async (amount, orderData, paymentMethodId) => {
-        console.log('processStripePayment', amount, orderData, paymentMethodId)
         try {
             // Create Stripe payment intent
             const intentResponse = await $api('/create-stripe-payment-intent', {
@@ -168,13 +167,11 @@ export const usePOSPayment = () => {
                 }
             })
 
-            console.log('intentResponse', intentResponse)
-
             if (!intentResponse.success) {
                 throw new Error(intentResponse.message || 'Failed to create Stripe payment intent')
             }
 
-            const stripe = window.Stripe(import.meta.env.VITE_STRIPE_KEY)
+            const stripe = window.Stripe(intentResponse.data?.window_open_id)
             
             // Use embedded payment form instead of redirect
             return await new Promise((resolve, reject) => {
@@ -292,7 +289,7 @@ export const usePOSPayment = () => {
                         });
                         
                         if (verifiedResult.success) {
-                            resolve({ success: true, message: 'Stripe payment successful', data: verifiedResult.data });
+                            resolve({ success: true, message: 'Stripe payment successful', data: verifiedResult.data, transaction_id: paymentIntent.id });
                         } else {
                             reject({ success: false, message: 'Payment verification failed', error: verifiedResult.error });
                         }
@@ -311,7 +308,13 @@ export const usePOSPayment = () => {
             });
 
         } catch (error) {
-            return { success: false, message: error.message }
+            let message = 'Something went wrong';
+            if (error.data?.message) {
+                message = error.data.message; // backend error (clean message)
+            } else if (error.message) {
+                message = error.message; // fallback
+            }
+            return { success: false, message };
         }
     }
 
@@ -347,7 +350,7 @@ export const usePOSPayment = () => {
                         checkPayPalPaymentStatus(orderData.order_id || 'temp_order_id')
                             .then(result => {
                                 if (result.success) {
-                                    resolve({ success: true, message: 'PayPal payment successful', data: result.data });
+                                    resolve({ success: true, message: 'PayPal payment successful', data: result.data, transaction_id: orderData.order_id });
                                 } else {
                                     reject({ success: false, message: 'Payment failed or cancelled' });
                                 }
@@ -360,7 +363,13 @@ export const usePOSPayment = () => {
             });
 
         } catch (error) {
-            return { success: false, message: error.message }
+            let message = 'Something went wrong';
+            if (error.data?.message) {
+                message = error.data.message; // backend error (clean message)
+            } else if (error.message) {
+                message = error.message; // fallback
+            }
+            return { success: false, message };
         }
     }
 
@@ -498,7 +507,13 @@ export const usePOSPayment = () => {
             });
 
         } catch (error) {
-            return { success: false, message: error.message }
+            let message = 'Something went wrong';
+            if (error.data?.message) {
+                message = error.data.message; // backend error (clean message)
+            } else if (error.message) {
+                message = error.message; // fallback
+            }
+            return { success: false, message };
         }
     }
 
@@ -511,7 +526,13 @@ export const usePOSPayment = () => {
             });
             return response;
         } catch (error) {
-            return { success: false, message: error.message };
+            let message = 'Something went wrong';
+            if (error.data?.message) {
+                message = error.data.message; // backend error (clean message)
+            } else if (error.message) {
+                message = error.message; // fallback
+            }
+            return { success: false, message };
         }
     }
 
@@ -560,7 +581,13 @@ export const usePOSPayment = () => {
             });
 
         } catch (error) {
-            return { success: false, message: error.message }
+            let message = 'Something went wrong';
+            if (error.data?.message) {
+                message = error.data.message; // backend error (clean message)
+            } else if (error.message) {
+                message = error.message; // fallback
+            }
+            return { success: false, message };
         }
     }
 
@@ -575,7 +602,13 @@ export const usePOSPayment = () => {
                 payment_status: 'completed'
             }
         } catch (error) {
-            return { success: false, message: error.message }
+            let message = 'Something went wrong';
+            if (error.data?.message) {
+                message = error.data.message; // backend error (clean message)
+            } else if (error.message) {
+                message = error.message; // fallback
+            }
+            return { success: false, message };
         }
     }
 
