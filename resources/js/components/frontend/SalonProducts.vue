@@ -41,6 +41,7 @@
             <div class="product-card h-100">
               <div class="product-image">
                 <img :src="product.photo_url" :alt="product.name" class="img-fluid">
+                <div class="light-shadow"></div>
               </div>
               <div class="product-content">
                 <h5 class="product-name">{{ product.name }}</h5>

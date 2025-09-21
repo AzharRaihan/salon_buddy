@@ -42,6 +42,7 @@
                       <div class="team-image-wrapper">
                         <div class="team-image">
                           <img :src="member.photo_url" class="img-fluid" :alt="member.name">
+                          <div class="light-shadow"></div>
                           <div class="view-more">
                             <BlurTypeBtn :link="`/frontend/team-details?member_id=${encryptId(member.id)}`" :text="t('Read More')" />
                           </div>
@@ -54,10 +55,10 @@
             </div>
             
             <!-- Navigation Arrows -->
-            <div class="team-nav-prev" v-if="headerShow && teamMembers.length > 0">
+            <div class="team-nav-prev common-swiper-button common-animation-button" v-if="headerShow && teamMembers.length > 0">
               <VIcon size="24" icon="tabler-arrow-narrow-left" />
             </div>
-            <div class="team-nav-next" v-if="headerShow && teamMembers.length > 0">
+            <div class="team-nav-next common-swiper-button common-animation-button" v-if="headerShow && teamMembers.length > 0">
               <VIcon size="24" icon="tabler-arrow-narrow-right" />
             </div>
           </div>

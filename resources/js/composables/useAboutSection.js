@@ -54,23 +54,23 @@ const stats = computed(() => [
       
       const [
         aboutUsRes,
-        servicesRes, 
-        staffRes,
-        customersRes,
-        doneServicesRes
+        // servicesRes, 
+        // staffRes,
+        // customersRes,
+        // doneServicesRes
       ] = await Promise.all([
         $api('/get-about-us'),
-        $api('/get-service-counter'),
-        $api('/get-staff-counter'), 
-        $api('/get-customer-counter'),
-        $api('/get-done-service-counter')
+        // $api('/get-service-counter'),
+        // $api('/get-staff-counter'), 
+        // $api('/get-customer-counter'),
+        // $api('/get-done-service-counter')
       ])
 
       aboutUs.value = aboutUsRes.data
-      countTotalServices.value = servicesRes.data
-      countTotalStaff.value = staffRes.data
-      countTotalCustomers.value = customersRes.data
-      countTotalDoneServices.value = doneServicesRes.data
+      countTotalServices.value = aboutUsRes.data?.total_services_count
+      countTotalStaff.value = aboutUsRes.data?.total_staff_count
+      countTotalCustomers.value = aboutUsRes.data?.total_customers_count
+      countTotalDoneServices.value = aboutUsRes.data?.total_done_services_count
 
     } catch (err) {
       error.value = err

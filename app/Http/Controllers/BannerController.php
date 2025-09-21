@@ -86,6 +86,10 @@ class BannerController extends Controller
                 'user_id' => Auth::id(),
                 'company_id' => Auth::user()->company_id,
             ]);
+
+            // Update other banner is disabled except the current banner
+            Banner::where('id', '!=', $banner->id)->update(['status' => 'Disabled']);
+
             DB::commit();
             return response()->json([
                 'status' => 'success',
@@ -150,6 +154,10 @@ class BannerController extends Controller
             $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['updated_at'] = now();
             $banner->update($validatedData);
+
+            // Update other banner is disabled except the current banner
+            Banner::where('id', '!=', $banner->id)->update(['status' => 'Disabled']);
+
             DB::commit();
             return $this->successResponse($banner, 'Banner updated successfully');
         } catch (\Exception $e) {

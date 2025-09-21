@@ -134,6 +134,10 @@ class WebsiteSettingController extends Controller
             'section_discover_item_2_description' => 'required|string|max:250',
             'section_discover_item_3_heading' => 'required|string|max:100',
             'section_discover_item_3_description' => 'required|string|max:250',
+            'total_services_count' => 'nullable|integer',
+            'total_staff_count' => 'nullable|integer',
+            'total_customers_count' => 'nullable|integer',
+            'total_done_services_count' => 'nullable|integer',
         ];
 
         // Image validation rules - required for new records, optional for updates
@@ -169,6 +173,10 @@ class WebsiteSettingController extends Controller
                 'section_1_heading' => $request->section_1_heading,
                 'section_1_description' => $request->section_1_description,
                 'section_1_btn_link' => $request->section_1_btn_link,
+                'total_services_count' => $request->total_services_count,
+                'total_staff_count' => $request->total_staff_count,
+                'total_customers_count' => $request->total_customers_count,
+                'total_done_services_count' => $request->total_done_services_count,
                 'section_1_experience' => $request->section_1_experience,
                 'section_play_title' => $request->section_play_title,
                 'section_play_link' => $request->section_play_link,

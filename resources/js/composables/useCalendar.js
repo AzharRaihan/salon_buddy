@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 export const useCalendar = () => {
   const currentDate = ref(new Date())
   const selectedDate = ref(null)
+  const isDateAvailable = ref({})
+  const isCheckingAvailability = ref(false)
+  
 
   // Calendar computed properties
   const calendarDays = computed(() => {
@@ -92,9 +95,53 @@ export const useCalendar = () => {
   })
 
   // Methods
-  const selectDate = (day) => {
-    if (!day.otherMonth && day.available) {
-      selectedDate.value = day.date
+  const selectDate = async (day) => {
+    try {
+      // Set loading state
+      isCheckingAvailability.value = true
+      
+      // Reset availability state
+      isDateAvailable.value = {
+        availability: null,
+        message: ''
+      }
+
+      // call api to check if the date is available
+      const response = await $api('/check-date-availability', {
+        method: 'POST',
+        body: {
+          date: day.date
+        }
+      })
+
+      if (!response.data?.availability) {
+        console.log('Date not available:', response.data?.availability)
+        isDateAvailable.value = {
+          availability: false,
+          message: response.message || 'Selected date is not available.'
+        }
+        return { success: false, message: response.message || 'Selected date is not available.' }
+      } else {
+        isDateAvailable.value = {
+          availability: true,
+          message: ''
+        }
+        
+        if (!day.otherMonth && day.available) {
+          selectedDate.value = day.date
+        }
+        return { success: true, message: '' }
+      }
+    } catch (error) {
+      console.error('Error checking date availability:', error)
+      isDateAvailable.value = {
+        availability: false,
+        message: 'Error checking date availability. Please try again.'
+      }
+      return { success: false, message: 'Error checking date availability. Please try again.' }
+    } finally {
+      // Clear loading state
+      isCheckingAvailability.value = false
     }
   }
 
@@ -119,6 +166,8 @@ export const useCalendar = () => {
     selectDate,
     previousMonth,
     nextMonth,
-    resetCalendar
+    resetCalendar,
+    isDateAvailable,
+    isCheckingAvailability
   }
 } 

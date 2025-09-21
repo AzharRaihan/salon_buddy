@@ -526,11 +526,21 @@ const handleConfirm = async () => {
             // Process payment first
             let paymentResult = {};
             if(selectedMethodId.value) {
-                paymentResult = await processPOSPayment(
-                    props.formData.method, 
+                try {
+                    paymentResult = await processPOSPayment(
+                        props.formData.method, 
                         totalWithTip.value, 
                         orderData
                     )
+                } catch (error) {
+                    // Handle redirect case (like Paystack)
+                    if (error.is_redirect) {
+                        // Don't save order yet, just show redirect message
+                        toast('Redirecting to payment gateway...', { type: 'info' })
+                        return // Exit without saving order
+                    }
+                    throw error
+                }
             } else {
                 paymentResult = {
                     success: true,

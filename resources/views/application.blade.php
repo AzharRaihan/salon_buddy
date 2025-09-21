@@ -5,9 +5,91 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="{{ favicon_url() }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ setting('site_title') ?? 'Salon Buddy' }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('loader.css') }}" />
     @vite(['resources/js/main.js'])
+    
+    <!-- Paystack Script -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    
+    <!-- Payment Success Handler -->
+    <script>
+        // Handle Paystack payment success
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user returned from Paystack
+            const paystackReference = localStorage.getItem('paystack_order_reference');
+            if (paystackReference) {
+                // Get the stored order data
+                const orderData = JSON.parse(localStorage.getItem('paystack_order_data') || '{}');
+                const paymentMethodId = localStorage.getItem('paystack_payment_method_id');
+                const amount = localStorage.getItem('paystack_amount');
+                
+                // Verify payment and complete order
+                verifyAndCompletePaystackOrder(paystackReference, orderData, paymentMethodId, amount);
+            }
+        });
+        
+        async function verifyAndCompletePaystackOrder(reference, orderData, paymentMethodId, amount) {
+            try {
+                // Verify payment with backend
+                const response = await fetch('/api/verify-paystack-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
+                    },
+                    body: JSON.stringify({ reference: reference })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Add transaction_id to orderData
+                    orderData.transaction_id = reference;
+                    
+                    // Save order to backend
+                    const saveResponse = await fetch('/api/save-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                            'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                    
+                    const saveResult = await saveResponse.json();
+                    
+                    if (saveResult.success) {
+                        // Show success message
+                        if (typeof toast !== 'undefined') {
+                            toast('Payment successful! Order completed.', { type: 'success' });
+                        }
+                        
+                        // Redirect to POS
+                        window.location.href = '/pos';
+                    } else {
+                        throw new Error(saveResult.message || 'Failed to save order');
+                    }
+                } else {
+                    throw new Error(result.message || 'Payment verification failed');
+                }
+            } catch (error) {
+                console.error('Paystack payment completion error:', error);
+                if (typeof toast !== 'undefined') {
+                    toast('Payment verification failed: ' + error.message, { type: 'error' });
+                }
+            } finally {
+                // Clear stored data
+                localStorage.removeItem('paystack_order_reference');
+                localStorage.removeItem('paystack_order_data');
+                localStorage.removeItem('paystack_payment_method_id');
+                localStorage.removeItem('paystack_amount');
+            }
+        }
+    </script>
 
     <style>
     /* CUSTOM CURSOR ELEMENTS */

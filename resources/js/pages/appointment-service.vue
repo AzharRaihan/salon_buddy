@@ -63,7 +63,9 @@ const {
   currentMonthYear,
   selectDate,
   previousMonth,
-  nextMonth
+  nextMonth,
+  isDateAvailable,
+  isCheckingAvailability
 } = useCalendar()
 
 // Cart animation composable
@@ -205,6 +207,21 @@ const removeFromCart = (serviceId) => {
   // Trigger remove animation and show toast notification
   if (serviceToRemove) {
     triggerRemoveAnimation(serviceToRemove)
+  }
+}
+
+
+// Handle date selection with proper async handling
+const handleDateSelection = async (day) => {
+  const result = await selectDate(day)
+  
+  if (!result.success) {
+    console.log('Date selection failed:', result.message)
+    toast(result.message, { type: 'error' })
+  } else {
+    console.log('Date selected successfully')
+    // Optional: Show success message
+    // toast('Date selected successfully', { type: 'success' })
   }
 }
 
@@ -599,16 +616,13 @@ definePage({
                             'selected': day.selected,
                             'other-month': day.otherMonth,
                             'available': day.available,
-                            'disabled': (!day.available || isDateLocked) && !day.selected
+                            'disabled': (!day.available || isDateLocked || isCheckingAvailability) && !day.selected,
+                            'loading': isCheckingAvailability
                           }"
-                          @click="day.available && !isDateLocked && selectDate(day)">
+                          @click="day.available && !isDateLocked && !isCheckingAvailability && handleDateSelection(day)">
                         {{ day.day }}
                       </div>
                     </div>
-                  </div>
-
-                  <div v-if="validationErrors.date" class="text-danger mt-2">
-                    {{ validationErrors.date }}
                   </div>
                 </div>
 
@@ -651,21 +665,7 @@ definePage({
                   @click="addToCart" 
                   :disabled="!selectedBranch || !selectedService || !selectedDate || !selectedTime || isAddingToCart" 
                   :text="t('Add To Cart')" 
-                  :class="{ 'btn-animation': isAnimating, 'btn-loading': isAddingToCart }"
                   />
-                </div>
-                <!-- Validation Errors -->
-                <div v-if="validationErrors.branch" class="text-danger mt-2">
-                  {{ validationErrors.branch }}
-                </div>
-                <div v-if="validationErrors.service" class="text-danger mt-2">
-                  {{ validationErrors.service }}
-                </div>
-                <div v-if="validationErrors.date && !selectedDate" class="text-danger mt-2">
-                  {{ validationErrors.date }}
-                </div>
-                <div v-if="validationErrors.time && !selectedTime" class="text-danger mt-2">
-                  {{ validationErrors.time }}
                 </div>
               </div>
             </div>
@@ -923,13 +923,13 @@ definePage({
 /* Calendar disabled state */
 .calendar-day.disabled {
   cursor: not-allowed;
-  background-color: #f8f9fa;
 }
 
 .calendar-day.disabled:hover {
   background-color: #f8f9fa;
   transform: none;
 }
+
 
 /* Time selection styles */
 .time-selection {

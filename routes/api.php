@@ -387,6 +387,9 @@ Route::controller(FrontendController::class)->group(function () {
     // Payment success API
     Route::get('payment-success', 'paymentSuccess');
 
+    // Date Check for Booking
+    Route::post('check-date-availability', 'checkDateAvailability');
+
 });
 
 // Package routes for sold packages and usage

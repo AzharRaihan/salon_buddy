@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use DateTime;
+use Carbon\Carbon;
 use App\Models\Faq;
 use App\Models\Item;
 use App\Models\Sale;
@@ -10,9 +11,11 @@ use App\Models\Branch;
 use App\Models\Booking;
 use App\Models\Company;
 use App\Models\Contact;
+use App\Models\Holiday;
 use App\Models\Ratting;
 use App\Models\Category;
 use App\Models\Customer;
+use App\Models\Vacation;
 use App\Models\Portfolio;
 use App\Models\ItemDetail;
 use App\Models\SaleDetail;
@@ -59,11 +62,22 @@ class FrontendController extends Controller
 
     public function getAllEmployeesFrontend()
     {
-        $listEmployees = User::where('company_id', 1)
+        // add limit 10
+        if(demoCheck()) {
+            $listEmployees = User::where('company_id', 1)
+            ->where('status', 'Active')
+            ->where('del_status', 'Live')
+            ->where('id', '!=', 1)
+            ->limit(4)
+            ->get();
+        } else {
+            $listEmployees = User::where('company_id', 1)
                     ->where('status', 'Active')
                     ->where('del_status', 'Live')
                     ->where('id', '!=', 1)
                     ->get();
+        }
+        
         return $this->successResponse($listEmployees, 'Employees fetched successfully');
     }
 
@@ -2123,5 +2137,32 @@ class FrontendController extends Controller
     public function paymentSuccess(Request $request)
     {
         return $this->successResponse(['success' => true], 'Payment successful');
+    }
+
+    public function checkDateAvailability(Request $request)
+    {
+        $date = $request->date;
+        $dayName = Carbon::parse($date)->format('l');
+
+        $date2 = Carbon::parse($date)->format('Y-m-d');
+    
+        // Change the query to get the day name
+        $holiday = Holiday::where('day', $dayName)
+        ->where('company_id', 1)
+        ->where('del_status', 'Live')
+        ->first();
+        if($holiday){
+            return $this->successResponse(['availability' => false], "Selected date is a holiday.");
+        }
+
+        $vacation = Vacation::where('start_date', '<=', $date2)
+        ->where('end_date', '>=', $date2)
+        ->where('company_id', 1)
+        ->where('del_status', 'Live')
+        ->first();
+        if($vacation){
+            return $this->successResponse(['availability' => false], "Selected date is a vacation.");
+        }
+        return $this->successResponse(['availability' => true], "Selected date is available.");
     }
 }

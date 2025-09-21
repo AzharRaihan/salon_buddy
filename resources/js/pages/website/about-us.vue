@@ -165,6 +165,59 @@ watch(() => form.processing, (processing) => {
                                 </VRow>
                             </FormSection>
 
+                            <!-- Counter Section -->
+                            <FormSection 
+                                :title="t('Counter Section')" 
+                                :subtitle="t('Counter section')"
+                            >
+                                <VRow>
+                                    <VCol cols="12" md="6">
+                                        <AppTextField
+                                            v-model="form.total_services_count"
+                                            :label="t('Total Services Count')"
+                                            :placeholder="t('Enter total services count')"
+                                            :error-messages="getFieldError('total_services_count')"
+                                            :disabled="loadings"
+                                            type="number"
+                                            :required="true"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <AppTextField
+                                            v-model="form.total_staff_count"
+                                            :label="t('Total Staff Count')"
+                                            :placeholder="t('Enter total staff count')"
+                                            :error-messages="getFieldError('total_staff_count')"
+                                            :disabled="loadings"
+                                            type="number"
+                                            :required="true"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <AppTextField
+                                            v-model="form.total_customers_count"
+                                            :label="t('Total Satisfied Clients Count')"
+                                            :placeholder="t('Enter total satisfied clients count')"
+                                            :error-messages="getFieldError('total_customers_count')"
+                                            :disabled="loadings"
+                                            type="number"
+                                            :required="true"
+                                        />
+                                    </VCol>
+                                    <VCol cols="12" md="6">
+                                        <AppTextField
+                                            v-model="form.total_done_services_count"
+                                            :label="t('Total Done Services Count')"
+                                            :placeholder="t('Enter total done services count')"
+                                            :error-messages="getFieldError('total_done_services_count')"
+                                            :disabled="loadings"
+                                            type="number"
+                                            :required="true"
+                                        />
+                                    </VCol>
+                                </VRow>
+                            </FormSection>
+
                             <!-- Section 2: Video/Play Section -->
                             <FormSection 
                                 :title="t('Video Section')" 

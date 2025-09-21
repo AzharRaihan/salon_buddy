@@ -61,6 +61,7 @@ definePage({
               <div class="col-md-6">
                 <div class="image-wrapper">
                   <img :src="aboutUs.section_1_image_url" alt="" class="img-fluid">
+                  <div class="light-shadow"></div>
                 </div>
                 <div class="discover-image-wrapper">
                   <div class="discover-image-overlay"></div>
@@ -75,11 +76,12 @@ definePage({
               <div class="col-md-6">
                 <div class="image-wrapper">
                   <img :src="aboutUs.section_1_image_2_url" alt="" class="img-fluid" >
+                  <div class="light-shadow"></div>
                 </div>
               </div>
             </div>
-            
           </div>
+          
           <div class="col-lg-5">
             <div class="discover-content">
               <h2>{{ aboutUs.section_1_heading }}</h2>
@@ -114,7 +116,7 @@ definePage({
     </section>
 
     <!-- About Section -->
-    <AboutSection :showAboutUs="false" :showUserCounter="true" classBind="" />
+    <AboutSection :aboutUs="aboutUs" :showAboutUs="false" :showUserCounter="true" classBind="" />
 
     <!-- About Video Section -->
     <div class="about-use-video-section">

@@ -6,15 +6,6 @@
     </div>
   </div>
 
-  <!-- Error State -->
-  <div v-else-if="error" class="alert alert-danger mx-3" role="alert">
-    <h4 class="alert-heading">Error Loading Content</h4>
-    <p>{{ error.message || 'Something went wrong while loading the about section.' }}</p>
-    <button @click="fetchAboutUs" class="btn btn-outline-danger">
-      <VIcon icon="tabler-refresh" class="me-1" />
-      Retry
-    </button>
-  </div>
 
   <!-- About Section -->
   <section 
@@ -27,11 +18,24 @@
         <div class="row align-items-center">
           <div class="col-lg-6">
             <div class="about-us-with-play">
-              <div class="play-video">
+              <!-- <div class="play-video">
                 <div class="play-inner">
                   <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-player-play"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z" /></svg>
                 </div>
+              </div> -->
+
+              <div class="about-use-video-play-btn about-use-video-play-btn-2">
+                <div class="play-container">
+                  <div class="circle circle1"></div>
+                  <div class="circle circle2"></div>
+                  <div class="circle circle3">
+                    <a :href="aboutUs.section_play_link" target="_blank">
+                      <i class="fas fa-play"></i>
+                    </a>
+                  </div>
+                </div>
               </div>
+
               <div class="about-image">
                 <img 
                   :src="aboutUs.section_discover_front_image_url" 
@@ -39,6 +43,7 @@
                   alt="About Us"
                   loading="lazy"
                 >
+                <div class="light-shadow"></div>
               </div>
             </div>
           </div>
@@ -90,7 +95,7 @@
               </div>
               <div class="start-el-wrap">
                 <h3 class="stat-number">
-                  <CountUp :end-val="stat.value" :duration="2.5" :options="{ suffix: '+' }" />
+                  <CountUp :end-val="stat.value" :duration="9.5" :options="{ suffix: '+' }" />
                 </h3>
                 <p class="stat-label">{{ stat.label }}</p>
               </div>
@@ -143,12 +148,13 @@ const props = defineProps({
 })
 
 // Composables
-const { aboutUs, stats, isLoading, error, fetchAboutUs } = useAboutSection()
+const { stats, aboutUs, isLoading, error, fetchAboutUs } = useAboutSection()
 
 // Lifecycle hooks
 onMounted(async () => {
   await fetchAboutUs()
 })
+
 </script>
 
 <style scoped>

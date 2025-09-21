@@ -95,3 +95,18 @@ index.vue POS
 
 
 
+
+ALTER TABLE `aboutus_pages` ADD `total_services_count` INT(11) NULL DEFAULT '25' AFTER `section_1_btn_link`, ADD `total_staff_count` INT(11) NULL DEFAULT '100' AFTER `total_services_count`, ADD `total_customers_count` INT(11) NULL DEFAULT '5000' AFTER `total_staff_count`, ADD `total_done_services_count` INT(11) NULL DEFAULT '10000' AFTER `total_customers_count`;
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -318,7 +318,7 @@ export const usePOSPayment = () => {
         }
     }
 
-    // PayPal Integration - Using popup window
+    // PayPal Integration - Using popup window with new Server SDK
     const processPayPalPayment = async (amount, orderData, paymentMethodId) => {
         try {
             // Create PayPal order
@@ -327,6 +327,7 @@ export const usePOSPayment = () => {
                 body: {
                     amount: amount,
                     currency: 'USD',
+                    order_id: orderData.order_id || 'pos_order_' + Date.now(),
                     ...orderData
                 }
             })
@@ -346,11 +347,16 @@ export const usePOSPayment = () => {
                 const checkClosed = setInterval(() => {
                     if (popup.closed) {
                         clearInterval(checkClosed);
-                        // Check payment status
-                        checkPayPalPaymentStatus(orderData.order_id || 'temp_order_id')
+                        // Check payment status using the order_id from the response
+                        checkPayPalPaymentStatus(orderResponse.data?.order_id)
                             .then(result => {
                                 if (result.success) {
-                                    resolve({ success: true, message: 'PayPal payment successful', data: result.data, transaction_id: orderData.order_id });
+                                    resolve({ 
+                                        success: true, 
+                                        message: 'PayPal payment successful', 
+                                        data: result.data, 
+                                        transaction_id: orderResponse.data?.order_id 
+                                    });
                                 } else {
                                     reject({ success: false, message: 'Payment failed or cancelled' });
                                 }
@@ -553,67 +559,32 @@ export const usePOSPayment = () => {
                 throw new Error(orderResponse.message || 'Failed to create Paystack order')
             }
 
-            // Use Paystack redirect method (more reliable)
-            if (orderResponse.data?.authorization_url) {
-                // Store the order reference for verification when user returns
-                localStorage.setItem('paystack_order_reference', orderResponse.data.reference);
-                localStorage.setItem('paystack_order_data', JSON.stringify(orderData));
-                localStorage.setItem('paystack_payment_method_id', paymentMethodId);
-                localStorage.setItem('paystack_amount', amount);
-                
-                // Redirect to Paystack payment page
-                window.location.href = orderResponse.data.authorization_url;
-                
-                // Return a promise that will be rejected to prevent order saving
-                // The order will only be saved after successful payment verification
-                return new Promise((resolve, reject) => {
-                    reject({ 
-                        success: false, 
-                        message: 'Redirecting to Paystack for payment...', 
-                        redirect_url: orderResponse.data.authorization_url,
-                        reference: orderResponse.data.reference,
-                        is_redirect: true
-                    });
-                });
-            } else {
-                // Fallback to inline method if authorization_url is not available
-                return await new Promise((resolve, reject) => {
-                    // Check if PaystackPop is available
-                    if (typeof window.PaystackPop === 'undefined') {
-                        reject({ success: false, message: 'Paystack library not loaded. Please include Paystack script.' });
-                        return;
-                    }
-
-                    const handler = window.PaystackPop.setup({
-                        key: orderResponse.data?.p_k || orderResponse.data?.public_key,
-                        email: orderData.customer_email || 'customer@example.com',
-                        amount: amount * 100, // Convert to kobo
-                        currency: 'NGN',
-                        ref: orderResponse.data?.reference,
-                        callback: async function(response) {
-                            try {
-                                // Verify payment
-                                const verifiedResult = await verifyPayment('paystack', {
-                                    reference: response.reference
-                                });
-                                
-                                if (verifiedResult.success) {
-                                    resolve({ success: true, message: 'Paystack payment successful', data: verifiedResult.data, transaction_id: response.reference });
-                                } else {
-                                    reject({ success: false, message: 'Payment verification failed', error: verifiedResult.error });
-                                }
-                            } catch (error) {
-                                reject({ success: false, message: 'Payment verification error: ' + error.message });
-                            }
-                        },
-                        onClose: function() {
-                            reject({ success: false, message: 'Payment cancelled by user' });
+            // Use Paystack inline payment
+            return await new Promise((resolve, reject) => {
+                const handler = window.PaystackPop.setup({
+                    key: orderResponse.data?.p_k,
+                    email: orderData.customer_email || 'customer@example.com',
+                    amount: amount * 100, // Convert to kobo
+                    currency: 'NGN',
+                    ref: orderResponse.data?.reference,
+                    callback: async function(response) {
+                        // Verify payment
+                        const verifiedResult = await verifyPayment('paystack', {
+                            reference: response.reference
+                        });
+                        
+                        if (verifiedResult.success) {
+                            resolve({ success: true, message: 'Paystack payment successful', data: verifiedResult.data });
+                        } else {
+                            reject({ success: false, message: 'Payment verification failed', error: verifiedResult.error });
                         }
-                    });
-                    
-                    handler.openIframe();
+                    },
+                    onClose: function() {
+                        reject({ success: false, message: 'Payment cancelled by user' });
+                    }
                 });
-            }
+                handler.openIframe();
+            });
 
         } catch (error) {
             let message = 'Something went wrong';

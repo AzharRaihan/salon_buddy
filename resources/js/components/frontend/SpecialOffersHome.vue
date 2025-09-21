@@ -67,10 +67,10 @@
           </div>
         </div>
         <!-- Navigation Buttons -->
-        <div class="swiper-button-next" v-if="specialOffers.length > 0">
+        <div class="swiper-button-next common-swiper-button common-animation-button" v-if="specialOffers.length > 0">
           <VIcon size="22" icon="tabler-arrow-narrow-right" />
         </div>
-        <div class="swiper-button-prev" v-if="specialOffers.length > 0">
+        <div class="swiper-button-prev common-swiper-button common-animation-button" v-if="specialOffers.length > 0">
           <VIcon size="22" icon="tabler-arrow-narrow-left" />
         </div>
       </div>

@@ -1,0 +1,7 @@
+If paypal payment failed due to below error
+message	"sizeof(): Argument #1 ($value) must be of type Countable|array, string given"
+then go to the 
+
+vendor/paypal/rest-api-sdk-php/lib/paypal/common/paypalmodel.php
+
+then replace the below code  

@@ -64,10 +64,10 @@
           </div>
           
           <!-- Navigation Buttons -->
-          <div class="swiper-button-next" v-if="featuredServices.length > 0">
+          <div class="swiper-button-next common-swiper-button common-animation-button" v-if="featuredServices.length > 0">
             <VIcon size="22" icon="tabler-arrow-narrow-right" />
           </div>
-          <div class="swiper-button-prev" v-if="featuredServices.length > 0">
+          <div class="swiper-button-prev common-swiper-button common-animation-button" v-if="featuredServices.length > 0">
             <VIcon size="22" icon="tabler-arrow-narrow-left" />
           </div>
 
@@ -229,4 +229,8 @@ function encryptId(id) {
 .fade-up-move {
   transition: transform 0.5s ease;
 }
+
+
+
+
 </style>

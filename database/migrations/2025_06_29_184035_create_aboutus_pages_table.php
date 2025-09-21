@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('section_1_heading', 100)->nullable();
             $table->text('section_1_description')->nullable();
             $table->string('section_1_btn_link', 250)->nullable();
+            $table->integer('total_services_count')->default(25);
+            $table->integer('total_staff_count')->default(100);
+            $table->integer('total_customers_count')->default(5000);
+            $table->integer('total_done_services_count')->default(10000);
             $table->string('section_1_image', 100)->nullable();
             $table->string('section_1_image_2', 100)->nullable();
             $table->string('section_1_experience', 100)->nullable();

@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use PayPal\Api\Payer;
 use Razorpay\Api\Api;
+use PayPal\Api\Amount;
 use App\Models\Setting;
+use PayPal\Api\Payment;
 use App\Traits\ApiResponse;
+use PayPal\Api\Transaction;
+use PayPal\Rest\ApiContext;
 use Illuminate\Http\Request;
+use PayPal\Api\RedirectUrls;
 use Illuminate\Support\Facades\Auth;
-use PayPal\PayPalAPI\PaypalServerSdkClientBuilder;
-use PayPal\PayPalAPI\ClientCredentialsAuthCredentialsBuilder;
-use PayPal\PayPalAPI\Environment;
-use PayPal\PayPalAPI\OrdersController;
-use PayPal\PayPalAPI\Models\OrderRequest;
-use PayPal\PayPalAPI\Models\PurchaseUnitRequest;
-use PayPal\PayPalAPI\Models\AmountWithBreakdown;
-use PayPal\PayPalAPI\Models\Money;
-use PayPal\PayPalAPI\Models\ApplicationContext;
+use PayPal\Auth\OAuthTokenCredential;
 
 class PaymentGatewayController extends Controller
 {
@@ -174,107 +172,78 @@ class PaymentGatewayController extends Controller
         }
     }
 
-    // PayPal - Using paypal-server-sdk
+    // PayPal
     public function createPaypalOrder(Request $request)
     {
+        // dd($request->all());
+        
         try {
-            // Initialize PayPal client using the new SDK
-            $client = PaypalServerSdkClientBuilder::init()
-                ->clientCredentialsAuthCredentials(
-                    ClientCredentialsAuthCredentialsBuilder::init(
-                        $this->companyPaymentConfig['paypal_client_id'],
-                        $this->companyPaymentConfig['paypal_client_secret']
-                    )
+            $apiContext = new ApiContext(
+                new OAuthTokenCredential(
+                    $this->companyPaymentConfig['paypal_client_id'],
+                    $this->companyPaymentConfig['paypal_client_secret']
                 )
-                ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
-                ->build();
+            );
+            $apiContext->setConfig(['mode' => $this->companyPaymentConfig['paypal_mode']]);
 
-            // Create orders controller
-            $ordersController = new OrdersController($client);
+            $payer = new Payer();
+            $payer->setPaymentMethod('paypal');
 
-            // Create order request
-            $orderRequest = new OrderRequest();
-            $orderRequest->setIntent('CAPTURE');
-
-            // Create purchase unit
-            $purchaseUnit = new PurchaseUnitRequest();
+            $amount = new Amount();
+            $amount->setTotal(number_format((float)$request->payment_amount, 2, '.', ''));
             
-            // Set amount
-            $amount = new AmountWithBreakdown();
-            $amount->setCurrencyCode($request->currency ?? 'USD');
-            $amount->setValue(number_format((float)$request->amount, 2, '.', ''));
-            
-            $purchaseUnit->setAmount($amount);
-            $purchaseUnit->setDescription('POS Payment - Order: ' . ($request->order_id ?? 'Unknown'));
+            $amount->setCurrency($request->currency ?? 'USD');
 
-            $orderRequest->setPurchaseUnits([$purchaseUnit]);
+            $transaction = new Transaction();
+            $transaction->setAmount($amount);
+            $transaction->setDescription('POS Payment - Order: ' . ($request->order_id ?? 'Unknown'));
 
-            // Set application context
-            $applicationContext = new ApplicationContext();
-            $applicationContext->setReturnUrl(url('/payment-success'));
-            $applicationContext->setCancelUrl(url('/payment-cancel'));
-            $applicationContext->setBrandName('Salon Buddy');
-            $applicationContext->setLandingPage('NO_PREFERENCE');
-            $applicationContext->setUserAction('PAY_NOW');
+            $redirectUrls = new RedirectUrls();
+            $redirectUrls->setReturnUrl(url('/payment-success'))
+                        ->setCancelUrl(url('/payment-cancel'));
 
-            $orderRequest->setApplicationContext($applicationContext);
+            $payment = new Payment();
+            $payment->setIntent('sale')
+                    ->setPayer($payer)
+                    ->setTransactions([$transaction])
+                    ->setRedirectUrls($redirectUrls);
 
-            // Create the order
-            $response = $ordersController->createOrder($orderRequest);
-            $order = $response->getResult();
-
-            // Get approval URL
-            $approvalUrl = '';
-            foreach ($order->getLinks() as $link) {
-                if ($link->getRel() === 'approve') {
-                    $approvalUrl = $link->getHref();
-                    break;
-                }
-            }
+            $payment->create($apiContext);
 
             return $this->successResponse([
-                'payment_url' => $approvalUrl,
-                'order_id' => $order->getId()
+                'payment_url' => $payment->getApprovalLink(),
+                'payment_id' => $payment->getId()
             ], 'PayPal order created');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to create PayPal order: ' . $e->getMessage());
         }
     }
 
-    // Verify  Paypal
     public function verifyPaypalPayment(Request $request)
     {
         try {
-            // Initialize PayPal client using the new SDK
-            $client = PaypalServerSdkClientBuilder::init()
-                ->clientCredentialsAuthCredentials(
-                    ClientCredentialsAuthCredentialsBuilder::init(
-                        $this->companyPaymentConfig['paypal_client_id'],
-                        $this->companyPaymentConfig['paypal_client_secret']
-                    )
+            $apiContext = new ApiContext(
+                new OAuthTokenCredential(
+                    $this->companyPaymentConfig['paypal_client_id'],
+                    $this->companyPaymentConfig['paypal_client_secret']
                 )
-                ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
-                ->build();
+            );
+            $apiContext->setConfig(['mode' => $this->companyPaymentConfig['paypal_mode']]);
 
-            // Create orders controller
-            $ordersController = new OrdersController($client);
+            $paymentId = $request->paymentId;
+            $payerId = $request->PayerID;
 
-            $orderId = $request->order_id;
-            $token = $request->token;
-
-            if (!$orderId) {
-                return $this->errorResponse('Missing order ID');
+            if (!$paymentId || !$payerId) {
+                return $this->errorResponse('Missing payment ID or payer ID');
             }
 
-            // Capture the order
-            $response = $ordersController->captureOrder($orderId);
-            $capturedOrder = $response->getResult();
+            $payment = Payment::get($paymentId, $apiContext);
+            $execution = new \PayPal\Api\PaymentExecution();
+            $execution->setPayerId($payerId);
 
-            if ($capturedOrder->getStatus() === 'COMPLETED') {
-                return $this->successResponse(['success' => true], 'Payment verified successfully');
-            } else {
-                return $this->errorResponse('Payment not completed');
-            }
+            $result = $payment->execute($execution, $apiContext);
+            // Mark order as paid in your DB here
+            return $this->successResponse(['success' => true], 'Payment verified successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Payment verification failed: ' . $e->getMessage());
         }
@@ -284,38 +253,21 @@ class PaymentGatewayController extends Controller
     public function checkPaypalPaymentStatus(Request $request)
     {
         try {
-            // Initialize PayPal client using the new SDK
-            $client = PaypalServerSdkClientBuilder::init()
-                ->clientCredentialsAuthCredentials(
-                    ClientCredentialsAuthCredentialsBuilder::init(
-                        $this->companyPaymentConfig['paypal_client_id'],
-                        $this->companyPaymentConfig['paypal_client_secret']
-                    )
-                )
-                ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
-                ->build();
-
-            // Create orders controller
-            $ordersController = new OrdersController($client);
-
             $orderId = $request->order_id;
             
-            if (!$orderId) {
-                return $this->errorResponse('Missing order ID');
-            }
-
-            // Get order details from PayPal
-            $response = $ordersController->getOrder($orderId);
-            $order = $response->getResult();
-
-            $status = $order->getStatus();
-            $isCompleted = $status === 'COMPLETED';
-
+            // You should implement your own logic to check payment status
+            // This is a placeholder - you need to store and check payment status in your database
+            // For now, we'll return a mock response
+            
+            // In a real implementation, you would:
+            // 1. Check your database for the order status
+            // 2. Optionally call PayPal API to verify payment
+            // 3. Return the actual status
+            
             return $this->successResponse([
-                'success' => $isCompleted,
-                'status' => strtolower($status),
-                'order_id' => $orderId,
-                'paypal_order_id' => $order->getId()
+                'success' => true,
+                'status' => 'completed',
+                'order_id' => $orderId
             ], 'Payment status checked');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to check payment status: ' . $e->getMessage());
@@ -335,9 +287,6 @@ class PaymentGatewayController extends Controller
                 'client_id' => $this->companyPaymentConfig['paypal_client_id'],
                 'secret' => $this->companyPaymentConfig['paypal_client_secret'] ? 'SET' : 'NOT SET',
                 'mode' => $this->companyPaymentConfig['paypal_mode'],
-                'environment' => $this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? 'SANDBOX' : 'PRODUCTION',
-                'sdk_version' => 'PayPal Server SDK v1.1',
-                'package' => 'paypal/paypal-server-sdk'
             ];
 
             return $this->successResponse($config, 'PayPal configuration debug info');
@@ -431,41 +380,30 @@ class PaymentGatewayController extends Controller
     // Paystack Integration
     public function createPaystackOrder(Request $request)
     {
-
-        $rawAmount = $request->amount;
-
-        // Remove commas, cast to float, then convert to kobo
-        $amount = (int) round(((float) str_replace(',', '', $rawAmount)) * 100);
-        // $amount = (int)$request->amount * 100; // Convert to kobo
+        $amount = $request->amount * 100; // Convert to kobo
         $email = $request->email ?? 'customer@example.com';
-
         $reference = 'PAYSTACK_' . uniqid();
 
         $url = 'https://api.paystack.co/transaction/initialize';
-
-
-
-
-        // 'Authorization: Bearer ' . 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-        // // 'Authorization: Bearer ' . config('services.paystack.secret'),
-        // 'Cache-Control: no-cache',
         $headers = [
-            'Authorization: Bearer sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-            'Content-Type: application/json',
+            'Authorization: Bearer ' . config('services.paystack.secret'),
             'Cache-Control: no-cache',
         ];
+
         $fields = [
             'email' => $email,
             'amount' => $amount,
             'reference' => $reference,
-            'callback_url' => url('/pos'),
+            'callback_url' => url('/payment-success'),
         ];
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
         $response = curl_exec($ch);
         curl_close($ch);
 
@@ -474,9 +412,7 @@ class PaymentGatewayController extends Controller
         if ($result['status']) {
             return $this->successResponse([
                 'authorization_url' => $result['data']['authorization_url'],
-                'reference' => $reference,
-                's_k' => 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-                'p_k' => 'pk_test_4ce4113cc2899b24a65cbe3ee16669dd161d7a91'	
+                'reference' => $reference
             ], 'Paystack order created');
         } else {
             return $this->errorResponse('Failed to create Paystack order');
@@ -489,9 +425,7 @@ class PaymentGatewayController extends Controller
 
         $url = 'https://api.paystack.co/transaction/verify/' . $reference;
         $headers = [
-            // 'Authorization: Bearer ' . config('services.paystack.secret'),
-            'Authorization: Bearer ' . 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-            'Content-Type: application/json',
+            'Authorization: Bearer ' . config('services.paystack.secret'),
             'Cache-Control: no-cache',
         ];
 
