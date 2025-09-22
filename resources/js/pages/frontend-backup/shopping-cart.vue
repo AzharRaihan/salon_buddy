@@ -50,7 +50,7 @@ onMounted(async () => {
                   <div v-if="!cartStore.hasItems" class="empty-cart-message text-center py-4">
                     <VIcon size="48" icon="tabler-shopping-cart-x" class="text-muted mb-3" />
                     <p class="text-muted">{{ t('Your cart is empty') }}</p>
-                    <RouterLink to="/frontend/product" class="btn btn-primary">{{ t('Continue Shopping') }}</RouterLink>
+                    <RouterLink to="/product" class="btn btn-primary">{{ t('Continue Shopping') }}</RouterLink>
                   </div>
 
                   
@@ -83,7 +83,7 @@ onMounted(async () => {
                 </div>
                 <div class="shopping-cart-footer" v-if="cartStore.hasItems">
                   <div class="d-flex justify-content-between">
-                    <RouterLink :to="`/frontend/product`" class="btn btn-default btn-rounded">{{ t('Return To Shop') }}</RouterLink>
+                    <RouterLink :to="`/product`" class="btn btn-default btn-rounded">{{ t('Return To Shop') }}</RouterLink>
                   </div>
                 </div>
               </div>
@@ -130,7 +130,7 @@ onMounted(async () => {
                     </li>
                   </ul>
                   <div class="d-flex justify-content-center order-summary-button-group" v-if="cartStore.selectedDeliveryAreaId">
-                    <BookingSamllBtn :link="'/frontend/checkout'" :text="t('Proceed to checkout')" />
+                    <BookingSamllBtn :link="'/customer/checkout'" :text="t('Proceed to checkout')" />
                   </div>
                   <div class="d-flex justify-content-center order-summary-button-group" v-else>
                     <BookingSamllBtn2 :disabled="true" :text="t('Proceed to checkout')" />

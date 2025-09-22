@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import SectionMoreBtn from '@/components/frontend/mini-components/SectionMoreBtn.vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import TeamSection from '@/components/frontend/TeamSection.vue'
 import { useI18n } from 'vue-i18n';

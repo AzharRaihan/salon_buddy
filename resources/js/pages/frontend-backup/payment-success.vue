@@ -84,7 +84,7 @@ onMounted(() => {
               <div class="success-actions">
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <RouterLink to="/frontend/product" class="btn btn-primary w-100 common-animation-button large-btn">
+                    <RouterLink to="/product" class="btn btn-primary w-100 common-animation-button large-btn">
                       Continue Shopping
                     </RouterLink>
                   </div>

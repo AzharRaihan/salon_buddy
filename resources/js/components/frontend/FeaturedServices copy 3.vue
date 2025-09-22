@@ -55,7 +55,7 @@
                       <span class="duration">{{ formatAmount(service.price) }}</span>
                     </p>
                     <div class="service-footer d-flex justify-content-between align-items-center">
-                      <BookNowBtn :link="`/frontend/appointment-service?service_id=${encryptId(service.id)}`" :text="t('Book Now')" />
+                      <BookNowBtn :link="`/appointment-service?service_id=${encryptId(service.id)}`" :text="t('Book Now')" />
                     </div>
                   </div>
                 </div>

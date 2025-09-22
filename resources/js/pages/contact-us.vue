@@ -1,6 +1,6 @@
 <script setup>
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
-import BookingSamllBtn from '../../components/frontend/mini-components/BookingSamllBtn.vue'
+import BookingSamllBtn from '@/components/frontend/mini-components/BookingSamllBtn.vue'
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 import { ref, onMounted, computed } from 'vue'
 import { toast } from 'vue3-toastify';

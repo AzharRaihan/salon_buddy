@@ -58,7 +58,7 @@
           
           <!-- View All Button (Homepage) -->
           <div v-if="showViewAllButton" class="col-12 text-center mt-5" v-show="visible" :style="{ transitionDelay: (8 * 0.4) + 's' }">
-            <BookingSamllBtn  :link="'/frontend/product'" :text="t('View All Products')" />
+            <BookingSamllBtn  :link="'/product'" :text="t('View All Products')" />
           </div>
 
           <!-- Pagination (Product Page) -->

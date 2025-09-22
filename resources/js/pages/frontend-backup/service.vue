@@ -149,7 +149,7 @@ function encryptId(id) {
               >
                 <ServiceCard 
                   :service="service"
-                  :booking-link="`/frontend/appointment-service?service_id=${encryptId(service.id)}`"
+                  :booking-link="`/appointment-service?service_id=${encryptId(service.id)}`"
                   @book-service="handleBookService"
                   @image-error="handleImageError"
                 />

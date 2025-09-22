@@ -12,8 +12,8 @@
               {{ banners.banner_description }}
             </p>
             <div class="d-flex gap-2">
-              <BookingSamllBtn :link="'frontend/appointment-service'" :text="'Book Appointment'" />
-              <RouterLink to="/frontend/contact-us" class="btn hero-contact-us common-animation-button">
+              <BookingSamllBtn :link="'/appointment-service'" :text="'Book Appointment'" />
+              <RouterLink to="/contact-us" class="btn hero-contact-us common-animation-button">
                 Contact Us
               </RouterLink>
             </div>

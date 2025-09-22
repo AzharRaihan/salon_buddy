@@ -10,7 +10,6 @@
     </div>
     
     <div class="container-fluid">
-
       <div class="special-offers-swiper-wrap">
         <div class="swiper special-offers-swiper">
           <div class="swiper-wrapper">

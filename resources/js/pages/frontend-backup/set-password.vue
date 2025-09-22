@@ -65,7 +65,7 @@ const submitPasswordReset = async () => {
       
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push('/frontend/login')
+        router.push('/login')
       }, 3000)
     } else {
       message.value = response.message || 'Failed to reset password.'
@@ -110,7 +110,7 @@ const extractParams = () => {
     messageType.value = 'error'
     
     setTimeout(() => {
-      router.push('/frontend/forgot-password')
+      router.push('/forgot-password')
     }, 3000)
   }
 }
@@ -258,7 +258,7 @@ definePage({
 
               <div class="text-center pt-3">
                 <p>Remember your password?
-                  <RouterLink to="/frontend/login">Login</RouterLink>
+                  <RouterLink to="/login">Login</RouterLink>
                 </p>
               </div>
             </div>

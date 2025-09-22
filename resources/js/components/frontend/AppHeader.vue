@@ -50,7 +50,6 @@
                 </template>
               </div>
             </div>
-            
           </div>
         </div>
       </div>
@@ -84,16 +83,16 @@
               <RouterLink class="nav-link" :class="{ active: $route.name === 'root' }" to="/">{{ t('Home') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-aboutus' }" to="/frontend/aboutus">{{ t('About Us') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-appointment-service' }" to="/frontend/appointment-service">{{ t('Booking') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-service' }" to="/frontend/service">{{ t('Service') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-service' }" to="/service">{{ t('Service') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-package' }" to="/frontend/package">{{ t('Package') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-package' }" to="/package">{{ t('Package') }}</RouterLink>
             </li>
           </ul>
 
@@ -108,17 +107,16 @@
             <div v-if="isCustomerAuthenticated" class="customer-auth-dropdown dropdown">
               <a class="dropdown-toggle customer-avatar-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img 
-                  :src="customerInfo.photo || '../../../@frontend/images/user_avater.png'" 
+                  :src="customerInfo.photo || defaultAvatar" 
                   class="customer-avatar" 
                   :alt="customerInfo.name"
-                  @error="$event.target.src = '../../../@frontend/images/user_avater.png'"
                 >
                 <span class="customer-name">{{ truncateWords(customerInfo.name, 2) }}</span>
                 <VIcon icon="tabler-chevron-down" size="16" />
               </a>
               <ul class="dropdown-menu customer-dropdown-menu">
                 <li>
-                  <RouterLink to="/frontend/dashboard" class="dropdown-item">
+                  <RouterLink to="/dashboard" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-dashboard" size="18" />
                       <span>{{ t('Dashboard') }}</span>
@@ -126,7 +124,7 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="/frontend/profile-setting" class="dropdown-item">
+                  <RouterLink to="/profile-setting" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-user-cog" size="18" />
                       <span>{{ t('Profile Setting') }}</span>
@@ -147,10 +145,10 @@
 
             <!-- Guest Authentication -->
             <div v-else class="guest-auth-buttons">
-              <RouterLink to="/frontend/login" class="btn btn-primary btn-login me-2 common-animation-button">
+              <RouterLink to="/customer-panel/login" class="btn btn-primary btn-login me-2 common-animation-button">
                 {{ t('Login') }}
               </RouterLink>
-              <RouterLink to="/frontend/register" class="btn btn-register common-animation-button">
+              <RouterLink to="/customer-panel/register" class="btn btn-register common-animation-button">
                 {{ t('Register') }}
               </RouterLink>
             </div>
@@ -225,7 +223,7 @@
           <span>{{ formatAmount(cartStore.total) }}</span>
         </li>
       </ul>
-      <BookPackageBtn link="/frontend/shopping-cart" :text="t('Checkout')" data-bs-dismiss="offcanvas" aria-label="Close" @click="enableScroll();" />
+      <BookPackageBtn link="/shopping-cart" :text="t('Checkout')" data-bs-dismiss="offcanvas" aria-label="Close" @click="enableScroll();" />
     </div>
   </div>
 
@@ -245,16 +243,16 @@
           <RouterLink class="nav-link" :class="{ active: $route.name === 'root' }" to="/">{{ t('Home') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-aboutus' }" to="/frontend/aboutus">{{ t('About Us') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-appointment-service' }" to="/frontend/appointment-service">{{ t('Booking') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-service' }" to="/frontend/service">{{ t('Service') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-service' }" to="/service">{{ t('Service') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-package' }" to="/frontend/package">{{ t('Package') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-package' }" to="/package">{{ t('Package') }}</RouterLink>
         </li>
         
       </ul>
@@ -270,11 +268,11 @@
             >
             <span class="customer-name-mobile">{{ customerInfo.name }}</span>
           </div>
-          <RouterLink to="/frontend/dashboard" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas">
+          <RouterLink to="/dashboard" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas">
             <VIcon icon="tabler-dashboard" size="18" />
             {{ t('Dashboard') }}
           </RouterLink>
-          <RouterLink to="/frontend/profile-setting" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas">
+          <RouterLink to="/profile-setting" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas">
             <VIcon icon="tabler-user-cog" size="18" />
             {{ t('Profile Setting') }}
           </RouterLink>
@@ -284,10 +282,10 @@
           </button>
         </div>
         <div v-else class="guest-mobile-auth">
-          <RouterLink to="/frontend/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
+          <RouterLink to="/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
             {{ t('Login') }}
           </RouterLink>
-          <RouterLink to="/frontend/register" class="btn btn-register w-100">
+          <RouterLink to="/register" class="btn btn-register w-100">
             {{ t('Register') }}
           </RouterLink>
         </div>
@@ -322,6 +320,9 @@ import BookPackageBtn from './mini-components/BookPackageBtn.vue'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 import { useI18n } from 'vue-i18n';
+// import default avatar
+import defaultAvatar from '../../../../public/assets/images/default-images/avatar.png'
+
 const { locale, t } = useI18n({ useScope: 'global' })
 
 const websiteStore = useWebsiteSettingsStore()
@@ -353,7 +354,7 @@ const handleLogout = async () => {
       autoClose: 2000
     })
     setTimeout(() => {
-      router.push('/frontend/login')
+      router.push('/customer-panel/login')
     }, 1000)
   } catch (error) {
     toast('Error during logout', {

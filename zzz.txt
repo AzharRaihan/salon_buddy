@@ -105,7 +105,7 @@ ALTER TABLE `aboutus_pages` ADD `total_services_count` INT(11) NULL DEFAULT '25'
 
 
 
-
+ALTER TABLE `customers` CHANGE `photo` `photo` VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
 
 
 

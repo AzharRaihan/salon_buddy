@@ -325,6 +325,7 @@ declare global {
   const useObjectUrl: typeof import('@vueuse/core')['useObjectUrl']
   const useOffsetPagination: typeof import('@vueuse/core')['useOffsetPagination']
   const useOnline: typeof import('@vueuse/core')['useOnline']
+  const usePackageData: typeof import('./resources/js/composables/usePackageData.js')['usePackageData']
   const usePackageList: typeof import('./resources/js/composables/usePackageList.js')['usePackageList']
   const usePackageOrders: typeof import('./resources/js/composables/usePackageOrders.js')['usePackageOrders']
   const usePackages: typeof import('./resources/js/composables/usePackages.js')['usePackages']

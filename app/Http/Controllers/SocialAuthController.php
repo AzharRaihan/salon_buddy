@@ -24,7 +24,16 @@ class SocialAuthController extends Controller
                 session(['social_return_url' => $request->get('return_url')]);
             }
             
-            return Socialite::driver('google')->redirect();
+            // Clear any existing OAuth state to force fresh authentication
+            session()->forget('oauth_state');
+            
+            // Force Google to always show account selection screen
+            return Socialite::driver('google')
+                ->with([
+                    'prompt' => 'select_account',
+                    'access_type' => 'offline'
+                ])
+                ->redirect();
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to redirect to Google: ' . $e->getMessage());
         }
@@ -37,13 +46,22 @@ class SocialAuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
+            
+            // Log for debugging
+            \Log::info('Google OAuth callback received', [
+                'user_email' => $googleUser->getEmail(),
+                'user_name' => $googleUser->getName(),
+                'user_id' => $googleUser->getId(),
+                'avatar_url' => $googleUser->getAvatar(),
+                'avatar_url_length' => strlen($googleUser->getAvatar())
+            ]);
 
             $customer = $this->findOrCreateCustomer($googleUser, 'google');
 
             $token = $customer->createToken('customer_auth_token')->plainTextToken;
 
             // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/frontend/login');
+            $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
@@ -59,11 +77,17 @@ class SocialAuthController extends Controller
             return redirect($frontendUrl . $returnUrl . '?token=' . $token . '&status=success&customer=' . $customerEncoded);
 
         } catch (\Exception $e) {
-            $returnUrl = session('social_return_url', '/frontend/login');
+            // Log the error for debugging
+            \Log::error('Google OAuth callback error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url');
             
             $frontendUrl = config('app.frontend_url', config('app.url'));
-            return redirect($frontendUrl . $returnUrl . '?status=error&message=' . urlencode('Google authentication failed'));
+            return redirect($frontendUrl . $returnUrl . '?status=error&message=' . urlencode('Google authentication failed: ' . $e->getMessage()));
         }
     }
 
@@ -78,7 +102,10 @@ class SocialAuthController extends Controller
                 session(['social_return_url' => $request->get('return_url')]);
             }
             
-            return Socialite::driver('facebook')->redirect();
+            // Force Facebook to always show account selection screen
+            return Socialite::driver('facebook')
+                ->with(['auth_type' => 'reauthenticate'])
+                ->redirect();
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to redirect to Facebook: ' . $e->getMessage());
         }
@@ -97,7 +124,7 @@ class SocialAuthController extends Controller
             $token = $customer->createToken('customer_auth_token')->plainTextToken;
 
             // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/frontend/login');
+            $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
@@ -113,7 +140,7 @@ class SocialAuthController extends Controller
             return redirect($frontendUrl . $returnUrl . '?token=' . $token . '&status=success&customer=' . $customerEncoded);
 
         } catch (\Exception $e) {
-            $returnUrl = session('social_return_url', '/frontend/login');
+            $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url');
             
             $frontendUrl = config('app.frontend_url', config('app.url'));
@@ -132,7 +159,10 @@ class SocialAuthController extends Controller
                 session(['social_return_url' => $request->get('return_url')]);
             }
             
-            return Socialite::driver('github')->redirect();
+            // Force GitHub to always show account selection screen
+            return Socialite::driver('github')
+                ->with(['prompt' => 'select_account'])
+                ->redirect();
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to redirect to GitHub: ' . $e->getMessage());
         }
@@ -151,7 +181,7 @@ class SocialAuthController extends Controller
             $token = $customer->createToken('customer_auth_token')->plainTextToken;
 
             // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/frontend/login');
+            $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
@@ -167,7 +197,7 @@ class SocialAuthController extends Controller
             return redirect($frontendUrl . $returnUrl . '?token=' . $token . '&status=success&customer=' . $customerEncoded);
 
         } catch (\Exception $e) {
-            $returnUrl = session('social_return_url', '/frontend/login');
+            $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url');
             
             $frontendUrl = config('app.frontend_url', config('app.url'));
@@ -185,26 +215,72 @@ class SocialAuthController extends Controller
                           ->where('del_status', 'Live')
                           ->first();
 
+        // Handle photo URL - use a default avatar if URL is too long or invalid
+        $photoUrl = $socialUser->getAvatar();
+        if (empty($photoUrl) || strlen($photoUrl) > 500) {
+            $photoUrl = null; // Use default avatar from frontend
+        }
+
         if ($customer) {
             // Update social provider info if customer exists
-            $customer->update([
-                'photo' => $socialUser->getAvatar(),
-                'email_verified_at' => now(), // Social users are considered verified
-            ]);
+            try {
+                $customer->update([
+                    'photo' => $photoUrl,
+                    'email_verified_at' => now(), // Social users are considered verified
+                ]);
+            } catch (\Exception $e) {
+                // If photo URL is too long, update without photo
+                if (strpos($e->getMessage(), 'Data too long for column') !== false) {
+                    \Log::warning('Photo URL too long for existing customer, updating without photo', [
+                        'customer_id' => $customer->id,
+                        'email' => $customer->email,
+                        'photo_url_length' => strlen($photoUrl)
+                    ]);
+                    
+                    $customer->update([
+                        'photo' => null,
+                        'email_verified_at' => now(),
+                    ]);
+                } else {
+                    throw $e; // Re-throw if it's a different error
+                }
+            }
             return $customer;
         }
 
         // Create new customer if not found
-        $customer = Customer::create([
-            'name' => $socialUser->getName() ?: $socialUser->getEmail(),
-            'email' => $socialUser->getEmail(),
-            'password' => Hash::make(Str::random(12)), // Random password for social users
-            // $provider . '_id' => $socialUser->getId(),
-            'photo' => $socialUser->getAvatar(),
-            'email_verified_at' => now(), // Social users are considered verified
-            'company_id' => 1, // Default company
-            'del_status' => 'Live'
-        ]);
+        try {
+            $customer = Customer::create([
+                'name' => $socialUser->getName() ?: $socialUser->getEmail(),
+                'email' => $socialUser->getEmail(),
+                'password' => Hash::make(Str::random(12)), // Random password for social users
+                // $provider . '_id' => $socialUser->getId(),
+                'photo' => $photoUrl,
+                'email_verified_at' => now(), // Social users are considered verified
+                'company_id' => 1, // Default company
+                'del_status' => 'Live'
+            ]);
+        } catch (\Exception $e) {
+            // If photo URL is still too long, create customer without photo
+            if (strpos($e->getMessage(), 'Data too long for column') !== false) {
+                \Log::warning('Photo URL too long, creating customer without photo', [
+                    'email' => $socialUser->getEmail(),
+                    'photo_url_length' => strlen($photoUrl)
+                ]);
+                
+                $customer = Customer::create([
+                    'name' => $socialUser->getName() ?: $socialUser->getEmail(),
+                    'email' => $socialUser->getEmail(),
+                    'password' => Hash::make(Str::random(12)),
+                    'photo' => null, // No photo if URL is too long
+                    'email_verified_at' => now(),
+                    'company_id' => 1,
+                    'del_status' => 'Live'
+                ]);
+            } else {
+                throw $e; // Re-throw if it's a different error
+            }
+        }
 
         return $customer;
     }

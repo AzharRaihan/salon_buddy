@@ -148,6 +148,10 @@ class CustomerAuthController extends Controller
         // Revoke all tokens for the customer
         $customer->tokens()->delete();
         
+        // Clear OAuth state to force fresh authentication on next login
+        session()->forget('oauth_state');
+        session()->forget('social_return_url');
+        
         return $this->successResponse(null, 'Logged out successfully');
     }
 

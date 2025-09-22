@@ -19,7 +19,7 @@ class Purchase extends Model
 
     public function getAttachmentUrlAttribute(): string
     {
-        if ($this->attachment) {
+        if ($this->attachment && file_exists(public_path('assets/images/' . $this->attachment))) {
             return asset('assets/images/' . $this->attachment);
         }
         return asset('assets/images/system-config/default-picture.png');

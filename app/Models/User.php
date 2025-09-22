@@ -69,7 +69,7 @@ class User extends Authenticatable
 
     public function getPhotoUrlAttribute(): string
     {
-        if ($this->photo) {
+        if ($this->photo && file_exists(public_path('assets/images/' . $this->photo))) {
             return asset('assets/images/' . $this->photo);
         }
 

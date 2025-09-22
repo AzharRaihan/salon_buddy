@@ -8,7 +8,7 @@
           <div class="special-inner">
             <p>{{ websiteStore.getTestimonialData.title }}</p>
             <h2>{{ websiteStore.getTestimonialData.heading }}</h2>
-            <BookingSamllBtn :link="'/frontend/appointment-service'" :text="t('Book Appointment')" />
+            <BookingSamllBtn :link="'/appointment-service'" :text="t('Book Appointment')" />
           </div>
         </div>
         <div class="footer-row">
@@ -39,9 +39,9 @@
               <div class="footer-widget">
                 <h5 class="widget-title">{{ t('Pages') }}</h5>
                 <ul class="footer-links">
-                  <li><RouterLink to="/frontend/aboutus">{{ t('About Us') }}</RouterLink></li>
-                  <li><RouterLink to="/frontend/gallery">{{ t('Gallery') }}</RouterLink></li>
-                  <li><RouterLink to="/frontend/team-members">{{ t('Team Membar') }}</RouterLink></li>
+                  <li><RouterLink to="/aboutus">{{ t('About Us') }}</RouterLink></li>
+                  <li><RouterLink to="/gallery">{{ t('Gallery') }}</RouterLink></li>
+                  <li><RouterLink to="/team-members">{{ t('Team Membar') }}</RouterLink></li>
                 </ul>
               </div>
             </div>
@@ -51,8 +51,8 @@
               <div class="footer-widget">
                 <h5 class="widget-title">{{ t('Links') }}</h5>
                 <ul class="footer-links">
-                  <li><RouterLink to="/frontend/contact-us">{{ t('Contact Us') }}</RouterLink></li>
-                  <li><RouterLink to="/frontend/faq">{{ t('Help & FAQ') }}</RouterLink></li>
+                  <li><RouterLink to="/contact-us">{{ t('Contact Us') }}</RouterLink></li>
+                  <li><RouterLink to="/faq">{{ t('Help & FAQ') }}</RouterLink></li>
                 </ul>
               </div>
             </div>

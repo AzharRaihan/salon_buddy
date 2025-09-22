@@ -1,7 +1,7 @@
 <script setup>
 import HeroSection from '@/components/frontend/HeroSection.vue'
 import FeaturedServices from '@/components/frontend/FeaturedServices.vue'
-import SpecialOffersHome from '@/components/frontend/SpecialOffersHome.vue'
+import SpecialOffers from '@/components/frontend/SpecialOffers.vue'
 import SalonProducts from '@/components/frontend/SalonProducts.vue'
 import AboutSection from '@/components/frontend/AboutSection.vue'
 import WorkingProcess from '@/components/frontend/WorkingProcess.vue'
@@ -30,12 +30,19 @@ definePage({
     <FeaturedServices />
     
     <!-- Special Offers -->
-    <SpecialOffersHome 
+    <SpecialOffers 
+      mode="homepage" 
+      sectionClass="special-offers default-section-padding-b"
+      :showHeader="true"
+      :itemLimit="9"
+      buttonText="Buy Package"
+    />
+    <!-- <SpecialOffersHome 
       mode="homepage" 
       :itemLimit="10" 
       sectionClass="special-offers default-section-padding-b"
-      buttonText="Buy This Package"
-    />
+      buttonText="Buy Package"
+    /> -->
 
     <!-- Animation Div -->
     <!-- <AnimationDiv /> -->

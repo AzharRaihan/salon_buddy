@@ -57,7 +57,7 @@ const handleLoginModalClose = () => {
   // This prevents redirect on successful login
   setTimeout(() => {
     if (!isAuthenticated.value) {
-      router.push('/frontend/shopping-cart')
+      router.push('/shopping-cart')
     }
   }, 100)
 }

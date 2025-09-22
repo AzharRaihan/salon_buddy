@@ -140,7 +140,7 @@ const processPayment = async () => {
         
         // Redirect to success page with order info
         router.push({
-          path: '/frontend/payment-success',
+          path: '/payment-success',
           query: { 
             order: response.data.reference_no,
             amount: response.data.total_amount 
@@ -171,7 +171,7 @@ const handleLoginModalClose = () => {
   showLoginModal.value = false
   // Redirect back to checkout if not authenticated
   if (!isAuthenticated.value) {
-    router.push('/frontend/checkout')
+    router.push('/customer/checkout')
   }
 }
 
@@ -290,7 +290,7 @@ const paymentAmount = computed(() => {
               </div>
               <div class="d-flex justify-content-center order-summary-button-group">
                 <div class="button-group">
-                  <RouterLink to="/frontend/checkout" class="btn btn-previous">
+                  <RouterLink to="/customer/checkout" class="btn btn-previous">
                     <span><VIcon size="22" icon="tabler-arrow-left" /></span>
                     Previous
                   </RouterLink>

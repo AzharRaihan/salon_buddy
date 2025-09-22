@@ -81,7 +81,7 @@
         <!-- View All Button (Homepage) -->
         <div v-if="showViewAllButton" class="col-12 text-center mt-5">
           <div xyz="fade up-2 duration-8 delay-4">
-            <BookingSamllBtn :link="'/frontend/product'" :text="t('View All Products')" />
+            <BookingSamllBtn :link="'/product'" :text="t('View All Products')" />
           </div>
         </div>
 

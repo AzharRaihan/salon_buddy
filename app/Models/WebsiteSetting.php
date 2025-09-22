@@ -54,7 +54,7 @@ class WebsiteSetting extends Model
 
     public function getHeaderLogoUrlAttribute(): string
     {
-        if ($this->header_logo) {
+        if ($this->header_logo && file_exists(public_path('assets/images/' . $this->header_logo))) {
             return asset('assets/images/' . $this->header_logo);
         }
 
@@ -63,7 +63,7 @@ class WebsiteSetting extends Model
 
     public function getFooterLogoUrlAttribute(): string 
     {
-        if ($this->footer_logo) {
+        if ($this->footer_logo && file_exists(public_path('assets/images/' . $this->footer_logo))) {
             return asset('assets/images/' . $this->footer_logo);
         }
 
@@ -72,7 +72,7 @@ class WebsiteSetting extends Model
 
     public function getFavIconUrlAttribute(): string
     {
-        if ($this->fav_icon) {
+        if ($this->fav_icon && file_exists(public_path('assets/images/' . $this->fav_icon))) {
             return asset('assets/images/' . $this->fav_icon);
         }
         return asset('assets/images/default-images/favicon.ico');
@@ -80,7 +80,7 @@ class WebsiteSetting extends Model
 
     public function getLoginImageUrlAttribute(): string
     {
-        if ($this->login_image) {
+        if ($this->login_image && file_exists(public_path('assets/images/' . $this->login_image))) {
             return asset('assets/images/' . $this->login_image);
         }
         return asset('assets/images/system-config/login-card.png');
@@ -90,14 +90,14 @@ class WebsiteSetting extends Model
 
     public function getTestimonialImageUrlAttribute(): string  
     {
-        if ($this->testimonial_image) {
+        if ($this->testimonial_image && file_exists(public_path('assets/images/' . $this->testimonial_image))) {
             return asset('assets/images/' . $this->testimonial_image);
         }
         return asset('assets/images/default-images/footer_bg.png');
     }
     public function getCommonBannerImageUrlAttribute(): string  
     {
-        if ($this->common_banner_image) {
+        if ($this->common_banner_image && file_exists(public_path('assets/images/' . $this->common_banner_image))) {
             return asset('assets/images/' . $this->common_banner_image);
         }
         return asset('assets/images/default-images/common_banner.png');

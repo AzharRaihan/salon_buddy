@@ -1,8 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import SectionMoreBtn from '@/components/frontend/mini-components/SectionMoreBtn.vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
-import BookAppointmentBtn from '../../components/frontend/mini-components/BookAppointmentBtn.vue'
+import BookAppointmentBtn from '@/components/frontend/mini-components/BookAppointmentBtn.vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
@@ -111,7 +110,7 @@ onMounted(async () => {
           <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3">
             <div class="team-details-card">
               <div class="image-circle">
-                <img src="../../@frontend/images/team-details/total-service.png" alt="Team Details Card">
+                <img src="../../js/@frontend/images/team-details/total-service.png" alt="Team Details Card">
               </div>
               <div class="team-details-card-content">
                 <h3>{{ memberDetails.service_done || 0 }}</h3>
@@ -122,7 +121,7 @@ onMounted(async () => {
           <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3">
             <div class="team-details-card">
               <div class="image-circle">
-                <img src="../../@frontend/images/team-details/happy-client.png" alt="Team Details Card">
+                <img src="../../js/@frontend/images/team-details/happy-client.png" alt="Team Details Card">
               </div>
               <div class="team-details-card-content">
                 <h3>{{ memberDetails.happy_customers || 0 }} +</h3>
@@ -134,7 +133,7 @@ onMounted(async () => {
           <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3">
             <div class="team-details-card">
               <div class="image-circle">
-                <img src="../../@frontend/images/team-details/years.png" alt="Team Details Card">
+                <img src="../../js/@frontend/images/team-details/years.png" alt="Team Details Card">
               </div>
               <div class="team-details-card-content">
                 <h3>{{ memberDetails.experience || 0 }}</h3>
@@ -147,7 +146,7 @@ onMounted(async () => {
           <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-3">
             <div class="team-details-card">
               <div class="image-circle">
-                <img src="../../@frontend/images/team-details//ratting.png" alt="Team Details Card">
+                <img src="../../js/@frontend/images/team-details/ratting.png" alt="Team Details Card">
               </div>
               <div class="team-details-card-content">
                 <h3>{{ Number(memberDetails.customer_rattings || 0).toFixed(1) }}</h3>
@@ -165,7 +164,7 @@ onMounted(async () => {
                 <div class="customer-comment-box-header">
                   <div>
                     <div class="customer-comment-box-header-left-image">
-                      <img src="../../@frontend/images/rectangle-avater.png" alt="Customer Comment Image">
+                      <img src="../../js/@frontend/images/rectangle-avater.png" alt="Customer Comment Image">
                     </div>
 
                   </div>

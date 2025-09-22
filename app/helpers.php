@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
  */
 function demoCheck()
 {
-    return true;
+    return false;
 }
 
 /**

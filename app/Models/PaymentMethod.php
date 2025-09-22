@@ -19,7 +19,7 @@ class PaymentMethod extends Model
 
     public function getPaymentMethodIconUrlAttribute(): string
     {
-        if ($this->payment_method_icon) {
+        if ($this->payment_method_icon && file_exists(public_path('assets/images/' . $this->payment_method_icon))) {
             return asset('assets/images/' . $this->payment_method_icon);
         }
         return asset('assets/images/system-config/default-picture.png');

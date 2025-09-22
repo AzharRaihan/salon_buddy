@@ -142,7 +142,7 @@ definePage({
 
               <div class="text-center pt-3">
                 <p>Remember your password?
-                  <RouterLink to="/frontend/login">Login</RouterLink>
+                  <RouterLink to="/login">Login</RouterLink>
                 </p>
               </div>
             </div>

@@ -75,7 +75,7 @@ router.replace = function (location, ...args) {
 // Updated navigation guard
 router.beforeEach((to, from, next) => {
   // Admin/Staff Authentication cookies
-  const accessToken = useCookie("accessToken").value;
+  const accessToken = useCookie("accessToken").value ?? null;
   const userData = useCookie("userData").value;
   const branch_info = useCookie("branch_info").value || 0;
   
@@ -83,6 +83,7 @@ router.beforeEach((to, from, next) => {
   const customerAccessToken = useCookie("customerAccessToken").value;
   const customerData = useCookie("customerData").value;
 
+  
 
   // 🔑 Step A: Decrypt query params if they have `id`
   if (to.query?.id) {
@@ -101,9 +102,9 @@ router.beforeEach((to, from, next) => {
   // Define public frontend pages that don't require authentication
   const publicFrontendPages = [
     "/", 
-    "/customer-panel/login", 
-    "/customer-panel/register", 
-    "/customer-panel/forgot-password",
+    "/login", 
+    "/register", 
+    "/forgot-password",
     "/aboutus",
     "/contact-us",
     "/service",
@@ -111,7 +112,7 @@ router.beforeEach((to, from, next) => {
     "/product",
     "/package",
     "/team-members",
-    "/team-details/:id",
+    "/team-member-details/:id",
     "/faq",
     "/shopping-cart",
     "/appointment-service",
@@ -122,21 +123,20 @@ router.beforeEach((to, from, next) => {
 
   // Define customer-only pages that require customer authentication
   const customerOnlyPages = [
-    "/customer-panel/dashboard",
-    "/customer-panel/service-order",
-    "/customer-panel/product-order", 
-    "/customer-panel/transaction-history",
-    "/customer-panel/package-order",
-    "/customer-panel/package-details",
-    "/customer-panel/profile-setting"
+    "/customer/dashboard",
+    "/customer/service-order",
+    "/customer/product-order", 
+    "/customer/transaction-history",
+    "/customer/package-order",
+    "/customer/package-details",
+    "/customer/profile-setting"
   ];
 
   // Define backend public pages
   const publicBackendPages = ["/login", "/register", "/forgot-password"];
   
-  // Check if current route is a public frontend page
-  const isPublicFrontendPage = publicFrontendPages.includes(to.path) || 
-                               (to.meta?.public === true);
+  // Check if current route is a public page 
+  const isPublicFrontendPage = publicFrontendPages.includes(to.path);
 
   // Check if current route is a customer-only page
   const isCustomerOnlyPage = customerOnlyPages.includes(to.path);
@@ -144,33 +144,6 @@ router.beforeEach((to, from, next) => {
   // Check if current route is a public backend page
   const isPublicBackendPage = publicBackendPages.includes(to.path) || 
                               to.path.startsWith("/forgot-password/");
-
-
-  // Handle admin redirect if admin is logged in and trying to access login pages
-  if (userData && (to.path == "/login") ) {
-    // toast("You've already logged in as an admin, Please logout to access this page", {
-    //   type: "warning",
-    //   position: "top-right",
-    //   autoClose: 3000
-    // });
-    return next({ path: "/dashboard" });
-  }
-
-
-  // Handle customer dashboard redirect
-  if (customerData && (to.path == "/customer-panel/login" || to.path == "/customer-panel/register" || to.path == "/login")) {
-    return next({ path: "/customer-panel/dashboard" });
-  }
-
-  // Handle admin redirect if admin is logged in and trying to access customer panel pages
-  if (userData && (to.path == "/customer-panel/login" || to.path == "/customer-panel/register" || to.path == "/customer-panel/dashboard" || to.path == "/customer-panel/service-order" || to.path == "/customer-panel/product-order" || to.path == "/customer-panel/package-order" || to.path == "/customer-panel/profile-setting" || to.path == "/customer-panel/transaction-history" || to.path == "/customer-panel/package-details") ) {
-    // toast("You've already logged in as an admin, Please logout to access this page", {
-    //   type: "warning",
-    //   position: "top-right",
-    //   autoClose: 3000
-    // });
-    return next({ path: "/" });
-  }
 
   // Handle customer authentication for customer-only pages
   if (isCustomerOnlyPage) {
@@ -180,23 +153,23 @@ router.beforeEach((to, from, next) => {
         position: "top-right",
         autoClose: 3000
       });
-      return next({ path: "/customer-panel/login" });
+      return next({ path: "/login" });
     }
     return next();
   }
 
   // If it's a public frontend page, allow access without authentication
   if (isPublicFrontendPage) {
+    console.log('Public Frontend Page', isPublicFrontendPage)
     return next();
   }
 
   // Handle backend authentication logic (Admin/Staff)
-  if (!accessToken) {
-    // If not authenticated and trying to access protected backend page
+  if (accessToken != null && accessToken != undefined && accessToken != '' && accessToken != 'null' && !accessToken) {
     return isPublicBackendPage ? next() : next({ path: "/login" });
   }
 
-  if (isPublicBackendPage) {
+  if (isPublicBackendPage) {  
     return next({ path: "/dashboard" });
   }
 

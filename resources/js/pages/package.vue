@@ -18,8 +18,9 @@ definePage({
     <!-- Special Offers with Pagination -->
     <SpecialOffers 
       mode="page" 
-      sectionClass="special-offers package-single-page-section"
+      sectionClass="special-offers default-section-padding"
       :showHeader="false"
+      :itemLimit="9"
       :buttonText="t('Buy This Package')"
     />
   </div>

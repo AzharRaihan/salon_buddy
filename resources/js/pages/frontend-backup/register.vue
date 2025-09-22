@@ -79,7 +79,7 @@ const submitRegistration = async () => {
 
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push('/frontend/dashboard')
+        router.push('/customer/dashboard')
       }, 2000)
     } else {
       message.value = result.message || 'Registration failed'
@@ -98,7 +98,7 @@ const submitRegistration = async () => {
 
 // Handle social login
 const handleSocialLogin = (provider) => {
-  customerSocialLogin(provider, '/frontend/register')
+  customerSocialLogin(provider, '/register')
 }
 
 onMounted(() => {
@@ -319,7 +319,7 @@ definePage({
 
               <div class="text-center">
                 <p>{{ t('Already have an account?') }}
-                  <RouterLink to="/frontend/login">{{ t('Login') }}</RouterLink>
+                  <RouterLink to="/login">{{ t('Login') }}</RouterLink>
                 </p>
               </div>
             </div>

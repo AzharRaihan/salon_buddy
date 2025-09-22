@@ -78,7 +78,7 @@ const submitLogin = async () => {
 
       // Redirect after 1 second
       setTimeout(() => {
-        router.push('/frontend/dashboard')
+        router.push('/customer/dashboard')
       }, 1000)
     } else {
       message.value = result.message || 'Login failed'
@@ -97,7 +97,7 @@ const submitLogin = async () => {
 
 // Handle social login
 const handleSocialLogin = (provider) => {
-  customerSocialLogin(provider, '/frontend/login')
+  customerSocialLogin(provider, '/customer/login')
 }
 
 // Handle social login callback
@@ -113,7 +113,7 @@ const handleCallback = () => {
 
     // Redirect after 1 second
     setTimeout(() => {
-      router.push('/frontend/dashboard')
+      router.push('/customer/dashboard')
     }, 1000)
   } else if (result.message) {
     message.value = result.message
@@ -209,7 +209,7 @@ definePage({
                 </div>
 
                 <div class="text-right my-3">
-                  <RouterLink to="/frontend/forgot-password" class="forgot-password">
+                  <RouterLink to="/forgot-password" class="forgot-password">
                     {{ t('Forgot password?') }}
                   </RouterLink>
                 </div>
@@ -255,7 +255,7 @@ definePage({
               <div class="text-center">
                 <p>
                   {{ t("Don't have an account?") }}
-                  <RouterLink to="/frontend/register">{{ t('Create an account') }}</RouterLink>
+                  <RouterLink to="/register">{{ t('Create an account') }}</RouterLink>
                 </p>
               </div>
             </div>

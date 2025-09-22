@@ -66,7 +66,7 @@ export function useCheckoutForm() {
     localStorage.setItem('checkout_customer_data', JSON.stringify(customerForm))
     
     // Navigate to payment page
-    router.push('/frontend/payment')
+    router.push('/payment')
     return true
   }
 

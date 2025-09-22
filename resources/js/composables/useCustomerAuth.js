@@ -151,6 +151,14 @@ export function useCustomerAuth() {
       customerDataCookie.value = null
       customer.value = null
       
+      // Clear any OAuth-related data from localStorage/sessionStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('oauth_state')
+        sessionStorage.removeItem('oauth_state')
+        localStorage.removeItem('social_auth_data')
+        sessionStorage.removeItem('social_auth_data')
+      }
+      
       isLoading.value = false
     }
   }

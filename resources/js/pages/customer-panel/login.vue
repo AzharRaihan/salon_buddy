@@ -6,14 +6,14 @@ import { useAuthState } from '@/composables/useAuthState'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 
+// import default avatar
+
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const showPassword = ref(false)
 const websiteStore = useWebsiteSettingsStore()
-
-console.log('This is websiteStore', websiteStore)
 
 // Use customer authentication composable
 const { 
@@ -55,6 +55,24 @@ const clearError = (field) => {
   }
 }
 
+const applicationMode = ref(false)
+const defaultCustomerEmail = ref('')
+const defaultCustomerPassword = ref('')
+// call a api to check application mode type demo or live 
+const checkApplicationMode = async () => {
+  const result = await $api('/check-application-mode')
+  if (result.data?.mode) {
+    applicationMode.value = result.data.mode
+    defaultCustomerEmail.value = 'doorsoftdemocustomer@gmail.com'
+    defaultCustomerPassword.value = '12345678'
+  }
+}
+onMounted(() => {
+  checkApplicationMode()
+})
+
+
+
 // Submit login
 const submitLogin = async () => {
   if (!isFormValid.value) {
@@ -78,7 +96,7 @@ const submitLogin = async () => {
 
       // Redirect after 1 second
       setTimeout(() => {
-        router.push('/frontend/dashboard')
+        router.push('/customer-panel/dashboard')
       }, 1000)
     } else {
       message.value = result.message || 'Login failed'
@@ -97,7 +115,7 @@ const submitLogin = async () => {
 
 // Handle social login
 const handleSocialLogin = (provider) => {
-  customerSocialLogin(provider, '/frontend/login')
+  customerSocialLogin(provider, '/customer-panel/login')
 }
 
 // Handle social login callback
@@ -113,7 +131,7 @@ const handleCallback = () => {
 
     // Redirect after 1 second
     setTimeout(() => {
-      router.push('/frontend/dashboard')
+      router.push('/customer-panel/dashboard')
     }, 1000)
   } else if (result.message) {
     message.value = result.message
@@ -165,7 +183,8 @@ definePage({
                       class="form-control" 
                       :class="{ 'is-invalid': formErrors.email }"
                       id="email" 
-                      :placeholder="t('Enter your email')" 
+                      :placeholder="t('Enter your email')"
+                      :value="applicationMode ? defaultCustomerEmail : form.email"
                       autocomplete="email"
                     >
                   </div>
@@ -187,6 +206,7 @@ definePage({
                       id="password" 
                       :placeholder="t('Enter your password')" 
                       autocomplete="current-password"
+                      :value="applicationMode ? defaultCustomerPassword : form.password"
                     >
                     <VIcon 
                       v-if="showPassword" 

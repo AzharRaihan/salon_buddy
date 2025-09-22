@@ -6,31 +6,31 @@
         </RouterLink>
         <ul>
             <li>
-                <RouterLink to="/frontend/dashboard" :class="{ active: $route.name === 'frontend-dashboard' }">
+                <RouterLink to="/customer-panel/dashboard" :class="{ active: $route.name === 'customer-panel-dashboard' }">
                     <VIcon icon="tabler-layout-dashboard" size="20" />
                     <span>{{ t('Dashboard') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/frontend/service-order" :class="{ active: $route.name === 'frontend-service-order' }">
+                <RouterLink to="/customer-panel/service-order" :class="{ active: $route.name === 'customer-panel-service-order' }">
                     <VIcon icon="tabler-calendar-week" size="20" />
                     <span>{{ t('Booking History') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/frontend/product-order" :class="{ active: $route.name === 'frontend-product-order' }">
+                <RouterLink to="/customer-panel/product-order" :class="{ active: $route.name === 'customer-panel-product-order' }">
                     <VIcon icon="tabler-garden-cart" size="20" />
                     <span>{{ t('Orders') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/frontend/package-order" :class="{ active: $route.name === 'frontend-package-order' }">
+                <RouterLink to="/customer-panel/package-order" :class="{ active: $route.name === 'customer-panel-package-order' }">
                     <VIcon icon="tabler-package" size="20" />
                     <span>{{ t('Package History') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/frontend/profile-setting" :class="{ active: $route.name === 'frontend-profile-setting' }">
+                <RouterLink to="/customer-panel/profile-setting" :class="{ active: $route.name === 'customer-panel-profile-setting' }">
                     <VIcon icon="tabler-user-cog" size="20" />
                     <span>{{ t('Profile Settings') }}</span>
                 </RouterLink>
@@ -66,7 +66,7 @@ const handleLogout = async () => {
       autoClose: 2000
     })
     setTimeout(() => {
-      router.push('/frontend/login')
+      router.push('/customer-panel/login')
     }, 1000)
   } catch (error) {
     toast('Error during logout', {

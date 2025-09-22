@@ -390,6 +390,9 @@ Route::controller(FrontendController::class)->group(function () {
     // Date Check for Booking
     Route::post('check-date-availability', 'checkDateAvailability');
 
+    // Check application mode
+    Route::get('check-application-mode', 'checkApplicationMode');
+
 });
 
 // Package routes for sold packages and usage

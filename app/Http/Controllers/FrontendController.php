@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\PackageUsagesSummary;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
@@ -2164,5 +2165,11 @@ class FrontendController extends Controller
             return $this->successResponse(['availability' => false], "Selected date is a vacation.");
         }
         return $this->successResponse(['availability' => true], "Selected date is available.");
+    }
+
+    public function checkApplicationMode()
+    {
+        $applicationMode = demoCheck();
+        return $this->successResponse(['mode' => $applicationMode], 'Application mode fetched successfully');
     }
 }

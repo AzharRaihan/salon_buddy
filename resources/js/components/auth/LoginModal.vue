@@ -69,6 +69,7 @@ const submitLogin = async () => {
     // Close modal after short delay
     setTimeout(() => {
       closeModal()
+      window.location.reload()
     }, 1000)
   } else {
     message.value = result.message || 'Login failed'
@@ -83,15 +84,25 @@ const submitLogin = async () => {
 
 // Handle social login
 const handleSocialLogin = async (provider) => {
-  // Emit social login event to parent for handling
   emit('social-login', provider)
-  
+
   const success = await customerSocialLogin(provider, props.returnUrl)
-  if (!success) {
-    message.value = 'Social login setup failed'
+
+  if (success) {
+    message.value = 'Login successful!'
+    messageType.value = 'success'
+
+    // Close modal and reload
+    setTimeout(() => {
+      closeModal()
+      window.location.reload()
+    }, 1000)
+  } else {
+    message.value = 'Social login failed'
     messageType.value = 'error'
   }
 }
+
 
 // Get social auth URLs
 const getSocialAuthUrls = async () => {
@@ -246,7 +257,7 @@ onMounted(() => {
         <div class="text-center">
           <p>
             Don't have an account?
-            <RouterLink to="/frontend/register" class="register-link">Create an account</RouterLink>
+            <RouterLink to="/register" class="register-link">Create an account</RouterLink>
           </p>
         </div>
       </div>

@@ -159,10 +159,10 @@ definePage({
 
 <style scoped>
 .about-us-section-discover::before {
-  background-image: url('../../@frontend/images/about_us_page_shpage_left.png');
+  background-image: url('../../js/@frontend/images/about_us_page_shpage_left.png');
 }
 /* Right image (bottom-right) */
 .about-us-section-discover::after {
-  background-image: url('../../@frontend/images/about_us_page_shpage_right.png');
+  background-image: url('../../js/@frontend/images/about_us_page_shpage_right.png');
 }
 </style>

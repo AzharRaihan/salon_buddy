@@ -445,6 +445,7 @@
     "getAnimationType": true,
     "getStaggeredDelay": true,
     "useCheckoutForm": true,
-    "useServiceManagement": true
+    "useServiceManagement": true,
+    "usePackageData": true
   }
 }
