@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useCustomerAuth } from '@/composables/useCustomerAuth'
+import { useAuthState } from '@/composables/useAuthState'
 import { $api } from '@/utils/api'
 
 const props = defineProps({
@@ -17,6 +18,9 @@ const props = defineProps({
 const emit = defineEmits(['close', 'success', 'social-login'])
 
 const { customerLogin, customerSocialLogin, isLoading, error, handleCustomerSocialCallback } = useCustomerAuth()
+
+// Use auth state for updates
+const { updateCustomerAuthState } = useAuthState()
 
 const showPassword = ref(false)
 const message = ref('')
@@ -60,6 +64,9 @@ const submitLogin = async () => {
   const result = await customerLogin(form)
 
   if (result.success) {
+    // Update auth state after successful login
+    updateCustomerAuthState()
+    
     message.value = 'Login successful!'
     messageType.value = 'success'
     
@@ -84,24 +91,16 @@ const submitLogin = async () => {
 
 // Handle social login
 const handleSocialLogin = async (provider) => {
+  // Emit social login event to parent for handling
   emit('social-login', provider)
-
+  
   const success = await customerSocialLogin(provider, props.returnUrl)
-
-  if (success) {
-    message.value = 'Login successful!'
-    messageType.value = 'success'
-
-    // Close modal and reload
-    setTimeout(() => {
-      closeModal()
-      window.location.reload()
-    }, 1000)
-  } else {
-    message.value = 'Social login failed'
+  if (!success) {
+    message.value = 'Social login setup failed'
     messageType.value = 'error'
   }
 }
+
 
 
 // Get social auth URLs
@@ -135,8 +134,31 @@ const handleBackdropClick = (event) => {
   }
 }
 
+// Handle social login callback
+const handleCallback = () => {
+  const result = handleCustomerSocialCallback()
+
+  if (result.success) {
+    // Update auth state after successful social login
+    updateCustomerAuthState()
+    
+    message.value = 'Social login successful!'
+    messageType.value = 'success'
+
+    // Close modal after short delay
+    setTimeout(() => {
+      closeModal()
+      window.location.reload()
+    }, 800)
+  } else if (result.message) {
+    message.value = result.message
+    messageType.value = 'error'
+  }
+}
+
 onMounted(() => {
   getSocialAuthUrls()
+  handleCallback()
 })
 </script>
 
