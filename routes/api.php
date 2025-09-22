@@ -104,6 +104,12 @@ Route::group(['prefix' => 'customer'], function () {
         
         // Debug route
         Route::get('debug-data', [FrontendController::class, 'debugCustomerData'])->name('customer.debug');
+        
+        // Employee Rating API (authenticated)
+        Route::post('employee/{id}/rating', [FrontendController::class, 'submitEmployeeRating'])->name('customer.employee.rating');
+        
+        // Debug route for rating system
+        Route::get('employee/{id}/debug-service', [FrontendController::class, 'debugCustomerEmployeeService'])->name('customer.employee.debug');
     });
 });
 
@@ -301,6 +307,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('payment-settings', 'paymentSettingsPost');
         Route::get('tax-settings', 'taxSettings');
         Route::post('tax-settings', 'taxSettingsPost');
+        Route::get('social-auth-settings', 'socialAuthSettings');
+        Route::post('social-auth-settings', 'socialAuthSettingsPost');
         
         // Test routes for email and SMS
         Route::post('test-email', 'testEmail');
@@ -371,6 +379,10 @@ Route::controller(FrontendController::class)->group(function () {
 
     // Team details API
     Route::get('get-member-details/{id}', 'getMemberDetails');
+
+    // Employee Rating API
+    Route::get('employee/{id}/ratings', 'getEmployeeRatings');
+    Route::post('employee/can-rate', 'canRateEmployee');
 
     // Testimonials API
     Route::get('get-testimonials', 'getTestimonials');

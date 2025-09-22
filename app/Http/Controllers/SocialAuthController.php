@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Setting;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,32 @@ use Illuminate\Support\Str;
 class SocialAuthController extends Controller
 {
     use ApiResponse;
+
+    public $companySocialAuthConfig;
+
+    public function __construct()
+    {
+        $this->companySocialAuthConfig = $this->getCompanySocialAuthConfig();
+    }
+
+    public function getCompanySocialAuthConfig()
+    {
+        $settings = [
+            'google_enabled'       => Setting::getSetting('google_enabled', false),
+            'google_client_id'     => Setting::getSetting('google_client_id'),
+            'google_client_secret' => Setting::getSetting('google_client_secret'),
+            'google_redirect_url'  => Setting::getSetting('google_redirect_url'),
+            'google_app_url'       => Setting::getSetting('google_app_url'),
+            'facebook_enabled'       => Setting::getSetting('facebook_enabled', false),
+            'facebook_client_id'     => Setting::getSetting('facebook_client_id'),
+            'facebook_client_secret' => Setting::getSetting('facebook_client_secret'),
+            'facebook_redirect_url'  => Setting::getSetting('facebook_redirect_url'),
+            'facebook_app_url'       => Setting::getSetting('facebook_app_url'),
+        ];
+        return $settings;
+    }
+
+
 
     /**
      * Redirect to Google OAuth
@@ -34,6 +61,7 @@ class SocialAuthController extends Controller
                     'access_type' => 'offline'
                 ])
                 ->redirect();
+                
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to redirect to Google: ' . $e->getMessage());
         }
@@ -65,7 +93,8 @@ class SocialAuthController extends Controller
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
-            $frontendUrl = config('app.frontend_url', config('app.url'));
+            // $frontendUrl = config('app.url', config('app.url'));
+            $frontendUrl = $this->companySocialAuthConfig['google_app_url'];
             $customerEncoded = urlencode(json_encode([
                 'id' => $customer->id,
                 'name' => $customer->name,
@@ -86,7 +115,8 @@ class SocialAuthController extends Controller
             $returnUrl = session('social_return_url', '/customer-panel/login');
             session()->forget('social_return_url');
             
-            $frontendUrl = config('app.frontend_url', config('app.url'));
+            // $frontendUrl = config('app.url', config('app.url'));
+            $frontendUrl = $this->companySocialAuthConfig['google_app_url'];
             return redirect($frontendUrl . $returnUrl . '?status=error&message=' . urlencode('Google authentication failed: ' . $e->getMessage()));
         }
     }

@@ -446,6 +446,9 @@
     "getStaggeredDelay": true,
     "useCheckoutForm": true,
     "useServiceManagement": true,
-    "usePackageData": true
+    "usePackageData": true,
+    "useCustomerFormPrefill": true,
+    "useEmployeeRating": true,
+    "useToast": true
   }
 }

@@ -142,16 +142,48 @@
                 </li>
               </ul>
             </div>
+            <div v-else class="customer-auth-dropdown dropdown">
+              <a class="dropdown-toggle customer-avatar-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <VIcon icon="tabler-user-circle" size="25" />
+                <VIcon icon="tabler-chevron-down" size="16" />
+              </a>
+              <ul class="dropdown-menu customer-dropdown-menu">
+                <li>
+                  <RouterLink to="/customer-panel/login" class="dropdown-item">
+                    <div class="d-flex align-items-center gap-2 inner-item">
+                      <VIcon icon="tabler-login" size="18" />
+                      <span>{{ t('Login') }}</span>
+                    </div>
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink to="/customer-panel/register" class="dropdown-item">
+                    <div class="d-flex align-items-center gap-2 inner-item">
+                      <VIcon icon="tabler-user-plus" size="18" />
+                      <span>{{ t('Register') }}</span>
+                    </div>
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink to="/login" class="dropdown-item">
+                    <div class="d-flex align-items-center gap-2 inner-item">
+                      <VIcon icon="tabler-user-plus" size="18" />
+                      <span>{{ t('Login as Admin') }}</span>
+                    </div>
+                  </RouterLink>
+                </li>
+              </ul>
+            </div>
 
             <!-- Guest Authentication -->
-            <div v-else class="guest-auth-buttons">
+            <!-- <div v-else class="guest-auth-buttons">
               <RouterLink to="/customer-panel/login" class="btn btn-primary btn-login me-2 common-animation-button">
                 {{ t('Login') }}
               </RouterLink>
               <RouterLink to="/customer-panel/register" class="btn btn-register common-animation-button">
                 {{ t('Register') }}
               </RouterLink>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

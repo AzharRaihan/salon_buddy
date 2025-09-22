@@ -327,6 +327,65 @@ class SettingController extends Controller
         return $this->successResponse(null, 'Payment settings updated successfully');
     }
 
+
+    /**
+     * Get social auth settings
+     *
+     * @return JsonResponse
+     */
+    public function socialAuthSettings()
+    {
+        $settings = [
+            'google_enabled'       => Setting::getSetting('google_enabled', false),
+            'google_client_id'     => Setting::getSetting('google_client_id'),
+            'google_client_secret' => Setting::getSetting('google_client_secret'),
+            'google_redirect_url'  => Setting::getSetting('google_redirect_url'),
+            'google_app_url'       => Setting::getSetting('google_app_url'),
+            'facebook_enabled'       => Setting::getSetting('facebook_enabled', false),
+            'facebook_client_id'     => Setting::getSetting('facebook_client_id'),
+            'facebook_client_secret' => Setting::getSetting('facebook_client_secret'),
+            'facebook_redirect_url'  => Setting::getSetting('facebook_redirect_url'),
+            'facebook_app_url'       => Setting::getSetting('facebook_app_url'),
+        ];
+
+        return $this->successResponse($settings, 'Social auth settings fetched successfully');
+    }
+
+    /**
+     * Update social auth settings
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function socialAuthSettingsPost(Request $request)
+    {
+        $request->validate([
+            'google_enabled'       => 'required|boolean',
+            'google_client_id'     => 'required_if:google_enabled,true|string|max:350',
+            'google_client_secret' => 'required_if:google_enabled,true|string|max:350',
+            'google_redirect_url'  => 'required_if:google_enabled,true|string|max:500',
+            'google_app_url'       => 'required_if:google_enabled,true|string|max:500',
+            'facebook_enabled'       => 'required|boolean',
+            'facebook_client_id'     => 'required_if:facebook_enabled,true|string|max:350',
+            'facebook_client_secret' => 'required_if:facebook_enabled,true|string|max:350',
+            'facebook_redirect_url'  => 'required_if:facebook_enabled,true|string|max:500',
+            'facebook_app_url'       => 'required_if:facebook_enabled,true|string|max:500',
+        ]);
+
+        // Save social auth settings
+        Setting::setSetting('google_enabled', $request->google_enabled);
+        Setting::setSetting('google_client_id', $request->google_client_id);
+        Setting::setSetting('google_client_secret', $request->google_client_secret);
+        Setting::setSetting('google_redirect_url', $request->google_redirect_url);
+        Setting::setSetting('google_app_url', $request->google_app_url);
+        Setting::setSetting('facebook_enabled', $request->facebook_enabled);
+        Setting::setSetting('facebook_client_id', $request->facebook_client_id);
+        Setting::setSetting('facebook_client_secret', $request->facebook_client_secret);
+        Setting::setSetting('facebook_redirect_url', $request->facebook_redirect_url);
+        Setting::setSetting('facebook_app_url', $request->facebook_app_url);
+        return $this->successResponse(null, 'Social auth settings updated successfully');
+    }
+
     /**
      * Get SMS settings
      *

@@ -2949,7 +2949,25 @@ ease-in-out;
   padding: 30px;
   text-align: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(0px);
+  transition: all 0.3s ease;
 }
+
+.team-details-wrapper .team-details-card:hover {
+  transform: translateY(-6px);
+  transition: all 0.3s ease;
+}
+.team-details-wrapper .team-details-card .image-circle img {
+  transform: scale(1);
+  transition: all 0.3s ease;
+}
+
+.team-details-wrapper .team-details-card:hover .image-circle img{
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+
 .team-details-wrapper .team-details-card .image-circle {
   width: 110px;
   height: 110px;
@@ -6044,3 +6062,220 @@ input[type="radio"]:checked ~ .radio-circle:before {
 
 
 /* AI CSS should write here */
+
+
+
+
+
+
+
+
+/* Package Latest Design */
+.save-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, var(--primary-bg-color), var(--primary-bg-color));
+  color: var(--color-white);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.included-service-name {
+  font-weight: 400;
+  font-size: 16px;
+}
+.attached-services {
+  background: #F9F9F9;
+  border-radius: 12px;
+  padding: 10px;
+}
+.attached-services ul {
+  padding: 0;
+  margin: 0;
+}
+.attached-services ul li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+.about-area-one .about-list-right {
+  display: flex;
+  width: 100%;
+  float: left;
+}
+
+.about-area-one .about-list-right figure {
+  width: 50%;
+  float: left;
+  position: relative;
+  z-index: 9;
+  overflow: hidden;
+  padding-top: 50%;
+  margin: 0;
+}
+.about-area-one .about-list-right figure:before {
+  content: '';
+  position: absolute;
+  left: 100%;
+  right: 0;
+  bottom: 50%;
+  top: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  transition: all 0.5s;
+  z-index: 99;
+}
+.about-area-one .about-list-right figure:after {
+  content: '';
+  position: absolute;
+  top: 42%;
+  right: -19px;
+  transform: rotate(45deg);
+  background: #fff;
+  width: 35px;
+  height: 35px;
+  z-index: 999;
+}
+.about-area-one .about-list-right figure img {
+  transition: all 0.8s;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: auto;
+  max-width: initial;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.about-area-one .about-list-right .content {
+  background: #fff;
+  width: 50%;
+  display: flex;
+  position: relative;
+  z-index: 1;
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+}
+.about-area-one .about-list-right .content h4 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  display: block;
+  line-height: 35px;
+}
+.media {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.serviceInfoMain .serviceInfoicon {
+  color: var(--primary-bg-hover-color);
+  margin-right: 15px;
+}
+.media-body {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+.serviceInfoMain .serviceInfoHeading {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0;
+  line-height: 1;
+  text-align: left;
+}
+.about-area-one .about-list-right .content p {
+  color: #797979;
+}
+.serviceInfoMain .serviceInfoValue {
+  font-size: 16px;
+  text-align: left;
+}
+.serviceInfoMain p {
+  font-size: 14px;
+  line-height: 26px;
+  margin: 0;
+  padding: 0;
+}
+.about-area-one .about-list-right .content a {
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 3px;
+}
+.btn3:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 100%;
+  left: 0;
+  right: 100%;
+  height: 0;
+  background: var(--primary-bg-hover-color);
+  transition: all 0.5s;
+}
+.btn3:after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  bottom: 0;
+  right: 0;
+  left: 100%;
+  height: 100%;
+  background: var(--primary-bg-hover-color);
+  transition: all 0.5s;
+}
+.btn3 span {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+}
+
+.about-area-one .about-list-right:hover figure:before {
+  left: 0;
+  bottom: 0;
+  top: 0;
+  border-radius: 0px;
+}
+.about-area-one .about-list-right:hover figure img {
+  transform: scale(1.2, 1.2) translateX(-50%);
+}
+.serviceInfoMain .booknowBtn {
+  text-align: center;
+  font-size: 18px;
+  line-height: 35px;
+  margin-top: 10px;
+  padding: 5px 20px;
+  width: 100%;
+}
+.btn3 {
+  display: inline-block;
+  position: relative;
+  line-height: 50px;
+  background: var(--primary-bg-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 0 27px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.btn3:hover:before {
+  right: 50%;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+}
+.btn3:hover:after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+}

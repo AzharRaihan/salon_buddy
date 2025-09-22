@@ -68,6 +68,9 @@
 
 /* Large devices (desktops, less than 1200px) */
 @media only screen and (max-width: 1199.98px) {
+  .righ-side-overlay {
+      width: 420px;
+  }
 
   /* Header Part */
   .header-section .top-bar {
@@ -1006,7 +1009,10 @@
 @media only screen and (max-width: 767.98px) {
   /* Header Part */
   .righ-side-overlay {
-    width: 150px;
+    width: 250px;
+  }
+  .top-bar .email-address {
+    display: none;
   }
   .mobile-header-icon-wrapper {
     display: block;
@@ -1574,6 +1580,9 @@
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media only screen and (max-width: 575.98px) {
+  body {
+    overflow-x: hidden;
+  }
   .mobile-header-icon-wrapper {
     display: block;
   }
@@ -2156,6 +2165,9 @@
 
 /* Very small devices (small phones, less than 450px) */
 @media only screen and (min-width: 330px) and (max-width: 449.98px) {
+  body {
+    overflow-x: hidden;
+  }
   .mobile-header-icon-wrapper {
     display: block;
   }
@@ -2787,4 +2799,13 @@
   .team-details-wrapper .team-details-portfolio-title {
     font-size: 22px;
   }
+
+  /* Package Latest Design */
+  .about-area-one .about-list-right {
+    flex-direction: column;
+  }
+  .about-area-one .about-list-right .content, .about-area-one .about-list-right figure {
+    width: 100%;
+  }
+  
 }

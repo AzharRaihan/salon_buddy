@@ -169,6 +169,7 @@ declare module 'vue-router/auto-routes' {
     'settings-email': RouteRecordInfo<'settings-email', '/settings/email', Record<never, never>, Record<never, never>>,
     'settings-payment': RouteRecordInfo<'settings-payment', '/settings/payment', Record<never, never>, Record<never, never>>,
     'settings-sms': RouteRecordInfo<'settings-sms', '/settings/sms', Record<never, never>, Record<never, never>>,
+    'settings-social-auth': RouteRecordInfo<'settings-social-auth', '/settings/social-auth', Record<never, never>, Record<never, never>>,
     'settings-tax-setting': RouteRecordInfo<'settings-tax-setting', '/settings/tax-setting', Record<never, never>, Record<never, never>>,
     'settings-whatsapp': RouteRecordInfo<'settings-whatsapp', '/settings/whatsapp', Record<never, never>, Record<never, never>>,
     'settings-white-label': RouteRecordInfo<'settings-white-label', '/settings/white-label', Record<never, never>, Record<never, never>>,

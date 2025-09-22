@@ -308,12 +308,12 @@ definePage({
                       <span>{{ t('Sign up with Google') }}</span>
                     </a>
                   </li>
-                  <li>
+                  <!-- <li>
                     <a href="javascript:void(0)" @click="handleSocialLogin('github')">
                       <img src="../../@frontend/images/socialite/Git.png" alt="GitHub" />
                       <span>{{ t('Sign up with Github') }}</span>
                     </a>
-                  </li>
+                  </li> -->
                 </ul>
               </div>
 

@@ -2172,4 +2172,287 @@ class FrontendController extends Controller
         $applicationMode = demoCheck();
         return $this->successResponse(['mode' => $applicationMode], 'Application mode fetched successfully');
     }
+
+    /**
+     * Submit employee rating
+     */
+    public function submitEmployeeRating(Request $request)
+    {
+        // Check if customer is authenticated
+        if (!$request->user()) {
+            return $this->errorResponse('Customer authentication required', 401);
+        }
+
+        $customer = $request->user();
+        $customerId = $customer->id;
+
+        $validator = Validator::make($request->all(), [
+            'employee_id' => 'required|exists:users,id',
+            'rating' => 'required|numeric|min:1|max:5',
+            'comment' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        $validatedData = $validator->validated();
+        $employeeId = $validatedData['employee_id'];
+
+        try {
+            // Check if customer has already rated this employee
+            $existingRating = Ratting::where('customer_id', $customerId)
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->first();
+
+            if ($existingRating) {
+                return $this->errorResponse('You have already rated this employee', 400);
+            }
+
+            // Check if customer has received service from this employee
+            // Check both SaleDetail (for product sales) and BookingDetail (for service bookings)
+            $hasServiceFromEmployee = SaleDetail::whereHas('sale', function($query) use ($customerId) {
+                    $query->where('customer_id', $customerId)
+                          ->where('del_status', 'Live');
+                })
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->exists();
+
+            // Also check booking details for service appointments
+            $hasBookingFromEmployee = DB::table('booking_details')
+                ->join('bookings', 'booking_details.booking_id', '=', 'bookings.id')
+                ->where('bookings.customer_id', $customerId)
+                ->where('bookings.del_status', 'Live')
+                ->where('booking_details.service_seller_id', $employeeId)
+                ->where('booking_details.del_status', 'Live')
+                ->exists();
+
+            // Debug: Log the results
+            \Log::info('Rating eligibility check', [
+                'customer_id' => $customerId,
+                'employee_id' => $employeeId,
+                'has_service_from_employee' => $hasServiceFromEmployee,
+                'has_booking_from_employee' => $hasBookingFromEmployee,
+                'can_rate' => $hasServiceFromEmployee || $hasBookingFromEmployee
+            ]);
+
+            if (!$hasServiceFromEmployee && !$hasBookingFromEmployee) {
+                return $this->errorResponse('You can only rate employees who have provided you service', 400);
+            }
+
+            // Create the rating
+            $rating = Ratting::create([
+                'customer_id' => $customerId,
+                'employee_id' => $employeeId,
+                'rating' => $validatedData['rating'],
+                'comment' => $validatedData['comment'] ?? null,
+                'company_id' => 1,
+                'del_status' => 'Live',
+            ]);
+
+            return $this->successResponse($rating, 'Rating submitted successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to submit rating: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get employee ratings/reviews
+     */
+    public function getEmployeeRatings(Request $request, $employeeId)
+    {
+        try {
+            $perPage = $request->get('per_page', 10);
+            $page = $request->get('page', 1);
+
+            // Get ratings with customer information
+            $ratings = Ratting::with(['customer:id,name,photo'])
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->whereNotNull('comment')
+                ->where('comment', '!=', '')
+                ->orderBy('created_at', 'desc')
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            // Transform the data
+            $transformedRatings = $ratings->getCollection()->map(function ($rating) {
+                return [
+                    'id' => $rating->id,
+                    'rating' => (float) $rating->rating,
+                    'comment' => $rating->comment,
+                    'date' => $rating->created_at->format('M d, Y'),
+                    'customer' => [
+                        'name' => $rating->customer ? $rating->customer->name : 'Anonymous',
+                        'photo' => $rating->customer && $rating->customer->photo 
+                            ? asset('assets/images/' . $rating->customer->photo)
+                            : asset('assets/images/system-config/default-picture.png'),
+                    ]
+                ];
+            });
+
+            // Calculate average rating
+            $averageRating = Ratting::where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->avg('rating');
+
+            $totalRatings = Ratting::where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->count();
+
+            return $this->successResponse([
+                'reviews' => [
+                    'data' => $transformedRatings,
+                    'current_page' => $ratings->currentPage(),
+                    'per_page' => $ratings->perPage(),
+                    'total' => $ratings->total(),
+                    'last_page' => $ratings->lastPage(),
+                ],
+                'summary' => [
+                    'average_rating' => round($averageRating, 1),
+                    'total_ratings' => $totalRatings,
+                ]
+            ], 'Employee ratings fetched successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to fetch employee ratings: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if customer can rate employee
+     */
+    public function canRateEmployee(Request $request)
+    {
+        $employeeId = $request->employee_id;
+        $customerId = $request->customer_id;
+
+        // Check if customer is authenticated
+        if (!$customerId) {
+            return $this->successResponse([
+                'can_rate' => false,
+                'reason' => 'authentication_required'
+            ], 'Customer authentication required');
+        }
+
+
+        try {
+            // Check if customer has already rated this employee
+            $existingRating = Ratting::where('customer_id', $customerId)
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->first();
+
+            if ($existingRating) {
+                return $this->successResponse([
+                    'can_rate' => false,
+                    'reason' => 'already_rated',
+                    'existing_rating' => $existingRating
+                ], 'Customer has already rated this employee');
+            }
+
+            // Check if customer has received service from this employee
+            // Check both SaleDetail (for product sales) and BookingDetail (for service bookings)
+            $hasServiceFromEmployee = SaleDetail::whereHas('sale', function($query) use ($customerId) {
+                    $query->where('customer_id', $customerId)
+                          ->where('del_status', 'Live');
+                })
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->exists();
+
+            // Also check booking details for service appointments
+            $hasBookingFromEmployee = DB::table('booking_details')
+                ->join('bookings', 'booking_details.booking_id', '=', 'bookings.id')
+                ->where('bookings.customer_id', $customerId)
+                ->where('bookings.del_status', 'Live')
+                ->where('booking_details.service_seller_id', $employeeId)
+                ->where('booking_details.del_status', 'Live')
+                ->exists();
+
+            if (!$hasServiceFromEmployee && !$hasBookingFromEmployee) {
+                return $this->successResponse([
+                    'can_rate' => false,
+                    'reason' => 'no_service_received'
+                ], 'Customer has not received service from this employee');
+            }
+
+            return $this->successResponse([
+                'can_rate' => true,
+                'reason' => 'eligible'
+            ], 'Customer can rate this employee');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to check rating eligibility: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Debug method to check customer-employee service relationship
+     */
+    public function debugCustomerEmployeeService(Request $request, $employeeId)
+    {
+        // Check if customer is authenticated
+        if (!$request->user()) {
+            return $this->errorResponse('Customer authentication required', 401);
+        }
+
+        $customer = $request->user();
+        $customerId = $customer->id;
+
+        try {
+            // Get all sales for this customer
+            $customerSales = Sale::where('customer_id', $customerId)
+                ->where('del_status', 'Live')
+                ->with('saleDetails')
+                ->get();
+
+            // Get all bookings for this customer
+            $customerBookings = Booking::where('customer_id', $customerId)
+                ->where('del_status', 'Live')
+                ->with('bookingDetails')
+                ->get();
+
+            // Check SaleDetail records
+            $saleDetailsWithEmployee = SaleDetail::whereHas('sale', function($query) use ($customerId) {
+                    $query->where('customer_id', $customerId)
+                          ->where('del_status', 'Live');
+                })
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->get();
+
+            // Check BookingDetail records
+            $bookingDetailsWithEmployee = DB::table('booking_details')
+                ->join('bookings', 'booking_details.booking_id', '=', 'bookings.id')
+                ->where('bookings.customer_id', $customerId)
+                ->where('bookings.del_status', 'Live')
+                ->where('booking_details.service_seller_id', $employeeId)
+                ->where('booking_details.del_status', 'Live')
+                ->select('booking_details.*', 'bookings.customer_id')
+                ->get();
+
+            // Check existing ratings
+            $existingRatings = Ratting::where('customer_id', $customerId)
+                ->where('employee_id', $employeeId)
+                ->where('del_status', 'Live')
+                ->get();
+
+            return $this->successResponse([
+                'customer_id' => $customerId,
+                'employee_id' => $employeeId,
+                'customer_sales_count' => $customerSales->count(),
+                'customer_bookings_count' => $customerBookings->count(),
+                'sale_details_with_employee' => $saleDetailsWithEmployee,
+                'booking_details_with_employee' => $bookingDetailsWithEmployee,
+                'existing_ratings' => $existingRatings,
+                'can_rate' => ($saleDetailsWithEmployee->count() > 0 || $bookingDetailsWithEmployee->count() > 0) && $existingRatings->count() === 0
+            ], 'Debug data fetched successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Debug failed: ' . $e->getMessage());
+        }
+    }
 }

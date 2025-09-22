@@ -243,6 +243,7 @@ declare global {
   const useCurrentElement: typeof import('@vueuse/core')['useCurrentElement']
   const useCustomerAuth: typeof import('./resources/js/composables/useCustomerAuth.js')['useCustomerAuth']
   const useCustomerDashboard: typeof import('./resources/js/composables/useCustomerDashboard.js')['useCustomerDashboard']
+  const useCustomerFormPrefill: typeof import('./resources/js/composables/useCustomerFormPrefill.js')['useCustomerFormPrefill']
   const useCustomers: typeof import('./resources/js/composables/useCustomers.js')['useCustomers']
   const useCycleList: typeof import('@vueuse/core')['useCycleList']
   const useDailySummaryReport: typeof import('./resources/js/composables/useDailySummaryReport.js')['useDailySummaryReport']
@@ -267,6 +268,7 @@ declare global {
   const useElementSize: typeof import('@vueuse/core')['useElementSize']
   const useElementVisibility: typeof import('@vueuse/core')['useElementVisibility']
   const useEmployeeCommissionReport: typeof import('./resources/js/composables/useEmployeeCommissionReport.js')['useEmployeeCommissionReport']
+  const useEmployeeRating: typeof import('./resources/js/composables/useEmployeeRating.js')['useEmployeeRating']
   const useEmployees: typeof import('./resources/js/composables/useEmployees.js')['useEmployees']
   const useErrorHandler: typeof import('./resources/js/composables/useErrorHandler.js')['useErrorHandler']
   const useEventBus: typeof import('@vueuse/core')['useEventBus']
@@ -404,6 +406,7 @@ declare global {
   const useTitle: typeof import('@vueuse/core')['useTitle']
   const useToNumber: typeof import('@vueuse/core')['useToNumber']
   const useToString: typeof import('@vueuse/core')['useToString']
+  const useToast: typeof import('./resources/js/composables/useToast.js')['useToast']
   const useToggle: typeof import('@vueuse/core')['useToggle']
   const useTransactionHistory: typeof import('./resources/js/composables/useTransactionHistory.js')['useTransactionHistory']
   const useTransition: typeof import('@vueuse/core')['useTransition']
@@ -718,6 +721,7 @@ declare module 'vue' {
     readonly useElementSize: UnwrapRef<typeof import('@vueuse/core')['useElementSize']>
     readonly useElementVisibility: UnwrapRef<typeof import('@vueuse/core')['useElementVisibility']>
     readonly useEmployeeCommissionReport: UnwrapRef<typeof import('./resources/js/composables/useEmployeeCommissionReport.js')['useEmployeeCommissionReport']>
+    readonly useEmployeeRating: UnwrapRef<typeof import('./resources/js/composables/useEmployeeRating.js')['useEmployeeRating']>
     readonly useEmployees: UnwrapRef<typeof import('./resources/js/composables/useEmployees.js')['useEmployees']>
     readonly useErrorHandler: UnwrapRef<typeof import('./resources/js/composables/useErrorHandler.js')['useErrorHandler']>
     readonly useEventBus: UnwrapRef<typeof import('@vueuse/core')['useEventBus']>

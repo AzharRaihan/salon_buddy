@@ -2,13 +2,22 @@
 import { ref } from 'vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
 import BookAppointmentBtn from '@/components/frontend/mini-components/BookAppointmentBtn.vue'
+import EmployeeRatingForm from '@/components/frontend/EmployeeRatingForm.vue'
+import EmployeeReviews from '@/components/frontend/EmployeeReviews.vue'
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n'
+import { useEmployeeRating } from '@/composables/useEmployeeRating'
+import { toast } from 'vue3-toastify'
+
 const { t } = useI18n()
+const { checkRatingEligibility } = useEmployeeRating()
 const route = useRoute()
+
 const memberId = ref(null)
 const memberDetails = ref({})
 const socialMedia = ref([])
+const showRatingForm = ref(false)
+const employeeReviewsRef = ref(null)
 
 const iconMap = {
   Facebook: "tabler-brand-facebook",
@@ -31,6 +40,25 @@ const fetchMemberDetails = async () => {
     memberDetails.value = response.data
     socialMedia.value = JSON.parse(response.data.social_media)
   }
+}
+
+const handleRatingSubmitted = (ratingData) => {
+  toast(t('Rating submitted successfully!'), { type: 'success' })
+  showRatingForm.value = false
+}
+
+const handleRefreshReviews = () => {
+  if (employeeReviewsRef.value) {
+    employeeReviewsRef.value.refreshReviews()
+  }
+}
+
+const handleLoginRequired = (provider) => {
+  toast(t('Please login to continue'), { type: 'info' })
+}
+
+const toggleRatingForm = () => {
+  showRatingForm.value = !showRatingForm.value
 }
 
 onMounted(async () => {
@@ -156,74 +184,56 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div class="customer-comment-wrapper">
-          <h3 class="customer-comment-title">{{ t('Customer Review') }}</h3>
+        <!-- Employee Reviews Section -->
+        <div class="employee-reviews-section">
           <div class="row">
-            <div class="col-sm-12 col-md-10 col-lg-6">
-              <div class="customer-comment-box">
-                <div class="customer-comment-box-header">
-                  <div>
-                    <div class="customer-comment-box-header-left-image">
-                      <img src="../../js/@frontend/images/rectangle-avater.png" alt="Customer Comment Image">
-                    </div>
-
-                  </div>
-                  <div class="customer-comment-info">
-                    <div class="customer-name d-flex align-items-center">
-                      <h3 class="m-0 pe-2">Samantha W</h3>
-                      <p class="m-0">2 days ago</p>
-                    </div>
-                    <div class="customer-ratting">
-                      <VIcon icon="tabler-star" />
-                      <VIcon icon="tabler-star" />
-                      <VIcon icon="tabler-star" />
-                      <VIcon icon="tabler-star" />
-                      <VIcon icon="tabler-star" />
-                    </div>
-                    <div class="customer-comment">
-                      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div class="col-lg-8">
+              <!-- Reviews Display -->
+              <EmployeeReviews 
+                ref="employeeReviewsRef"
+                v-if="memberId"
+                :employee-id="memberId"
+                :key="`reviews-${memberId}`"
+              />
             </div>
-          </div>
-        </div>
-
-        <div class="review-box-wrapper">
-          <div class="row">
-            <div class="col-md-9 col-lg-7">
-              <div class="review-box">
-                <div class="review-box-header">
-                  <h3>{{ t('Review') }}</h3>
-                  <VIcon icon="tabler-star" />
-                  <VIcon icon="tabler-star" />
-                  <VIcon icon="tabler-star" />
-                  <VIcon icon="tabler-star" />
-                  <VIcon icon="tabler-star" />
+            <div class="col-lg-4">
+              <!-- Rating Form -->
+              <div class="rating-form-section">
+                <div class="rating-form-header">
+                  <h4>{{ t('Rate This Employee') }}</h4>
+                  <p class="text-muted">{{ t('Share your experience') }}</p>
                 </div>
-                <div class="review-box-content">
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="review-name">{{ t('Name') }}</label>
-                        <input type="text" class="form-control" id="review-name" placeholder="Enter your name">
-                      </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="review-email">{{ t('Email Address') }}</label>
-                        <input type="text" class="form-control" id="review-email" placeholder="Enter your email address">
-                      </div>
-                    </div>
-                    <div class="col-md-12 mb-3">
-                      <div class="form-group">
-                        <label for="review-message">{{ t('Message') }}</label>
-                        <textarea class="form-control" id="review-message" placeholder="Enter your message" rows="7"></textarea>
-                      </div>
-                    </div>
-                  </div>
-                  <BookAppointmentBtn :text="t('Submit Review')" link="#" />
+                
+                <!-- Toggle Button -->
+                <div v-if="!showRatingForm" class="text-center mb-3">
+                  <button 
+                    class="btn btn-outline-primary"
+                    @click="toggleRatingForm"
+                  >
+                    <VIcon icon="tabler-star" class="me-2" />
+                    {{ t('Write a Review') }}
+                  </button>
+                </div>
+
+                <!-- Rating Form -->
+                 
+                <EmployeeRatingForm 
+                  v-if="showRatingForm && memberId"
+                  :employee-id="memberId"
+                  :employee-name="memberDetails.name"
+                  @rating-submitted="handleRatingSubmitted"
+                  @login-required="handleLoginRequired"
+                  @refresh-reviews="handleRefreshReviews"
+                />
+
+                <!-- Close Button -->
+                <div v-if="showRatingForm" class="text-center mt-3">
+                  <button 
+                    class="btn btn-link text-muted"
+                    @click="toggleRatingForm"
+                  >
+                    {{ t('Cancel') }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -233,3 +243,80 @@ onMounted(async () => {
     </section>
   </div>
 </template>
+
+<style scoped>
+.employee-reviews-section {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid #eee;
+}
+
+.rating-form-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.rating-form-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.rating-form-header h4 {
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.btn-outline-primary {
+  border-color: var(--primary-bg-color);
+  color: var(--primary-bg-color);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-bg-color);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-link {
+  text-decoration: none;
+  color: #6c757d;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  transition: color 0.3s ease;
+}
+
+.btn-link:hover {
+  color: #333;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .rating-form-section {
+    position: static;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-reviews-section {
+    margin-top: 30px;
+    padding-top: 30px;
+  }
+  
+  .rating-form-section {
+    padding: 20px;
+  }
+}
+</style>
