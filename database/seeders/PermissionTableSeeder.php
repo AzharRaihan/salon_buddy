@@ -140,6 +140,8 @@ class PermissionTableSeeder extends Seeder
                 'settings-settings',
                 'settings-tax',
                 'settings-email',
+                'settings-sms',
+                'settings-whatsapp',
                 'settings-payment',
                 'settings-social_auth',
                 'settings-white_label',

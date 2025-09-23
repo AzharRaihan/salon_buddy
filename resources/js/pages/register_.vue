@@ -79,7 +79,7 @@ const submitRegistration = async () => {
 
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push('/customer/dashboard')
+        router.push('/dashboard')
       }, 2000)
     } else {
       message.value = result.message || 'Registration failed'
@@ -297,29 +297,24 @@ definePage({
               <div class="login-socialite">
                 <ul>
                   <li>
-                    <a href="javascript:void(0)" @click="handleSocialLogin('facebook')">
-                      <img src="../../@frontend/images/socialite/FB.png" alt="Facebook" />
-                      <span>{{ t('Sign up with Facebook') }}</span>
-                    </a>
-                  </li>
-                  <li>
                     <a href="javascript:void(0)" @click="handleSocialLogin('google')">
-                      <img src="../../@frontend/images/socialite/Google.png" alt="Google" />
+                      <img src="../@frontend/images/socialite/Google.png" alt="Google" />
                       <span>{{ t('Sign up with Google') }}</span>
                     </a>
                   </li>
                   <li>
-                    <a href="javascript:void(0)" @click="handleSocialLogin('github')">
-                      <img src="../../@frontend/images/socialite/Git.png" alt="GitHub" />
-                      <span>{{ t('Sign up with Github') }}</span>
+                    <a href="javascript:void(0)" @click="handleSocialLogin('facebook')">
+                      <img src="../@frontend/images/socialite/FB.png" alt="Facebook" />
+                      <span>{{ t('Sign up with Facebook') }}</span>
                     </a>
                   </li>
+                  
                 </ul>
               </div>
 
               <div class="text-center">
                 <p>{{ t('Already have an account?') }}
-                  <RouterLink to="/login">{{ t('Login') }}</RouterLink>
+                  <RouterLink to="/login_">{{ t('Login') }}</RouterLink>
                 </p>
               </div>
             </div>

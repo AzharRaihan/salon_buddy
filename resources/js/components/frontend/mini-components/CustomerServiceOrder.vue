@@ -169,7 +169,7 @@ onMounted(async () => {
                     </li>
                     
                     <li class="page-item" :class="{ disabled: !canGoNext }">
-                        <button class="page-link" @click="nextPage" :disabled="!canGoNext">
+                        <button class="page-link" @click="nextPage" :disabled="!canGoNext" type="button" >
                             <VIcon icon="tabler-chevron-right" size="16" />
                         </button>
                     </li>

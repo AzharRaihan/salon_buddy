@@ -83,16 +83,16 @@
               <RouterLink class="nav-link" :class="{ active: $route.name === 'root' }" to="/">{{ t('Home') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name == 'aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name == 'appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-service' }" to="/service">{{ t('Service') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name == 'service' }" to="/service">{{ t('Service') }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-package' }" to="/package">{{ t('Package') }}</RouterLink>
+              <RouterLink class="nav-link" :class="{ active: $route.name == 'package' }" to="/package">{{ t('Package') }}</RouterLink>
             </li>
           </ul>
 
@@ -116,7 +116,7 @@
               </a>
               <ul class="dropdown-menu customer-dropdown-menu">
                 <li>
-                  <RouterLink to="/dashboard" class="dropdown-item">
+                  <RouterLink to="/dashboard_" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-dashboard" size="18" />
                       <span>{{ t('Dashboard') }}</span>
@@ -124,7 +124,7 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="/profile-setting" class="dropdown-item">
+                  <RouterLink to="/profile-setting_" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-user-cog" size="18" />
                       <span>{{ t('Profile Setting') }}</span>
@@ -142,14 +142,14 @@
                 </li>
               </ul>
             </div>
-            <div v-else class="customer-auth-dropdown dropdown">
+            <div v-else class="customer-auth-dropdown auth-option dropdown">
               <a class="dropdown-toggle customer-avatar-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <VIcon icon="tabler-user-circle" size="25" />
                 <VIcon icon="tabler-chevron-down" size="16" />
               </a>
               <ul class="dropdown-menu customer-dropdown-menu">
                 <li>
-                  <RouterLink to="/customer-panel/login" class="dropdown-item">
+                  <RouterLink to="/login_" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-login" size="18" />
                       <span>{{ t('Login') }}</span>
@@ -157,7 +157,7 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="/customer-panel/register" class="dropdown-item">
+                  <RouterLink to="/register_" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-user-plus" size="18" />
                       <span>{{ t('Register') }}</span>
@@ -165,7 +165,7 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="/login" class="dropdown-item">
+                  <RouterLink to="/admin-login" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-user-plus" size="18" />
                       <span>{{ t('Login as Admin') }}</span>
@@ -174,16 +174,6 @@
                 </li>
               </ul>
             </div>
-
-            <!-- Guest Authentication -->
-            <!-- <div v-else class="guest-auth-buttons">
-              <RouterLink to="/customer-panel/login" class="btn btn-primary btn-login me-2 common-animation-button">
-                {{ t('Login') }}
-              </RouterLink>
-              <RouterLink to="/customer-panel/register" class="btn btn-register common-animation-button">
-                {{ t('Register') }}
-              </RouterLink>
-            </div> -->
           </div>
         </div>
       </div>
@@ -314,11 +304,14 @@
           </button>
         </div>
         <div v-else class="guest-mobile-auth">
-          <RouterLink to="/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
+          <RouterLink to="/login_" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
             {{ t('Login') }}
           </RouterLink>
-          <RouterLink to="/register" class="btn btn-register w-100">
+          <RouterLink to="/register_" class="btn btn-register w-100">
             {{ t('Register') }}
+          </RouterLink>
+          <RouterLink to="/admin-login" class="btn btn-register w-100">
+            {{ t('Login as Admin') }}
           </RouterLink>
         </div>
       </div>
@@ -386,7 +379,7 @@ const handleLogout = async () => {
       autoClose: 2000
     })
     setTimeout(() => {
-      router.push('/customer-panel/login')
+      router.push('/login_')
     }, 1000)
   } catch (error) {
     toast('Error during logout', {

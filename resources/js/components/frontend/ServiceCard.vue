@@ -62,7 +62,7 @@ const emit = defineEmits(['book-service', 'image-error'])
 const handleImageError = (event) => {
   // Prevent infinite loop by checking if we're already showing fallback
   if (!event.target.src.includes('default-picture.png')) {
-    event.target.src = '/assets/images/system-config/default-picture.png'
+    event.target.src = '/public/assets/images/system-config/default-picture.png'
     emit('image-error', props.service)
   }
 }

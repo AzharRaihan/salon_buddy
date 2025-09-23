@@ -256,23 +256,23 @@ onMounted(() => {
         <div class="login-socialite">
           <ul>
             <li>
-              <a href="javascript:void(0)" @click="handleSocialLogin('facebook')">
-                <img src="../../@frontend/images/socialite/FB.png" alt="Facebook" />
-                <span>Sign in with Facebook</span>
-              </a>
-            </li>
-            <li>
               <a href="javascript:void(0)" @click="handleSocialLogin('google')">
                 <img src="../../@frontend/images/socialite/Google.png" alt="Google" />
                 <span>Sign in with Google</span>
               </a>
             </li>
             <li>
+              <a href="javascript:void(0)" @click="handleSocialLogin('facebook')">
+                <img src="../../@frontend/images/socialite/FB.png" alt="Facebook" />
+                <span>Sign in with Facebook</span>
+              </a>
+            </li>
+            <!-- <li>
               <a href="javascript:void(0)" @click="handleSocialLogin('github')">
                 <img src="../../@frontend/images/socialite/Git.png" alt="GitHub" />
                 <span>Sign in with Github</span>
               </a>
-            </li>
+            </li> -->
           </ul>
         </div>
 

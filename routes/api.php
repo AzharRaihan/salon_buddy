@@ -231,6 +231,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::controller(BookingController::class)->group(function () {
         Route::get('booking-details-pos/{id}', 'getBookingDetailsForPOS');
         Route::put('update-booking-date/{id}', 'updateBookingDate');
+        Route::put('bookings/{id}/status', 'updateStatus');
     });
     
     // Dashboard routes

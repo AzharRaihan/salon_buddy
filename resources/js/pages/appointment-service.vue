@@ -275,7 +275,7 @@ const handleNextStep = () => {
         selectedServices: selectedServices.value,
         selectedDate: selectedDate.value,
         selectedTime: selectedTime.value,
-        customerForm: customerForm.value
+        customerForm: customerForm.value ?? customer.value
       })
       showLoginModal.value = true
       return
@@ -285,17 +285,17 @@ const handleNextStep = () => {
   if (currentStep.value == 2) {
     if (!canProceedToStep3.value) {
       const errors = {}
-      if (!customerForm.value.name) {
+      if (!customerForm.value.name ?? customer.value.name) {
         errors.name = 'Name is required'
       }
-      if (!customerForm.value.email) {
+      if (!customerForm.value.email ?? customer.value.email) {
         errors.email = 'Email is required'
       } else if (!customerForm.value.email.includes('@') || !customerForm.value.email.includes('.')) {
         errors.email = 'Please enter a valid email'
       }
-      if (!customerForm.value.phone) {
+      if (!customerForm.value.phone ?? customer.value.phone) {
         errors.phone = 'Phone is required'
-      } else if (customerForm.value.phone.length < 6 || isNaN(customerForm.value.phone.replace(/[\s+()-]/g, ''))) {
+      } else if ((customerForm.value.phone.length < 6 || isNaN(customerForm.value.phone.replace(/[\s+()-]/g, ''))) ?? (customer.value.phone.length < 6 || isNaN(customer.value.phone.replace(/[\s+()-]/g, '')))) {
         errors.phone = 'Please enter a valid phone number'
       }
       
@@ -320,7 +320,7 @@ const handlePreviousStep = () => {
 const handleBooking = async () => {
   try {
     // Validate customer data exists
-    if (!customerForm.value.name || !customerForm.value.email || !customerForm.value.phone) {
+    if ((!customerForm.value.name ?? customer.value.name) || (!customerForm.value.email ?? customer.value.email) || (!customerForm.value.phone ?? customer.value.phone)) {
       validationErrors.value = {
         booking: 'Customer information is missing. Please go back and fill in all required fields.'
       }
@@ -328,9 +328,9 @@ const handleBooking = async () => {
     }
 
     const orderData = {
-      customer_name: customerForm.value.name.trim(),
-      customer_email: customerForm.value.email.trim(),
-      customer_phone: customerForm.value.phone.trim(),
+      customer_name: customerForm.value.name.trim() ?? customer.value.name.trim(),
+      customer_email: customerForm.value.email.trim() ?? customer.value.email.trim(),
+      customer_phone: customerForm.value.phone.trim() ?? customer.value.phone.trim(),
       customer_address: customerForm.value.address?.trim() || '',
       branch_id: selectedBranch.value.id,
       appointment_date: selectedServices.value[0]?.date || new Date().toISOString().split('T')[0],
@@ -381,7 +381,7 @@ const saveCurrentBookingData = () => {
     selectedServices: selectedServices.value,
     selectedDate: selectedDate.value,
     selectedTime: selectedTime.value,
-    customerForm: customerForm.value
+    customerForm: customerForm.value ?? customer.value
   })
 }
 
@@ -390,10 +390,10 @@ const handleLoginSuccess = (userData) => {
   
   // Pre-fill customer form with user data
   if (userData) {
-    customerForm.value.name = userData.name || ''
-    customerForm.value.email = userData.email || ''
-    customerForm.value.phone = userData.phone || ''
-    customerForm.value.address = userData.address || ''
+    customerForm.value.name = userData.name ?? customer.value.name
+    customerForm.value.email = userData.email ?? customer.value.email
+    customerForm.value.phone = userData.phone ?? customer.value.phone
+    customerForm.value.address = userData.address ?? customer.value.address
   }
 
   // Move to step 2
@@ -418,10 +418,10 @@ const initializeUserData = () => {
   if (isCustomerAuthenticated.value) {
     const currentCustomer = getCurrentCustomer()
     if (currentCustomer) {
-      customerForm.value.name = currentCustomer.name || ''
-      customerForm.value.email = currentCustomer.email || ''
-      customerForm.value.phone = currentCustomer.phone || ''
-      customerForm.value.address = currentCustomer.address || ''
+      customerForm.value.name = currentCustomer.name ?? customer.value.name
+      customerForm.value.email = currentCustomer.email ?? customer.value.email
+      customerForm.value.phone = currentCustomer.phone ?? customer.value.phone
+      customerForm.value.address = currentCustomer.address ?? customer.value.address
     }
   }
   
@@ -433,7 +433,7 @@ const initializeUserData = () => {
       selectedServices,
       selectedDate,
       selectedTime,
-      customerForm
+      customerForm: customerForm.value ?? customer.value
     }
     
     const restored = restoreBookingData(bookingFlowRefs)
@@ -506,7 +506,7 @@ onMounted(async () => {
     selectedServices,
     selectedDate,
     selectedTime,
-    customerForm
+    customerForm: customerForm.value ?? customer.value
   }
   createAutoSaveWatcher(bookingFlowRefs)
 })
@@ -746,14 +746,15 @@ definePage({
             <div class="col-lg-4 mb-3">
               <div class="form-group">
                 <label for="name">{{ t('Name') }} <span class="required-star">*</span></label>
-                <input 
-                  v-model="customerForm.name"
-                  type="text" 
-                  class="form-control" 
-                  id="name" 
+                <input
+                  :value="customerForm.name ?? customer.name"
+                  @input="customerForm.name = $event.target.value"
+                  type="text"
+                  class="form-control"
+                  id="name"
                   :placeholder="t('Enter your name')"
                   :class="{ 'is-invalid': currentStep == 2 && validationErrors.name }"
-                >
+                />
                 <div v-if="currentStep == 2 && validationErrors.name" class="invalid-feedback">
                   {{ validationErrors.name }}
                 </div>
@@ -763,7 +764,8 @@ definePage({
               <div class="form-group">
                 <label for="email">{{ t('Email') }} <span class="required-star">*</span></label>
                 <input 
-                  v-model="customerForm.email"
+                  :value="customerForm.email ?? customer.email"
+                  @input="customerForm.email = $event.target.value"
                   type="email" 
                   class="form-control" 
                   id="email" 
@@ -779,7 +781,8 @@ definePage({
               <div class="form-group">
                 <label for="phone">{{ t('Phone') }} <span class="required-star">*</span></label>
                 <input 
-                  v-model="customerForm.phone"
+                  :value="customerForm.phone ?? customer.phone"
+                  @input="customerForm.phone = $event.target.value"
                   type="text" 
                   class="form-control" 
                   id="phone" 
@@ -795,7 +798,8 @@ definePage({
               <div class="form-group">
                 <label for="address">{{ t('Address') }}</label>
                 <textarea 
-                  v-model="customerForm.address"
+                  :value="customerForm.address ?? customer.address"
+                  @input="customerForm.address = $event.target.value"
                   rows="5" 
                   name="address" 
                   id="address" 
@@ -861,15 +865,15 @@ definePage({
                     <div class="detail-card">
                       <div class="detail-row">
                         <span class="detail-label">{{ t('Customer') }}</span>:
-                        <span class="detail-value">{{ customerForm.name }}</span>
+                        <span class="detail-value">{{ customerForm.name ?? customer.name }}</span>
                       </div>
                       <div class="detail-row">
                         <span class="detail-label">{{ t('Email') }}</span>:
-                        <span class="detail-value">{{ customerForm.email }}</span>
+                        <span class="detail-value">{{ customerForm.email ?? customer.email }}</span>
                       </div>
                       <div class="detail-row">
                         <span class="detail-label">{{ t('Phone') }}</span>:
-                        <span class="detail-value">{{ customerForm.phone }}</span>
+                        <span class="detail-value">{{ customerForm.phone ?? customer.phone }}</span>
                       </div>
                     </div>
                   </div>

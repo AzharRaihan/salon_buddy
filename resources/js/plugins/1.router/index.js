@@ -74,6 +74,8 @@ router.replace = function (location, ...args) {
 
 // Updated navigation guard
 router.beforeEach((to, from, next) => {
+
+
   // Admin/Staff Authentication cookies
   const accessToken = useCookie("accessToken").value;
   const userData = useCookie("userData").value;
@@ -101,9 +103,9 @@ router.beforeEach((to, from, next) => {
   // Define public frontend pages that don't require authentication
   const publicFrontendPages = [
     "/", 
-    "/customer-panel/login", 
-    "/customer-panel/register", 
-    "/customer-panel/forgot-password",
+    "/login_", 
+    "/register_", 
+    "/forgot-password_",
     "/aboutus",
     "/contact-us",
     "/service",
@@ -122,32 +124,30 @@ router.beforeEach((to, from, next) => {
 
   // Define customer-only pages that require customer authentication
   const customerOnlyPages = [
-    "/customer-panel/dashboard",
-    "/customer-panel/service-order",
-    "/customer-panel/product-order", 
-    "/customer-panel/transaction-history",
-    "/customer-panel/package-order",
-    "/customer-panel/package-details",
-    "/customer-panel/profile-setting"
+    "/dashboard_",
+    "/service-order_",
+    "/product-order_", 
+    "/transaction-history_",
+    "/package-order_",
+    "/package-details_",
+    "/profile-setting_"
   ];
 
   // Define backend public pages
-  const publicBackendPages = ["/login", "/register", "/forgot-password"];
-  
+  const publicBackendPages = ["/admin-login", "/admin-register", "forgot-password-step-1", "forgot-password-step-2", "forgot-password-step-3"];
+
   // Check if current route is a public frontend page
   const isPublicFrontendPage = publicFrontendPages.includes(to.path) || 
-                               (to.meta?.public === true);
+                               (to.meta?.public == true);
 
   // Check if current route is a customer-only page
   const isCustomerOnlyPage = customerOnlyPages.includes(to.path);
 
   // Check if current route is a public backend page
-  const isPublicBackendPage = publicBackendPages.includes(to.path) || 
-                              to.path.startsWith("/forgot-password/");
-
+  const isPublicBackendPage = publicBackendPages.includes(to.path);
 
   // Handle admin redirect if admin is logged in and trying to access login pages
-  if (userData && (to.path == "/login") ) {
+  if (userData && (to.path == "/admin-login") ) {
     // toast("You've already logged in as an admin, Please logout to access this page", {
     //   type: "warning",
     //   position: "top-right",
@@ -156,14 +156,13 @@ router.beforeEach((to, from, next) => {
     return next({ path: "/dashboard" });
   }
 
-
   // Handle customer dashboard redirect
-  if (customerData && (to.path == "/customer-panel/login" || to.path == "/customer-panel/register" || to.path == "/login")) {
-    return next({ path: "/customer-panel/dashboard" });
+  if (customerData && (to.path == "/login_" || to.path == "/register_" || to.path == "/admin-login")) {
+    return next({ path: "/dashboard_" });
   }
 
   // Handle admin redirect if admin is logged in and trying to access customer panel pages
-  if (userData && (to.path == "/customer-panel/login" || to.path == "/customer-panel/register" || to.path == "/customer-panel/dashboard" || to.path == "/customer-panel/service-order" || to.path == "/customer-panel/product-order" || to.path == "/customer-panel/package-order" || to.path == "/customer-panel/profile-setting" || to.path == "/customer-panel/transaction-history" || to.path == "/customer-panel/package-details") ) {
+  if (userData && (to.path == "/login_" || to.path == "/register_" || to.path == "/dashboard_" || to.path == "/service-order_" || to.path == "/product-order_" || to.path == "/package-order_" || to.path == "/profile-setting_" || to.path == "/transaction-history_" || to.path == "/package-details_") ) {
     // toast("You've already logged in as an admin, Please logout to access this page", {
     //   type: "warning",
     //   position: "top-right",
@@ -180,7 +179,7 @@ router.beforeEach((to, from, next) => {
         position: "top-right",
         autoClose: 3000
       });
-      return next({ path: "/customer-panel/login" });
+      return next({ path: "/login_" });
     }
     return next();
   }
@@ -202,7 +201,7 @@ router.beforeEach((to, from, next) => {
 
   // Admin/Staff specific checks
   if (
-    userData?.is_first_login === 0 &&
+    userData?.is_first_login == 0 &&
     to.path !== "/profile/security-question"
   ) {
     toast("This is your first login, Please setup your security question first!, Until you setup your security question you can't access any page, You should remember your security question and answer for future password reset.", {
@@ -216,7 +215,7 @@ router.beforeEach((to, from, next) => {
   // URL Protection if Branch is not set at cookie (Admin/Staff only)
   const branchPaths = ["/purchase/create", "/purchase", "/stock/stock", "/stock/alert-stock", "/sale", "/customer-receive/create", "/customer-receive", "/supplier-payment/create", "/supplier-payment", "/expense/create", "/expense", "/salary/create", "/salary", "/booking/calendar", "/booking/create", "/booking", "/promotion/create", "/promotion", "/dashboard", "/pos"];
   
-  if (branch_info === 0 && branchPaths.includes(to.path)) {
+  if (branch_info == 0 && branchPaths.includes(to.path)) {
     toast("Please select your branch first", {
       type: "warning",
       position: "top-right",

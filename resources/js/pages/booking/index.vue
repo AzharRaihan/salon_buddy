@@ -27,6 +27,25 @@ const isConfirmDialogOpen = ref(false)
 const selectedBookingId = ref(null)
 const bookingData = ref(null)
 
+// Offcanvas state for status editing
+const showOffcanvas = ref(false)
+const isEditingStatus = ref(false)
+const editingBookingId = ref(null)
+const editingBooking = ref(null)
+
+// Form data for status editing
+const statusForm = ref({
+    status: '',
+    send_sms: false,
+    send_email: false,
+    send_whatsapp: false
+})
+
+// Form errors
+const statusFormErrors = ref({
+    status: ''
+})
+
 
 // Company formatters
 const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber } = useCompanyFormatters()
@@ -140,6 +159,106 @@ const handleDelete = async (confirmed) => {
     }
 }
 
+// Offcanvas functions for status editing
+const openStatusOffcanvas = (booking) => {
+    // Prevent editing if status is Completed
+    if (booking.status === 'Completed') {
+        toast(t('Cannot edit completed bookings'), { type: 'error' })
+        return
+    }
+    
+    isEditingStatus.value = true
+    editingBookingId.value = booking.id
+    editingBooking.value = booking
+    statusForm.value = {
+        status: booking.status,
+        send_sms: false,
+        send_email: false,
+        send_whatsapp: false
+    }
+    resetStatusFormErrors()
+    showOffcanvas.value = true
+}
+
+const closeStatusOffcanvas = () => {
+    showOffcanvas.value = false
+    isEditingStatus.value = false
+    editingBookingId.value = null
+    editingBooking.value = null
+    resetStatusForm()
+}
+
+const resetStatusForm = () => {
+    statusForm.value = {
+        status: '',
+        send_sms: false,
+        send_email: false,
+        send_whatsapp: false
+    }
+    resetStatusFormErrors()
+}
+
+const resetStatusFormErrors = () => {
+    statusFormErrors.value = {
+        status: ''
+    }
+}
+
+const validateStatusForm = () => {
+    let isValid = true
+    resetStatusFormErrors()
+
+    if (!statusForm.value.status) {
+        statusFormErrors.value.status = t('Status is required')
+        isValid = false
+    }
+
+    return isValid
+}
+
+const updateBookingStatus = async () => {
+    if (!validateStatusForm()) {
+        toast(t('Please fix the errors in the form'), { type: 'error' })
+        return
+    }
+
+    try {
+        const response = await $api(`/bookings/${editingBookingId.value}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                status: statusForm.value.status,
+                send_sms: statusForm.value.send_sms,
+                send_email: statusForm.value.send_email,
+                send_whatsapp: statusForm.value.send_whatsapp
+            }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+
+        if (response.success) {
+            toast(response.message || t('Booking status updated successfully'), {
+                type: 'success'
+            })
+            resetStatusForm()
+            closeStatusOffcanvas()
+            await fetchBookings()
+        } else {
+            toast(response.message || t('Operation failed'), { type: 'error' })
+        }
+    } catch (error) {
+        console.error('Error updating booking status:', error)
+        if (error.errors) {
+            // Handle validation errors
+            Object.keys(error.errors).forEach(key => {
+                if (statusFormErrors.value.hasOwnProperty(key)) {
+                    statusFormErrors.value[key] = error.errors[key][0]
+                }
+            })
+        } else {
+            toast(t('An error occurred while updating status'), { type: 'error' })
+        }
+    }
+}
+
 // Watch for changes in search query
 watch(searchQuery, () => {
     page.value = 1 // Reset to first page when searching
@@ -233,6 +352,17 @@ onMounted(async () => {
                             <VIcon size="22" icon="tabler-edit" />
                         </VBtn>
 
+                        <VBtn 
+                            icon 
+                            variant="text" 
+                            color="warning" 
+                            size="small"
+                            @click="openStatusOffcanvas(item)"
+                            :disabled="item.status === 'Completed'"
+                        >
+                            <VIcon size="22" icon="tabler-settings" />
+                        </VBtn>
+
                         <VBtn icon variant="text" color="error" size="small" @click="openConfirmDialog(item.id)">
                             <VIcon size="22" icon="tabler-trash" />
                         </VBtn>
@@ -245,6 +375,107 @@ onMounted(async () => {
             :confirmation-question="$t('Are you sure you want to delete this booking?')" :confirm-title="$t('Deleted!')"
             :confirm-msg="$t('Booking has been deleted successfully.')" :cancel-title="$t('Cancelled')"
             :cancel-msg="$t('Booking Deletion Cancelled!')" @confirm="handleDelete" />
+
+        <!-- Offcanvas for Status Editing -->
+        <VNavigationDrawer
+            v-model="showOffcanvas"
+            location="end"
+            temporary
+            width="500"
+        >
+            <VCard flat>
+                <VCardTitle class="d-flex justify-space-between align-center pa-4">
+                    <span>{{ t('Update Booking Status') }}</span>
+                    <VBtn icon variant="text" @click="closeStatusOffcanvas">
+                        <VIcon icon="tabler-x" />
+                    </VBtn>
+                </VCardTitle>
+
+                <VDivider />
+
+                <VCardText class="pa-4">
+                    <!-- Booking Info Display -->
+                    <div v-if="editingBooking" class="mb-4 pa-3 bg-grey-lighten-5 rounded">
+                        <div class="text-subtitle-2 mb-2">{{ t('Booking Details') }}</div>
+                        <div class="text-body-2">
+                            <div><strong>{{ t('Reference') }}:</strong> {{ editingBooking.reference_no }}</div>
+                            <div><strong>{{ t('Customer') }}:</strong> {{ editingBooking.customer_name }}</div>
+                            <div><strong>{{ t('Date') }}:</strong> {{ editingBooking.formatted_date }}</div>
+                            <div><strong>{{ t('Current Status') }}:</strong> 
+                                <VChip 
+                                    :color="editingBooking.status == 'Pending' ? 'warning' : editingBooking.status == 'Rejected' ? 'error' : editingBooking.status == 'Completed' ? 'success' : 'info'"
+                                    size="small"
+                                    class="ml-2"
+                                >
+                                    {{ editingBooking.status }}
+                                </VChip>
+                            </div>
+                        </div>
+                    </div>
+
+                    <VForm @submit.prevent="updateBookingStatus">
+                        <VRow>
+                            <!-- Status Selection -->
+                            <VCol cols="12">
+                                <AppAutocomplete
+                                    v-model="statusForm.status"
+                                    :items="['Pending', 'Accepted', 'Rejected']"
+                                    :label="t('New Status')"
+                                    :placeholder="t('Select Status')"
+                                    :error-messages="statusFormErrors.status"
+                                    clearable
+                                    required
+                                />
+                            </VCol>
+
+                            <!-- Notification Options -->
+                            <VCol cols="12">
+                                <div class="text-subtitle-2 mb-3">{{ t('Send Notifications') }}</div>
+                                <VCheckbox
+                                    v-model="statusForm.send_sms"
+                                    :label="t('Send SMS')"
+                                    class="mb-2"
+                                />
+                                <VCheckbox
+                                    v-model="statusForm.send_email"
+                                    :label="t('Send Email')"
+                                    class="mb-2"
+                                />
+                                <VCheckbox
+                                    v-model="statusForm.send_whatsapp"
+                                    :label="t('Send WhatsApp Message')"
+                                />
+                            </VCol>
+                        </VRow>
+
+                        <!-- Form Actions -->
+                        <VRow class="mt-4">
+                            <VCol cols="12" class="d-flex gap-3">
+                                <VBtn
+                                    type="submit"
+                                    color="primary"
+                                    :loading="false"
+                                    block
+                                >
+                                    <VIcon start icon="tabler-check" />
+                                    {{ t('Update Status') }}
+                                </VBtn>
+                                <VBtn
+                                    type="button"
+                                    color="secondary"
+                                    variant="outlined"
+                                    @click="closeStatusOffcanvas"
+                                    block
+                                >
+                                    <VIcon start icon="tabler-x" />
+                                    {{ t('Cancel') }}
+                                </VBtn>
+                            </VCol>
+                        </VRow>
+                    </VForm>
+                </VCardText>
+            </VCard>
+        </VNavigationDrawer>
     </div>
 </template>
 

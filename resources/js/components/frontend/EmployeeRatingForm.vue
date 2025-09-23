@@ -260,7 +260,7 @@ const eligibilityMessageType = computed(() => {
       <div v-if="!isCustomerAuthenticated" class="text-center mt-3">
         <p class="text-muted">
           {{ t('Please') }} 
-          <RouterLink to="/customer-panel/login" class="text-primary">
+          <RouterLink to="/login_" class="text-primary">
             {{ t('login') }}
           </RouterLink> 
           {{ t('to submit a rating') }}

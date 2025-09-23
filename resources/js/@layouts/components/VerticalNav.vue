@@ -99,7 +99,7 @@ const logout = async () => {
       toast("Logout Successfully!", {
         "type": "success",
       });
-      router.replace('/login')
+      router.replace('/admin-login')
     })
   }
   catch (err) {

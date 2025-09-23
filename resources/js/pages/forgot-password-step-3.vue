@@ -1,7 +1,6 @@
 <script setup>
 import LogoPart from '@/components/auth/LogoPart.vue';
 import { useForgotPasswordStore } from '@/stores/forgotPassword'
-import securityQuestions from '@core/sampleQustions.json'
 import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
 import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
@@ -21,7 +20,7 @@ if (!forgotPasswordStore.hasEmail()) {
     toast('Please enter your email first', {
         type: 'error',
     })
-    router.push('/forgot-password-step-1')
+    router.push('/step-1')
 }
 
 definePage({
@@ -31,51 +30,64 @@ definePage({
     },
 })
 
-const form = ref({ question: null, answer: '' })
+const form = ref({
+    newPassword: '',
+    confirmPassword: '',
+})
 
-const questionError = ref('')
-const answerError = ref('')
+const isPasswordVisible = ref(false)
+const isConfirmPasswordVisible = ref(false)
 
-const items = Object.values(securityQuestions)
+const passwordError = ref('')
+const confirmPasswordError = ref('')
 
-const validateQuestion = (question) => {
-    if (!question) {
-        questionError.value = t('Question is required')
+const validatePassword = (password) => {
+    if (!password) {
+        passwordError.value = t('Password is required')
         return false
     }
+
+    if (password.length < 6) {
+        passwordError.value = t('Password must be at least 6 characters long')
+        return false
+    }
+
+    passwordError.value = ''
     return true
 }
 
-const validateAnswer = (answer) => {
-    if (!answer) {
-        answerError.value = t('Answer is required')
+const validateConfirmPassword = (confirmPassword) => {
+    if (!confirmPassword) {
+        confirmPasswordError.value = t('Confirm password is required')
+        return false
+    } else if (confirmPassword !== form.value.newPassword) {
+        confirmPasswordError.value = t('Passwords do not match')
         return false
     }
+    confirmPasswordError.value = ''
     return true
 }
 
 const forgotPassword = async () => {
     loadings.value = true
-    if (!validateQuestion(form.value.question) || !validateAnswer(form.value.answer)) {
-        loadings.value = false
-        return
-    }
-
     try {
-        const res = await $api('/forgot-password/step-2', {
+        const res = await $api('/forgot-password/step-3', {
             method: 'POST',
             body: {
                 email: forgotPasswordStore.email,
-                question: form.value.question,
-                answer: form.value.answer,
+                password: form.value.newPassword,
+                password_confirmation: form.value.confirmPassword,
             },
             onResponseError({ response }) {
+                toast(response._data.message, {
+                    type: 'error',
+                })
                 loadings.value = false
                 return Promise.reject(response._data)
             },
         })
 
-        const { status, error, message } = res
+        const { status, message } = res
 
         if (status == 'error') {
             toast(message, {
@@ -89,30 +101,18 @@ const forgotPassword = async () => {
             "type": "success",
         });
 
+        // Store email in Pinia before navigation
+        forgotPasswordStore.clearEmail()
         setTimeout(() => {
-            router.push('/forgot-password-step-3')
+            router.push('/admin-login')
         }, 1000)
-        
     }
     catch (err) {
-        if (err.error == 'question') {
-            questionError.value = err.message
-            if (form.value.answer == '') {
-                answerError.value = t('Answer is required')
-            } else {
-                answerError.value = ''
-            }
-        } else if (err.error == 'answer') {
-            answerError.value = err.message
-            questionError.value = ''
-        } else {
-            toast(err.message, {
-                type: 'error',
-            })
-        }
+        console.error(err)
         loadings.value = false
     }
 }
+
 
 </script>
 
@@ -127,43 +127,44 @@ const forgotPassword = async () => {
             <VNodeRenderer :nodes="h('div', { innerHTML: authV1BottomShape })"
                 class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
 
-            <!-- 👉 Auth card -->
-            <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
+            <!-- 👉 Auth Card -->
+            <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-2'">
                 <LogoPart />
 
                 <VCardText>
                     <h4 class="text-h4 mb-1">
-                        {{ $t('Verify Security') }}
+                        {{ $t('Reset Password') }} 🔒
                     </h4>
-                    <p class="mb-0">
-                        {{ $t('Select the security question and enter the answer.') }}
-                    </p>
                 </VCardText>
 
                 <VCardText>
                     <VForm @submit.prevent="forgotPassword">
                         <VRow>
-                            <!-- answer -->
+                            <!-- password -->
                             <VCol cols="12">
-                                <AppAutocomplete v-model="form.question" autofocus :label="$t('Security Question')" :required="true"
-                                    :items="items" :error-messages="questionError"
-                                    @input="validateQuestion($event.target.value)"
-                                    @blur="validateQuestion(form.question)"
-                                    :placeholder="$t('Select Security Question')" 
-                                    clearable
-                                    />
+                                <AppTextField v-model="form.newPassword" autofocus :label="$t('New Password')" :required="true"
+                                    placeholder="······" :type="isPasswordVisible ? 'text' : 'password'"
+                                    autocomplete="password"
+                                    :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                                    :error-messages="passwordError" @input="validatePassword($event.target.value)" @blur="validatePassword(form.newPassword)" />
                             </VCol>
 
+                            <!-- Confirm Password -->
                             <VCol cols="12">
-                                <AppTextField v-model="form.answer" :label="$t('Answer')" :required="true" type="text"
-                                    :placeholder="$t('Enter your answer')" :error-messages="answerError"
-                                    @input="validateAnswer($event.target.value)" @blur="validateAnswer(form.answer)" />
+                                <AppTextField v-model="form.confirmPassword" :label="$t('Confirm Password')" :required="true"
+                                    autocomplete="confirm-password" placeholder="······"
+                                    :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                                    :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                                    @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                                    :error-messages="confirmPasswordError"
+                                    @input="validateConfirmPassword($event.target.value)" @blur="validateConfirmPassword(form.confirmPassword)" />
                             </VCol>
 
                             <!-- reset password -->
                             <VCol cols="12">
                                 <VBtn block type="submit" :loading="loadings" :disabled="loadings">
-                                    {{ $t('Go to next step') }}
+                                    {{ $t('Set New Password') }}
                                 </VBtn>
                             </VCol>
 

@@ -4,7 +4,7 @@ import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 import BookingSamllBtn from '@/components/frontend/mini-components/BookingSamllBtn.vue' 
 import BookingSamllBtn2 from '@/components/frontend/mini-components/BookingSamllBtn2.vue'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
-import AppAutocomplete from '../../@core/components/app-form-elements/AppAutocomplete.vue'
+import AppAutocomplete from '../../js/@core/components/app-form-elements/AppAutocomplete.vue'
 
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n()

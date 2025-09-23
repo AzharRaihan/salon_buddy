@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('salary_payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('salary_id')->nullable();
-            $table->decimal('payment_method_id', 10, 3);
+            $table->unsignedInteger('payment_method_id')->nullable();
             $table->decimal('amount', 10, 3);
             $table->unsignedInteger('company_id')->nullable();
             $table->enum('del_status', ['Live', 'Deleted'])->default('Live');

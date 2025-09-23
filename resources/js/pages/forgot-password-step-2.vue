@@ -21,7 +21,7 @@ if (!forgotPasswordStore.hasEmail()) {
     toast('Please enter your email first', {
         type: 'error',
     })
-    router.push('/forgot-password-step-1')
+    router.push('/step-1')
 }
 
 definePage({
@@ -62,7 +62,7 @@ const forgotPassword = async () => {
     }
 
     try {
-        const res = await $api('/forgot-password/step-2', {
+        const res = await $api('/forgot-password-step-2', {
             method: 'POST',
             body: {
                 email: forgotPasswordStore.email,

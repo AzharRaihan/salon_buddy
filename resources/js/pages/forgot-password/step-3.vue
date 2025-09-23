@@ -20,7 +20,7 @@ if (!forgotPasswordStore.hasEmail()) {
     toast('Please enter your email first', {
         type: 'error',
     })
-    router.push('/forgot-password/step-1')
+    router.push('/forgot-password-step-1')
 }
 
 definePage({
@@ -104,7 +104,7 @@ const forgotPassword = async () => {
         // Store email in Pinia before navigation
         forgotPasswordStore.clearEmail()
         setTimeout(() => {
-            router.push('/login')
+            router.push('/admin-login')
         }, 1000)
     }
     catch (err) {
@@ -170,7 +170,7 @@ const forgotPassword = async () => {
 
                             <!-- back to login -->
                             <VCol cols="12">
-                                <RouterLink class="d-flex align-center justify-center" to="/login">
+                                <RouterLink class="d-flex align-center justify-center" to="/admin-login">
                                     <VIcon icon="tabler-chevron-left" size="20" class="me-1 flip-in-rtl" />
                                     <span>{{ $t('Back to login') }}</span>
                                 </RouterLink>

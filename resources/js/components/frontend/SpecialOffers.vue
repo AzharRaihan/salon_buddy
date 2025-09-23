@@ -13,7 +13,7 @@
       <section class="about-area-one" id="ourServices">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-6 col-xl-4 pd-0" v-for="offer in displayedOffers" 
+            <div class="col-md-6 col-lg-6 col-xl-4 pd-0" v-for="offer in displayedOffers" 
             :key="offer.id">
               <div class="about-list-right">
                 <figure>
@@ -21,7 +21,7 @@
                   <span class="save-badge" v-if="offer.discount">{{ formatAmount(offer.saveAmount) }} {{ t('OFF') }}</span>
                 </figure>
                 <div class="content">
-                  <h4>{{ offer.name }}</h4>
+                  <h4 v-tooltip="offer.name">{{ offer.name }}</h4>
                   <div class="serviceInfoMain">
                     <div class="media">
                       <VIcon icon="tabler-clock" size="24" class="serviceInfoicon" />
@@ -43,12 +43,14 @@
                     <div class="attached-services">
                       <ul>
                         <li v-for="service in offer.services" :key="service.name">
-                          <span>
-                            <VIcon icon="tabler-check" size="24" class="serviceInfoicon" />
-                          </span>
-                          <span class="pe-2">
-                            {{ service.name }} ({{ service.quantity }} x)
-                          </span>
+                          <div v-tooltip="service.name + ' (' + service.quantity + ' x)'">
+                            <span>
+                              <VIcon icon="tabler-check" size="24" class="serviceInfoicon" />
+                            </span>
+                            <span class="pe-2">
+                              {{ service.name }} ({{ service.quantity }} x)
+                            </span>
+                          </div>
                         </li>
                       </ul>
                     </div>

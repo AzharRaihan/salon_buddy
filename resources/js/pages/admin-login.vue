@@ -15,6 +15,9 @@ const router = useRouter()
 const route = useRoute()
 const loadings = ref(false)
 
+console.log("OK")
+
+
 definePage({
   meta: {
     layout: 'blank',
@@ -26,6 +29,15 @@ const form = ref({
   email: '',
   password: '',
   remember: false,
+})
+
+onMounted(() => {
+  if (!sessionStorage.getItem('pageReloaded')) {
+    sessionStorage.setItem('pageReloaded', 'true')
+    window.location.reload()
+  } else {
+    sessionStorage.removeItem('pageReloaded') // reset for next visit
+  }
 })
 
 const isPasswordVisible = ref(false)
@@ -149,7 +161,7 @@ const login = async () => {
 
                 <!-- remember me checkbox -->
                 <div class="text-end my-6">
-                  <RouterLink class="text-primary" to="/forgot-password/step-1">
+                  <RouterLink class="text-primary" to="/forgot-password-step-1">
                     {{ $t('Forgot Password?') }}
                   </RouterLink>
                 </div>

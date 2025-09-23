@@ -449,6 +449,12 @@
     "usePackageData": true,
     "useCustomerFormPrefill": true,
     "useEmployeeRating": true,
-    "useToast": true
+    "useToast": true,
+    "createRef": true,
+    "onElementRemoval": true,
+    "useCountdown": true,
+    "usePreferredReducedTransparency": true,
+    "useSSRWidth": true,
+    "useTimeAgoIntl": true
   }
 }

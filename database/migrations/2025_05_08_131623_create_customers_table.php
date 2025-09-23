@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 255)->nullable();
             $table->string('address', 255)->nullable();
-            $table->string('photo', 55)->nullable();
+            $table->string('photo', 500)->nullable();
             $table->enum('same_or_diff_state', ['Same', 'Different'])->default('Same');
             $table->string('gst_number', 55)->nullable();
             $table->string('date_of_birth', 25)->nullable();

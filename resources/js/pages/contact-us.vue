@@ -1,6 +1,6 @@
 <script setup>
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
-import BookingSamllBtn from '@/components/frontend/mini-components/BookingSamllBtn.vue'
+import BookingSamllBtn2 from '@/components/frontend/mini-components/BookingSamllBtn2.vue'
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 import { ref, onMounted, computed } from 'vue'
 import { toast } from 'vue3-toastify';
@@ -187,7 +187,8 @@ definePage({
                       </div>
                     </div>
                   </div>
-                  <BookingSamllBtn :text="loading ? t('Sending...') : t('Send Message')" :disabled="loading" />
+                  
+                  <BookingSamllBtn2 type="submit"  :text="loading ? t('Sending...') : t('Send Message')" :disabled="loading" />
                 </form>
               </div>
             </div>

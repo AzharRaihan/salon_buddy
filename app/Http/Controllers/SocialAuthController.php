@@ -89,7 +89,7 @@ class SocialAuthController extends Controller
             $token = $customer->createToken('customer_auth_token')->plainTextToken;
 
             // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/customer-panel/login');
+            $returnUrl = session('social_return_url', '/login_');
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
@@ -112,7 +112,7 @@ class SocialAuthController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             
-            $returnUrl = session('social_return_url', '/customer-panel/login');
+            $returnUrl = session('social_return_url', '/login_');
             session()->forget('social_return_url');
             
             // $frontendUrl = config('app.url', config('app.url'));
@@ -154,7 +154,7 @@ class SocialAuthController extends Controller
             $token = $customer->createToken('customer_auth_token')->plainTextToken;
 
             // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/customer-panel/login');
+            $returnUrl = session('social_return_url', '/login_');
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
@@ -170,7 +170,7 @@ class SocialAuthController extends Controller
             return redirect($frontendUrl . $returnUrl . '?token=' . $token . '&status=success&customer=' . $customerEncoded);
 
         } catch (\Exception $e) {
-            $returnUrl = session('social_return_url', '/customer-panel/login');
+            $returnUrl = session('social_return_url', '/login_');
             session()->forget('social_return_url');
             
             $frontendUrl = config('app.frontend_url', config('app.url'));
@@ -211,7 +211,7 @@ class SocialAuthController extends Controller
             $token = $customer->createToken('customer_auth_token')->plainTextToken;
 
             // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/customer-panel/login');
+            $returnUrl = session('social_return_url', '/login_');
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
@@ -227,7 +227,7 @@ class SocialAuthController extends Controller
             return redirect($frontendUrl . $returnUrl . '?token=' . $token . '&status=success&customer=' . $customerEncoded);
 
         } catch (\Exception $e) {
-            $returnUrl = session('social_return_url', '/customer-panel/login');
+            $returnUrl = session('social_return_url', '/login_');
             session()->forget('social_return_url');
             
             $frontendUrl = config('app.frontend_url', config('app.url'));

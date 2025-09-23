@@ -15,7 +15,7 @@
       <div class="testimonial-header">
         <div class="customer-image">
           <img 
-            :src="testimonial.photo_url" 
+            :src="defaultAvatar" 
             :alt="testimonial.name"
             class="img-fluid"
             @error="handleImageError"
@@ -32,6 +32,7 @@
 
 <script setup>
 import StarRating from './StarRating.vue'
+import defaultAvatar from '../../../public/assets/images/default-images/avatar.png'
 
 const props = defineProps({
   testimonial: {
@@ -47,7 +48,7 @@ const props = defineProps({
  * Handle image loading errors by setting a default image
  */
 const handleImageError = (event) => {
-  event.target.src = '/assets/images/system-config/default-picture.png'
+  event.target.src = '/public/assets/images/system-config/default-picture.png'
 }
 </script>
 

@@ -126,7 +126,10 @@ const statusClass = computed(() => {
       </div>
       <!-- Modal Footer -->
       <div class="modal-footer">
-        <button class="btn btn-secondary" @click="closeModal">{{ t('Close') }}</button>
+        <VBtn color="error" variant="tonal" @click="closeModal">
+          <VIcon start icon="tabler-x" />
+          {{ t('Close') }}
+        </VBtn>
       </div>
     </div>
   </div>

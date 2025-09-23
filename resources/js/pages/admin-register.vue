@@ -157,7 +157,7 @@ const register = async () => {
               <!-- login instead -->
               <VCol cols="12" class="text-center text-base">
                 <span>{{ t('Already have an account?') }}</span>
-                <RouterLink class="text-primary ms-1" to="/login">
+                <RouterLink class="text-primary ms-1" to="/admin-login">
                   {{ t('Sign in instead') }}
                 </RouterLink>
               </VCol>

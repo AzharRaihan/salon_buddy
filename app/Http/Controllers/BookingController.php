@@ -282,6 +282,54 @@ class BookingController extends Controller
     }
 
     /**
+     * Update booking status with notifications
+     */
+    public function updateStatus(Request $request, string $id)
+    {
+        try {
+            $booking = Booking::findOrFail($id);
+            
+            // Validate request
+            $validationRules = [
+                'status' => 'required|in:Pending,Accepted,Completed,Rejected',
+                'send_sms' => 'boolean',
+                'send_email' => 'boolean',
+                'send_whatsapp' => 'boolean',
+            ];
+
+            $validator = Validator::make($request->all(), $validationRules);
+            if ($validator->fails()) {
+                return $this->validationErrorResponse($validator->errors());
+            }
+
+            // Update booking status
+            $booking->update([
+                'status' => $request->status,
+                'updated_at' => now(),
+            ]);
+
+            // Send notifications if requested
+            $notificationData = [
+                'send_sms' => $request->send_sms ?? false,
+                'send_email' => $request->send_email ?? false,
+                'send_whatsapp' => $request->send_whatsapp ?? false,
+                'booking_id' => $booking->id,
+            ];
+
+            $notificationResult = $this->notificationService->sendNotifications($notificationData, 'Booking');
+
+            if ($notificationResult['status'] === 'Success') {
+                return $this->successResponse($booking, 'Booking status updated successfully');
+            } else {
+                return $this->successResponse($booking, 'Booking status updated successfully but ' . $notificationResult['message']);
+            }
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to update booking status: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Get booking details for POS system
      */
     public function getBookingDetailsForPOS(string $id)

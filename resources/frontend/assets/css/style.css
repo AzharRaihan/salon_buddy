@@ -110,7 +110,9 @@ html {
   font-weight: 600;
 }
 
-
+.customer-auth-dropdown.auth-option.dropdown .dropdown-menu {
+  left: -127px;
+}
 
 
 /* Common animation button */
@@ -6098,10 +6100,18 @@ input[type="radio"]:checked ~ .radio-circle:before {
   padding: 0;
   margin: 0;
 }
+
+/* keep it one line after ... */
 .attached-services ul li {
   list-style: none;
   display: flex;
   align-items: center;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 .about-area-one .about-list-right {
   display: flex;
@@ -6163,12 +6173,24 @@ input[type="radio"]:checked ~ .radio-circle:before {
   justify-content: center;
   min-height: 100%;
 }
+
+[dir="rtl"] .about-area-one .about-list-right .content {
+  padding-left: 0;
+  padding-right: 20px;
+}
+
 .about-area-one .about-list-right .content h4 {
   font-size: 28px;
   font-weight: 600;
   margin: 0 0 10px;
   display: block;
   line-height: 35px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 .media {
   display: flex;

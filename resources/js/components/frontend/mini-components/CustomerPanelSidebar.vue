@@ -6,31 +6,31 @@
         </RouterLink>
         <ul>
             <li>
-                <RouterLink to="/customer-panel/dashboard" :class="{ active: $route.name === 'customer-panel-dashboard' }">
+                <RouterLink to="/dashboard_" :class="{ active: $route.name === 'dashboard_' }">
                     <VIcon icon="tabler-layout-dashboard" size="20" />
                     <span>{{ t('Dashboard') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/customer-panel/service-order" :class="{ active: $route.name === 'customer-panel-service-order' }">
+                <RouterLink to="/service-order_" :class="{ active: $route.name === 'service-order_' }">
                     <VIcon icon="tabler-calendar-week" size="20" />
                     <span>{{ t('Booking History') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/customer-panel/product-order" :class="{ active: $route.name === 'customer-panel-product-order' }">
+                <RouterLink to="/product-order_" :class="{ active: $route.name === 'product-order_' }">
                     <VIcon icon="tabler-garden-cart" size="20" />
                     <span>{{ t('Orders') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/customer-panel/package-order" :class="{ active: $route.name === 'customer-panel-package-order' }">
+                <RouterLink to="/package-order_" :class="{ active: $route.name === 'package-order_' }">
                     <VIcon icon="tabler-package" size="20" />
                     <span>{{ t('Package History') }}</span>
                 </RouterLink>
             </li>
             <li>
-                <RouterLink to="/customer-panel/profile-setting" :class="{ active: $route.name === 'customer-panel-profile-setting' }">
+                <RouterLink to="/profile-setting_" :class="{ active: $route.name === 'profile-setting_' }">
                     <VIcon icon="tabler-user-cog" size="20" />
                     <span>{{ t('Profile Settings') }}</span>
                 </RouterLink>
@@ -66,7 +66,7 @@ const handleLogout = async () => {
       autoClose: 2000
     })
     setTimeout(() => {
-      router.push('/customer-panel/login')
+      router.push('/login_')
     }, 1000)
   } catch (error) {
     toast('Error during logout', {
