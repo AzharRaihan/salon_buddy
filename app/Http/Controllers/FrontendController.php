@@ -57,7 +57,7 @@ class FrontendController extends Controller
     public function websiteSettingsFrontend()
     {
         $websiteSettings = WebsiteSetting::where('company_id', 1)->first();
-        $websiteSettings->company = Company::where('id', 1)->select('currency', 'tax_is_gst')->first();
+        $websiteSettings->company = Company::where('id', 1)->select('currency', 'tax_is_gst', 'use_website', 'print_formate', 'over_sale')->first();
         return $this->successResponse($websiteSettings, 'Website settings fetched successfully');
     }
 

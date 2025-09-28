@@ -120,7 +120,7 @@ const logout = async () => {
     <!-- 👉 Header -->
     <div class="nav-header">
       <slot name="nav-header">
-        <RouterLink to="/" class="app-logo app-title-wrapper w-100">
+        <RouterLink to="/admin-dashboard" class="app-logo app-title-wrapper w-100">
           <img v-show="hideTitleAndIcon" :src="siteSettingsStore.getFavicon" alt="Company Logo"
             class="company-logo" />
           

@@ -540,6 +540,12 @@
   .common-page-banner .banner-content-section {
     background-size: contain;
   }
+  .top-bar .email-address {
+    display: none;
+  }
+  .serviceInfoValue  .regular-price {
+    font-size: 14px;
+  }
 
   /* Default Section */
   .section-header h2 {

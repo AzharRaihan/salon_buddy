@@ -11,8 +11,6 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const websiteStore = useWebsiteSettingsStore()
 
-console.log('This is websiteStore', websiteStore)
-
 // Use customer authentication composable
 const { 
   customerRegister, 
@@ -314,7 +312,7 @@ definePage({
 
               <div class="text-center">
                 <p>{{ t('Already have an account?') }}
-                  <RouterLink to="/login_">{{ t('Login') }}</RouterLink>
+                  <RouterLink to="/login">{{ t('Login') }}</RouterLink>
                 </p>
               </div>
             </div>

@@ -72,14 +72,14 @@
                     <VIcon  size="22" icon="tabler-map-pin" />
                     <span>{{ websiteStore.getAddress }}</span>
                   </div>
-                  <div class="contact-item">
+                  <a :href="'tel:' + websiteStore.getPhone" class="contact-item">
                     <VIcon  size="22" icon="tabler-phone" />
                     <span>{{ websiteStore.getPhone }}</span>
-                  </div>
-                  <div class="contact-item">
+                  </a>
+                  <a :href="'mailto:' + websiteStore.getEmail" class="contact-item">
                     <VIcon  size="22" icon="tabler-mail" />
                     <span>{{ websiteStore.getEmail }}</span>
-                  </div>
+                  </a>
                 </div>
                 
               </div>

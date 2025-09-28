@@ -3,6 +3,9 @@ import { createRouter, createWebHistory } from "vue-router/auto";
 import { toast } from 'vue3-toastify';
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 import { storeToRefs } from 'pinia'
+
+
+// import { useCookie } from '@vueuse/core'; // Add missing import
 import Hashids from "hashids";
 
 // Initialize hashids for encryption/decryption

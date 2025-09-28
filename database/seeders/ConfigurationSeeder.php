@@ -32,6 +32,7 @@ class ConfigurationSeeder extends Seeder
             'minimum_point_to_redeem' => '0',
             'print_formate' => '56mm',
             'over_sale' => 'No',
+            'use_website' => 'Yes',
             'loyalty_rate' => '0',
             'item_code_start_from' => '000001',
             'white_label' => json_encode([

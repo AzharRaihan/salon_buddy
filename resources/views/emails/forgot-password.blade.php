@@ -98,7 +98,7 @@
             <p>Your password has been reset. Please use the following temporary password to login:</p>
             <p><strong>Password: {{ $tempPassword }}</strong></p>
             <p>Please change your password after logging in.</p>
-            <p>Login URL: <a href="{{ url('/login_') }}">Login</a></p>
+            <p>Login URL: <a href="{{ url('/login') }}">Login</a></p>
             <div class="footer">
                 <p>🎉 Thank you for using <strong>{{ $companyName }}</strong>! 🎉</p>
             </div>

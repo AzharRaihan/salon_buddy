@@ -47,6 +47,7 @@ class SettingController extends Controller
             'timezone'           => 'required|string|max:255',
             'print_formate'     => 'required|string|max:255',
             'over_sale'          => 'required|string|max:255',
+            'use_website'        => 'required|string|max:255',
         ]);
 
         $company = Company::firstOrNew([]);

@@ -5,22 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    protected $fillable = [
-        'name',
-        'contact_person',
-        'email',
-        'phone',
-        'website',
-        'address',
-        'currency',
-        'currency_position',
-        'precision',
-        'thousand_separator',
-        'decimal_separator',
-        'date_format',
-        'logo',
-        'timezone',
-    ];
+    protected $guarded = ['id'];
 
     protected $appends = [
         'logo_url',

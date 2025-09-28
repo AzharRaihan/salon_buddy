@@ -62,8 +62,6 @@ const getSocialAuthSettings = async () => {
             method: 'GET'
         })
 
-        console.log(res.data)
-
         if (res.success == true) {
             form.value = res.data
             form.value.google_enabled = res.data.google_enabled == 1

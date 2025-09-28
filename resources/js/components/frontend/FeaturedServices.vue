@@ -6,7 +6,7 @@
           <div class="col-12">
             <div class="section-header">
               <h6 class="heading-mini-title">{{ t('Service') }}</h6>
-              <h2 class="section-title">{{ t('Featured Services') }}</h2>
+              <h2 class="section-title">{{ t('Our Services') }}</h2>
 
               <div class="features-category">
                 <a 

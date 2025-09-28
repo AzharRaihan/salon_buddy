@@ -24,6 +24,7 @@ export const useWebsiteSettingsStore = defineStore("websiteSettings", {
     getTaxIsGst: (state) => state.settings?.company?.tax_is_gst || "No",
     getPrintFormate: (state) => state.settings?.company?.print_formate || "56mm",
     getOverSale: (state) => state.settings?.company?.over_sale || "No",
+    getUseWebsite: (state) => state.settings?.company?.use_website,
     getSocialMedia: (state) => {
       if (!state.settings?.social_media) return [];
       try {

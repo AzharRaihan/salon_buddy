@@ -15,8 +15,6 @@ const router = useRouter()
 const route = useRoute()
 const loadings = ref(false)
 
-console.log("OK")
-
 
 definePage({
   meta: {

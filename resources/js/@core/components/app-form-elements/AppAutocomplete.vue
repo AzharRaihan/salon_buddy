@@ -9,19 +9,17 @@ defineOptions({
 
 
 // const { class: _class, label, variant: _, ...restAttrs } = useAttrs()
+const attrs = useAttrs()
 const elementId = computed(() => {
-  const attrs = useAttrs()
   const _elementIdToken = attrs.id
   const _id = useId()
   
   return _elementIdToken ? `app-autocomplete-${ _elementIdToken }` : _id
 })
 
-const label = computed(() => useAttrs().label)
-
+const label = computed(() => attrs.label)
 
 const labelWithAsterisk = computed(() => {
-  const attrs = useAttrs()
   const isRequired = attrs.required !== undefined && attrs.required !== false
 
   if (!label.value) return ''
@@ -30,15 +28,9 @@ const labelWithAsterisk = computed(() => {
     ? `${label.value}<span style='color:red; font-size: 14px; font-weight: 600;'> *</span>`
     : label.value
 })
-const toolTipShow = computed(() => {
-  const attrs = useAttrs()
-  return attrs.tooltipShow
-})
 
-const toolTipTitle = computed(() => {
-  const attrs = useAttrs()
-  return attrs.tooltipTitle
-})
+const toolTipShow = computed(() => attrs.tooltipShow)
+const toolTipTitle = computed(() => attrs.tooltipTitle)
 
 </script>
 

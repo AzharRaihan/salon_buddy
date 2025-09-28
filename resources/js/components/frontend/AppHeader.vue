@@ -7,14 +7,14 @@
         <div class="row align-items-center">
           <div class="col-8 col-md-6 col-lg-6">
             <div class="contact-info d-flex">
-              <span class="phone-number">
+              <a :href="'tel:' + websiteStore.getPhone" class="phone-number">
                 <VIcon icon="tabler-phone" />
                 {{ websiteStore.getPhone }}
-              </span>
-              <span class="email-address">
+              </a>
+              <a :href="'mailto:' + websiteStore.getEmail" class="email-address">
                 <VIcon icon="tabler-mail" />
                 {{ websiteStore.getEmail }}
-              </span>
+              </a>
             </div>
           </div>
           <div class="col-4 col-md-6 col-lg-6 d-flex align-items-center justify-content-end text-end">
@@ -104,7 +104,10 @@
             </a>
 
             <!-- Customer Authentication -->
-            <div v-if="isCustomerAuthenticated" class="customer-auth-dropdown dropdown">
+            <div v-if="isCustomerAuthenticated" class="customer-auth-dropdown dropdown"
+              @mouseenter="showDropdown"
+              @mouseleave="hideDropdown"
+            >
               <a class="dropdown-toggle customer-avatar-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img 
                   :src="customerInfo.photo || defaultAvatar" 
@@ -114,9 +117,9 @@
                 <span class="customer-name">{{ truncateWords(customerInfo.name, 2) }}</span>
                 <VIcon icon="tabler-chevron-down" size="16" />
               </a>
-              <ul class="dropdown-menu customer-dropdown-menu">
+              <ul class="dropdown-menu customer-dropdown-menu" :class="{ show: isOpen }">
                 <li>
-                  <RouterLink to="/dashboard_" class="dropdown-item">
+                  <RouterLink to="/dashboard" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-dashboard" size="18" />
                       <span>{{ t('Dashboard') }}</span>
@@ -124,7 +127,7 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="/profile-setting_" class="dropdown-item">
+                  <RouterLink to="/profile-setting" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-user-cog" size="18" />
                       <span>{{ t('Profile Setting') }}</span>
@@ -142,14 +145,17 @@
                 </li>
               </ul>
             </div>
-            <div v-else class="customer-auth-dropdown auth-option dropdown">
-              <a class="dropdown-toggle customer-avatar-btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <VIcon icon="tabler-user-circle" size="25" />
-                <VIcon icon="tabler-chevron-down" size="16" />
+            <div v-else class="customer-auth-dropdown auth-option dropdown"
+              @mouseenter="showDropdown"
+              @mouseleave="hideDropdown"
+            >
+              <a class="dropdown-toggle customer-avatar-btn customer-avatar-btn-icon" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <VIcon icon="tabler-user" size="25" />
+                <!-- <VIcon icon="tabler-chevron-down" size="16" /> -->
               </a>
-              <ul class="dropdown-menu customer-dropdown-menu">
+              <ul class="dropdown-menu customer-dropdown-menu" :class="{ show: isOpen }">
                 <li>
-                  <RouterLink to="/login_" class="dropdown-item">
+                  <RouterLink to="/login" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-login" size="18" />
                       <span>{{ t('Login') }}</span>
@@ -157,7 +163,7 @@
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="/register_" class="dropdown-item">
+                  <RouterLink to="/register" class="dropdown-item">
                     <div class="d-flex align-items-center gap-2 inner-item">
                       <VIcon icon="tabler-user-plus" size="18" />
                       <span>{{ t('Register') }}</span>
@@ -262,19 +268,19 @@
     <div class="offcanvas-body">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'root' }" to="/">{{ t('Home') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name == 'root' }" to="/">{{ t('Home') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name == 'aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name == 'appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-service' }" to="/service">{{ t('Service') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name == 'service' }" to="/service">{{ t('Service') }}</RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink class="nav-link" :class="{ active: $route.name === 'frontend-package' }" to="/package">{{ t('Package') }}</RouterLink>
+          <RouterLink class="nav-link" :class="{ active: $route.name == 'package' }" to="/package">{{ t('Package') }}</RouterLink>
         </li>
         
       </ul>
@@ -304,10 +310,10 @@
           </button>
         </div>
         <div v-else class="guest-mobile-auth">
-          <RouterLink to="/login_" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
+          <RouterLink to="/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
             {{ t('Login') }}
           </RouterLink>
-          <RouterLink to="/register_" class="btn btn-register w-100">
+          <RouterLink to="/register" class="btn btn-register w-100 mb-2">
             {{ t('Register') }}
           </RouterLink>
           <RouterLink to="/admin-login" class="btn btn-register w-100">
@@ -354,6 +360,24 @@ const websiteStore = useWebsiteSettingsStore()
 const cartStore = useShoppingCartStore()
 const router = useRouter()
 const { formatAmount } = useCompanyFormatters()
+
+// Auth Area Show Hide
+const isOpen = ref(false)
+let hideTimeout = null
+function showDropdown() {
+  clearTimeout(hideTimeout)
+  isOpen.value = true
+}
+function hideDropdown() {
+  hideTimeout = setTimeout(() => {
+    isOpen.value = false
+  }, 200) // 👈 delay in ms (200ms here, you can adjust)
+}
+// Auth Area Show Hide End
+
+
+
+
 // Customer Authentication
 const {  
   customerLogout, 
@@ -379,7 +403,7 @@ const handleLogout = async () => {
       autoClose: 2000
     })
     setTimeout(() => {
-      router.push('/login_')
+      router.push('/login')
     }, 1000)
   } catch (error) {
     toast('Error during logout', {
@@ -392,6 +416,11 @@ const handleLogout = async () => {
 function setLanguage(lang) {
   locale.value = lang
   localStorage.setItem('selectedLanguage', lang) // save in localStorage
+  isOpen.value = false
+
+  document.getElementById('languageDropdown').classList.remove('show')
+  document.querySelector('.dropdown-menu').classList.remove('show')
+
 }
 // on mount, restore language
 onMounted(() => {
@@ -435,6 +464,7 @@ function truncateWords(text, count) {
     ? words.slice(0, count).join(' ') + '..'
     : text
 }
+
 // Initialize website settings and cart on component mount
 onMounted(async () => {
   await websiteStore.initializeSettings()
@@ -442,6 +472,9 @@ onMounted(async () => {
 })
 </script>
 <style scoped>
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
 /* Customer Authentication Dropdown */
 .customer-auth-dropdown .customer-avatar-btn {
   display: flex;
@@ -453,6 +486,13 @@ onMounted(async () => {
   color: inherit;
   transition: all 0.3s ease;
   border: 1px solid transparent;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.customer-avatar-btn-icon {
+  border-radius: 50% !important;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px 8px !important;
 }
 .customer-auth-dropdown .customer-avatar-btn:hover {
   background-color: rgba(0, 0, 0, 0.05);

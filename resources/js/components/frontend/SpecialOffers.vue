@@ -13,7 +13,7 @@
       <section class="about-area-one" id="ourServices">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-6 col-lg-6 col-xl-4 pd-0" v-for="offer in displayedOffers" 
+            <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-4 pd-0" v-for="offer in displayedOffers" 
             :key="offer.id">
               <div class="about-list-right">
                 <figure>

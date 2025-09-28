@@ -22,8 +22,9 @@ const form = ref({
     date_format: null,
     timezone: null,
     logo: defaultAvater,
-    print_formate: '56mm',
+    print_formate: null,
     over_sale: null,
+    use_website: null,
 })
 const loadings = ref(false)
 const errors = ref({})
@@ -46,6 +47,7 @@ const validateForm = () => {
     if (!form.value.timezone) errors.value.timezone = t('Timezone is required')
     if (!form.value.print_formate) errors.value.print_formate = t('Printer format is required')
     if (!form.value.over_sale) errors.value.over_sale = t('Over sale is required')
+    if (!form.value.use_website) errors.value.use_website = t('Use website is required')
 
     return Object.keys(errors.value).length == 0
 }
@@ -66,8 +68,9 @@ const resetForm = () => {
         timezone: null,
         logo: defaultAvater,
         logo_url: null,
-        print_formate: '56mm',
+        print_formate: null,
         over_sale: null,
+        use_website: null,
     }
 }
 
@@ -123,8 +126,10 @@ const getCompanySettings = async () => {
                 date_format: res.data.date_format,
                 timezone: res.data.timezone,
                 logo: res.data.logo || defaultAvater,
-                print_formate: res.data.print_formate ? res.data.print_formate.toLowerCase().replace(/\s/g, '') : null,
+                print_formate: res.data.print_formate ? res.data.print_formate.trim() : null,
                 over_sale: res.data.over_sale || null,
+                // trim space
+                use_website: res.data.use_website ? res.data.use_website.trim() : null,
             }
 
             // Set preview image
@@ -258,6 +263,7 @@ onMounted(() => {
                                         { title: 'Before Amount', value: 'Before Amount' },
                                         { title: 'After Amount', value: 'After Amount' }
                                     ]"
+                                    
                                     :error-messages="errors.currency_position" :placeholder="t('Select currency position')"
                                     clearable
                                     />
@@ -267,9 +273,11 @@ onMounted(() => {
                             <VCol cols="12" md="4">
                                 <AppAutocomplete v-model="form.precision" :label="t('Precision')" :required="true"
                                     :items="[
-                                        { title: '2 Digit', value: '2' },
-                                        { title: '3 Digit', value: '3' }
+                                        { title: '2 Digit', value: 2 },
+                                        { title: '3 Digit', value: 3 }
                                     ]"
+                                    item-title="title"
+                                    item-value="value"
                                     :error-messages="errors.precision" :placeholder="t('Select precision')"
                                     clearable
                                     />
@@ -341,15 +349,36 @@ onMounted(() => {
 
                             <VCol cols="12" md="4">
                                 <AppAutocomplete 
-                                    v-model="form.print_formate" 
+                                    v-model="form.print_formate"
+                                    :tooltipShow="true"
+                                    :tooltipTitle="$t('Select 56mm for 56mm printer and 80mm for 80mm printer')"
                                     :label="t('Printer Format')" 
                                     :required="true"
-                                        :items="[
-                                            { title: '56mm', value: '56mm' },
-                                            { title: '80mm', value: '80mm' },
-                                        ]"
+                                    :items="[
+                                        { title: '56mm', value: '56mm' },
+                                        { title: '80mm', value: '80mm' },
+                                    ]"
                                     item-title="title"
+                                    item-value="value"
                                     :error-messages="errors.print_formate" :placeholder="t('Select printer format')"
+                                    clearable
+                                />
+                            </VCol>
+
+                            <VCol cols="12" md="4">
+                                <AppAutocomplete 
+                                    v-model="form.use_website"
+                                    :tooltipShow="true"
+                                    :tooltipTitle="$t('Use Website Yes means that allows you to use website')"
+                                    :label="t('Use Website?')" 
+                                    :required="true"
+                                    :items="[
+                                        { title: 'Yes', value: 'Yes' },
+                                        { title: 'No', value: 'No' },
+                                    ]"
+                                    item-title="title"
+                                    item-value="value"
+                                    :error-messages="errors.use_website" :placeholder="t('Select use website')"
                                     clearable
                                 />
                             </VCol>

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, watch, computed, nextTick } from 'vue'
+import { useApi } from '@/composables/useApi'
 import { useCustomerAuth } from '@/composables/useCustomerAuth'
 import { useBookingFlow } from '@/composables/useBookingFlow'
 import { useBookingPersistence } from '@/composables/useBookingPersistence'
@@ -22,6 +23,7 @@ const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber } = useC
 const route = useRoute()
 
 // Composables
+const { execute: apiCall } = useApi()
 const { isCustomerAuthenticated, customer, handleCustomerSocialCallback, getCurrentCustomer } = useCustomerAuth()
 const { 
   saveBookingData, 
@@ -900,7 +902,7 @@ definePage({
                   </table>
                 </div>
                 <div class="success-actions mt-4 text-center">
-                  <BookAppointmentBtn :text="t('Go to Homepage')" :link="'/'"/>
+                  <BookAppointmentBtn :text="t('Go to Homepage')" :link="'/'" @click="window.location.href = '/'"/>
                 </div>
               </div>
             </div>
@@ -912,6 +914,7 @@ definePage({
     <!-- Login Modal -->
     <LoginModal 
       :is-visible="showLoginModal"
+      :return-url="$route.fullPath"
       @close="handleLoginModalClose"
       @success="handleLoginSuccess"
       @social-login="handleSocialLoginRedirect"

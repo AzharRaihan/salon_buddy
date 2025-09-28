@@ -65,7 +65,7 @@ const submitPasswordReset = async () => {
       
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push('/login_')
+        router.push('/login')
       }, 3000)
     } else {
       message.value = response.message || 'Failed to reset password.'
@@ -258,7 +258,7 @@ definePage({
 
               <div class="text-center pt-3">
                 <p>Remember your password?
-                  <RouterLink to="/login_">Login</RouterLink>
+                  <RouterLink to="/login">Login</RouterLink>
                 </p>
               </div>
             </div>

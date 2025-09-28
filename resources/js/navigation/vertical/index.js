@@ -6,7 +6,7 @@ export default [
   },
   {
     title: "Dashboard",
-    to: { name: "dashboard" }, 
+    to: { name: "admin-dashboard" }, 
     icon: { icon: "tabler-gauge" },
     permission: ["dashboard"],
   },
