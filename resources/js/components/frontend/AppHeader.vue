@@ -97,15 +97,27 @@
           <!-- CTA Button -->
           <div class="navbar-nav">
             <div class="topheader-search" @click="toggleSearch">
-              <VIcon size="25" :icon="isSearchOpen ? 'tabler-x' : 'tabler-search'" />
+              <VIcon size="25" :icon="isSearchOpen ? 'tabler-x' : 'tabler-search'" class="search-icon-header" />
               <transition name="search-slide">
                 <div
                   v-show="isSearchOpen"
                   class="search-option"
                   @click.stop
                 >
-                  <VIcon icon="tabler-search" class="search-icon" />
-                  <input type="text" placeholder="Search" class="form-control" @focus="$event.target.select()">
+                  <VIcon 
+                    icon="tabler-search" 
+                    class="search-icon" 
+                    @click="handleSearchIconClick"
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Search products, services..." 
+                    class="form-control" 
+                    v-model="searchInput"
+                    @keydown="handleSearchInput"
+                    @focus="handleSearchInputFocus"
+                    ref="searchInputRef"
+                  />
                 </div>
               </transition>
             </div>
@@ -360,7 +372,7 @@
 <script setup>
 import { themeConfig } from '@themeConfig'
 
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
@@ -371,6 +383,7 @@ import BookPackageBtn from './mini-components/BookPackageBtn.vue'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 import { useI18n } from 'vue-i18n';
+import { useSearch } from '@/composables/useSearch';
 // import default avatar
 import defaultAvatar from '../../../../public/assets/images/default-images/avatar.png'
 
@@ -380,12 +393,55 @@ const websiteStore = useWebsiteSettingsStore()
 const cartStore = useShoppingCartStore()
 const router = useRouter()
 const { formatAmount } = useCompanyFormatters()
+const { navigateToSearch } = useSearch()
 
 // Search Option Animation State
 const isSearchOpen = ref(false)
+const searchInput = ref('')
+const searchInputRef = ref(null)
+
 function toggleSearch(e) {
   e && e.preventDefault && e.preventDefault()
   isSearchOpen.value = !isSearchOpen.value
+  if (isSearchOpen.value) {
+    // Focus the search input when opened
+    nextTick(() => {
+      if (searchInputRef.value) {
+        searchInputRef.value.focus()
+        searchInputRef.value.select()
+      }
+    })
+  }
+}
+
+// Handle search functionality
+const handleSearch = () => {
+  if (searchInput.value.trim()) {
+    navigateToSearch(searchInput.value.trim())
+    // Close search dropdown after search
+    isSearchOpen.value = false
+    searchInput.value = ''
+  }
+}
+
+// Handle search input events
+const handleSearchInput = (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    handleSearch()
+  }
+}
+
+// Handle search icon click
+const handleSearchIconClick = () => {
+  handleSearch()
+}
+
+// Handle input field focus and selection
+const handleSearchInputFocus = (event) => {
+  if (event.target.value) {
+    event.target.select()
+  }
 }
 
 // Auth Area Show Hide
@@ -655,6 +711,10 @@ onMounted(async () => {
   top: 27px;
   color: gray;
   font-size: 18px;
+  cursor: pointer;
+}
+.search-icon-header {
+  cursor: pointer;
 }
 
 /* Animation for search-option */

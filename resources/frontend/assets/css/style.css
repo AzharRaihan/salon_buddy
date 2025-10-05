@@ -4352,7 +4352,7 @@ transition: 0.3s;
 
 .salon-products .product-image {
   text-align: center;
-  height: 200px;
+  /* height: 200px; */
   width: 100%;
   object-fit: cover;
   overflow: hidden;

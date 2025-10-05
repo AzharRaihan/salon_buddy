@@ -2469,4 +2469,168 @@ class FrontendController extends Controller
             return $this->errorResponse('Debug failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Search functionality for products, services, and packages
+     */
+    public function search(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'q' => 'required|string|min:1|max:255',
+            'type' => 'nullable|in:all,products,services,packages',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer|min:1|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        $validatedData = $validator->validated();
+        $query = $validatedData['q'];
+        $type = $validatedData['type'] ?? 'all';
+        $page = $validatedData['page'] ?? 1;
+        $perPage = $validatedData['per_page'] ?? 12;
+
+        try {
+            $results = collect();
+            
+            // Search Products
+            if ($type === 'all' || $type === 'products') {
+                $products = Item::with(['category'])
+                    ->where('company_id', 1)
+                    ->where('del_status', 'Live')
+                    ->where('status', 'Enable')
+                    ->where('type', 'Product')
+                    ->where(function($q) use ($query) {
+                        $q->where('name', 'LIKE', "%{$query}%")
+                          ->orWhere('description', 'LIKE', "%{$query}%")
+                          ->orWhere('code', 'LIKE', "%{$query}%");
+                    })
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'description' => $item->description,
+                            'code' => $item->code,
+                            'sale_price' => $item->sale_price,
+                            'photo_url' => $item->photo_url,
+                            'type' => 'Product',
+                            'category' => $item->category ? $item->category->name : null,
+                            'category_id' => $item->category_id,
+                        ];
+                    });
+                
+                $results = $results->merge($products);
+            }
+
+            // Search Services
+            if ($type === 'all' || $type === 'services') {
+                $services = Item::with(['category', 'ratings'])
+                    ->where('company_id', 1)
+                    ->where('del_status', 'Live')
+                    ->where('status', 'Enable')
+                    ->where('type', 'Service')
+                    ->where(function($q) use ($query) {
+                        $q->where('name', 'LIKE', "%{$query}%")
+                          ->orWhere('description', 'LIKE', "%{$query}%")
+                          ->orWhere('code', 'LIKE', "%{$query}%");
+                    })
+                    ->get()
+                    ->map(function ($service) {
+                        return [
+                            'id' => $service->id,
+                            'name' => $service->name,
+                            'description' => $service->description,
+                            'code' => $service->code,
+                            'price' => $service->sale_price,
+                            'duration' => $service->duration ?? '',
+                            'duration_type' => $service->duration_type ?? '',
+                            'photo_url' => $service->photo_url,
+                            'category_image' => $service->category ? $service->category->photo_url : asset('assets/images/system-config/default-picture.png'),
+                            'type' => 'Service',
+                            'staff_assigned' => $this->getStaffAssignedCount($service->id),
+                            'category' => $service->category ? $service->category->name : null,
+                            'category_id' => $service->category_id,
+                            'rating' => round($service->averageRating(), 1),
+                            'reviews' => $service->totalReviews(),
+                        ];
+                    });
+                
+                $results = $results->merge($services);
+            }
+
+            // Search Packages
+            if ($type === 'all' || $type === 'packages') {
+                $packages = Item::with(['category', 'itemDetails:id,item_relation_id,item_id,quantity,price,discount,total_price','itemDetails.items:id,name'])
+                    ->where('company_id', 1)
+                    ->where('del_status', 'Live')
+                    ->where('status', 'Enable')
+                    ->where('type', 'Package')
+                    ->where(function($q) use ($query) {
+                        $q->where('name', 'LIKE', "%{$query}%")
+                          ->orWhere('description', 'LIKE', "%{$query}%")
+                          ->orWhere('code', 'LIKE', "%{$query}%");
+                    })
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'description' => $item->description,
+                            'code' => $item->code,
+                            'sale_price' => $item->sale_price,
+                            'duration' => $item->duration ?? '',
+                            'duration_type' => $item->duration_type ?? '',
+                            // map item details to name and quantity
+                            'item_details' => $item->itemDetails->map(function($detail) {
+                                return [
+                                    'name' => $detail->items->name,
+                                    'quantity' => $detail->quantity,
+                                ];
+                            }),
+                            'item_details' => $item->itemDetails,
+                            'photo_url' => $item->photo_url,
+                            'type' => 'Package',
+                            'category' => $item->category ? $item->category->name : null,
+                            'category_id' => $item->category_id,
+                        ];
+                    });
+                
+                $results = $results->merge($packages);
+            }
+
+            // Sort results by relevance (exact matches first, then partial matches)
+            $results = $results->sort(function ($a, $b) use ($query) {
+                $aExact = stripos($a['name'], $query) === 0;
+                $bExact = stripos($b['name'], $query) === 0;
+                
+                if ($aExact && !$bExact) return -1;
+                if (!$aExact && $bExact) return 1;
+                
+                return strcasecmp($a['name'], $b['name']);
+            });
+
+            // Paginate results
+            $totalResults = $results->count();
+            $paginatedResults = $results->forPage($page, $perPage)->values();
+            $lastPage = ceil($totalResults / $perPage);
+
+            return $this->successResponse([
+                'results' => $paginatedResults->toArray(),
+                'current_page' => (int) $page,
+                'per_page' => (int) $perPage,
+                'total' => $totalResults,
+                'last_page' => $lastPage,
+                'from' => ($page - 1) * $perPage + 1,
+                'to' => min($page * $perPage, $totalResults),
+                'query' => $query,
+                'type' => $type,
+            ], 'Search completed successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Search failed: ' . $e->getMessage());
+        }
+    }
 }

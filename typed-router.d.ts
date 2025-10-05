@@ -132,6 +132,7 @@ declare module 'vue-router/auto-routes' {
     'salary-edit': RouteRecordInfo<'salary-edit', '/salary/edit', Record<never, never>, Record<never, never>>,
     'sale': RouteRecordInfo<'sale', '/sale', Record<never, never>, Record<never, never>>,
     'sale-index-old': RouteRecordInfo<'sale-index-old', '/sale/index_old', Record<never, never>, Record<never, never>>,
+    'search-result': RouteRecordInfo<'search-result', '/search-result', Record<never, never>, Record<never, never>>,
     'second-page': RouteRecordInfo<'second-page', '/second-page', Record<never, never>, Record<never, never>>,
     'service': RouteRecordInfo<'service', '/service', Record<never, never>, Record<never, never>>,
     'set-password': RouteRecordInfo<'set-password', '/set-password', Record<never, never>, Record<never, never>>,

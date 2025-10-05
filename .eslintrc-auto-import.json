@@ -457,6 +457,7 @@
     "useSSRWidth": true,
     "useTimeAgoIntl": true,
     "useWebsitePolicyForm": true,
-    "useFrontendPolicy": true
+    "useFrontendPolicy": true,
+    "useSearch": true
   }
 }

@@ -414,6 +414,9 @@ Route::controller(FrontendController::class)->group(function () {
     // Check application mode
     Route::get('check-application-mode', 'checkApplicationMode');
 
+    // Search API
+    Route::get('search', 'search');
+
 });
 
 // Package routes for sold packages and usage

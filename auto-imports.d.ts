@@ -375,6 +375,7 @@ declare global {
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
   const useScroll: typeof import('@vueuse/core')['useScroll']
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
+  const useSearch: typeof import('./resources/js/composables/useSearch.js')['useSearch']
   const useServiceApi: typeof import('./resources/js/composables/useServiceApi.js')['useServiceApi']
   const useServiceFiltering: typeof import('./resources/js/composables/useServiceFiltering.js')['useServiceFiltering']
   const useServiceManagement: typeof import('./resources/js/composables/useServiceManagement.js')['useServiceManagement']
@@ -826,6 +827,7 @@ declare module 'vue' {
     readonly useScriptTag: UnwrapRef<typeof import('@vueuse/core')['useScriptTag']>
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
+    readonly useSearch: UnwrapRef<typeof import('./resources/js/composables/useSearch.js')['useSearch']>
     readonly useServiceApi: UnwrapRef<typeof import('./resources/js/composables/useServiceApi.js')['useServiceApi']>
     readonly useServiceManagement: UnwrapRef<typeof import('./resources/js/composables/useServiceManagement.js')['useServiceManagement']>
     readonly useServiceOrders: UnwrapRef<typeof import('./resources/js/composables/useServiceOrders.js')['useServiceOrders']>
