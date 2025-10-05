@@ -108,6 +108,7 @@ class PermissionTableSeeder extends Seeder
             'report-management' => [
                 'report-attendance',
                 'report-commission',
+                'report-earning',
                 'report-expense',
                 'report-purchase',
                 'report-profit-loss',
@@ -175,6 +176,8 @@ class PermissionTableSeeder extends Seeder
             'website-management' => [
                 'website-settings',
                 'website-aboutus',
+                'website-terms_and_conditions',
+                'website-privacy_policy',
                 'website-banner',
                 'website-delivery_area',
                 'website-delivery_partner',

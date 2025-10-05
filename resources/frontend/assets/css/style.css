@@ -113,7 +113,12 @@ html {
 .customer-auth-dropdown.auth-option.dropdown .dropdown-menu {
   left: -145px;
 }
-
+.topheader-search {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  color: #000000;
+}
 
 /* Common animation button */
 .common-animation-button {
@@ -682,6 +687,10 @@ html {
 .mobile-header-icon {
   display: flex;
 }
+.mobile-header-icon .btn:hover{
+  background-color: #098d9c1a;
+  color: var(--primary-bg-color);
+}
 .mobile-header-icon .cart-wrapper-mobile {
   margin-right: 10px;
   background: var(--primary-bg-color);
@@ -1231,7 +1240,7 @@ nav.navbar{
 
 /* ==============#  Hero Section Styles #============== */
 .hero-section {
-  height: 85vh;
+  height: 89vh;
   background-color: #F8FCFC;
   background-position: right;
   background-repeat: no-repeat;
@@ -2231,6 +2240,7 @@ nav.navbar{
 }
 .play-container .circle3 i {
   font-size: 24px;
+  margin-left: 4px;
   color: var(--primary-bg-color);
 }
 
@@ -2471,12 +2481,15 @@ nav.navbar{
   margin-right: 20px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
 }
-.contact-us-wrapper .store-card-content p {
+.contact-us-wrapper .store-card-content p, .contact-us-wrapper .store-card-content a {
   font-size: 16px;
   font-weight: 400;
   margin-bottom: 10px;
+  display: block;
+  color: #000018;
+  text-decoration: none;
 }
-.contact-us-wrapper .store-card-content p i {
+.contact-us-wrapper .store-card-content p i, .contact-us-wrapper .store-card-content a i {
   font-size: 20px;
   font-weight: 400;
   margin-right: 10px;
@@ -2875,6 +2888,30 @@ ease-in-out;
   padding-bottom: 350px;
   background-color: var(--color-white);
 }
+
+.light-shadow-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.light-shadow-wrap .light-shadow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+}
+.light-shadow-wrap:hover .light-shadow {
+  animation: shine 0.7s forwards;
+  opacity: 1;
+}
 .team-details-wrapper .team-details-image img {
   border-radius: 12px;
   width: 100%;
@@ -3173,7 +3210,7 @@ ease-in-out;
   border: 1px solid transparent;
 }
 .service-wrapper .service-card-inner .service-content {
-  padding: 40px;
+  padding: 1.5rem;
 }
 .service-card-inner {
   transition: all 0.3s ease;
@@ -3193,8 +3230,11 @@ ease-in-out;
   font-size: 22px;
   font-weight: 600;
   color: var(--title-color-dark);
-  margin-top: 30px;
-  margin-bottom: 20px;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+}
+.service-info .duration {
+  line-height: 12px;
 }
 .service-content .service-info {
   font-size: 16px;
@@ -4119,6 +4159,7 @@ transition: 0.3s;
 }
 .featured-services .features-service-swiper-wrap .service-info .duration{
   color: #000;
+  line-height: 12px;
 }
 
 .featured-services .features-service-swiper-wrap .service-info {
@@ -4850,7 +4891,7 @@ transition: 0.3s;
   border-radius: 12px;
 }
 .login-form label {
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
 .input-icon .eye-icon {
   cursor: pointer;
@@ -5467,6 +5508,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .payment-method-li {
@@ -5801,8 +5843,11 @@ input[type="radio"]:checked ~ .radio-circle:before {
 .service-info {
   flex: 1;
   display: flex;
-  flex-direction: column;
   gap: 4px;
+  align-items: center;
+}
+.staff-assigned {
+  line-height: 10px;
 }
 
 
@@ -6203,7 +6248,7 @@ input[type="radio"]:checked ~ .radio-circle:before {
 
 .serviceInfoMain .serviceInfoicon {
   color: var(--primary-bg-hover-color);
-  margin-right: 15px;
+  margin-right: 10px;
 }
 .media-body {
   display: flex;

@@ -444,7 +444,7 @@ onMounted(() => {
                     <div class="col-md-12">
                         <button 
                           type="submit" 
-                          class="btn btn-primary"
+                          class="btn common-animation-button common-animation-profile"
                           :disabled="isProfileLoading"
                         >
                           <span v-if="isProfileLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -512,7 +512,7 @@ onMounted(() => {
                         <div class="col-md-12">
                             <button 
                               type="submit" 
-                              class="btn btn-primary"
+                              class="btn common-animation-button common-animation-profile"
                               :disabled="isPasswordLoading"
                             >
                               <span v-if="isPasswordLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -643,4 +643,27 @@ onMounted(() => {
   height: 255px;
   background: #DDD;
 }
+
+
+
+.common-animation-profile {
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  background: var(--primary-bg-color);
+}
+.common-animation-profile::before {
+  background-color: var(--primary-bg-hover-color);
+}
+.common-animation-profile::after {
+  color: white;
+  background: var(--primary-bg-color);
+}
+.common-animation-profile:hover {
+  color: var(--color-white);
+}
+
+
 </style>

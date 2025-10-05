@@ -60,6 +60,14 @@
               <VIcon size="24" icon="tabler-arrow-narrow-right" />
             </div>
           </div>
+
+          <div class="col-12" v-if="teamMembers.length == 0">
+            <div class="text-center">
+              <h5>{{ t('No team member found') }}</h5>
+              <VIcon size="45" icon="tabler-filter-search" />
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

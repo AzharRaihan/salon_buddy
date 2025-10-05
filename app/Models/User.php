@@ -105,4 +105,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class, 'user_id', 'id');
     }
+
+    public function saleDetails(): HasMany
+    {
+        return $this->hasMany(SaleDetail::class, 'employee_id', 'id');
+    }
+    
+
+
 }

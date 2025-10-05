@@ -290,7 +290,7 @@ const paymentAmount = computed(() => {
               </div>
               <div class="d-flex justify-content-center order-summary-button-group">
                 <div class="button-group">
-                  <RouterLink to="/customer/checkout" class="btn btn-previous">
+                  <RouterLink to="/checkout" class="btn btn-previous">
                     <span><VIcon size="22" icon="tabler-arrow-left" /></span>
                     Previous
                   </RouterLink>

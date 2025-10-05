@@ -1392,6 +1392,34 @@
   "Transaction ID": "Transaction ID",	
   "Login as Admin": "Login as Admin",
   "Our Services": "Our Services",
+  "Damage": "Damage",
+  "Add Damage": "Add Damage",
+  "Edit Damage": "Edit Damage",
+  "List Damage": "List Damage",
+  "Email Settings": "Email Settings",
+  "SMS Setting": "SMS Setting",
+  "Whatsapp Settings": "Whatsapp Settings",
+  "Social Auth Settings": "Social Auth Settings",
+  "Current Month": "Current Month",
+  "Profit": "Profit",
+  "Last Month": "Last Month",
+  "Expenses": "Expenses",
+  "Revenue Report": "Revenue Report",
+  "Earning Reports": "Earning Reports",
+  "Weekly Earnings Overview": "Weekly Earnings Overview",
+  "Earning": "Earning",
+  "This Month": "This Month",
+  "Popular Products": "Popular Products",
+
+
+  "duration": "Duration",	
+  "staff": "Staff",
+  "price": "Price",
+
+
+
+
+
 
 
 

@@ -17,7 +17,7 @@
 
   /* Header Part */
   .hero-section {
-    height: 78vh;
+    height: 85vh;
   }
   .hero-section .hero-title {
     font-size: 40px;
@@ -576,7 +576,7 @@
 
   /* Hero Section */
   .hero-section {
-    height: 50vh;
+    height: 70vh;
     background-position: unset;
   }
   .hero-main .hero-content-wrapper {

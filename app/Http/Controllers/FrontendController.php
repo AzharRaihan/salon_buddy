@@ -500,6 +500,7 @@ class FrontendController extends Controller
                 'price' => $service->sale_price,
                 'duration' => $service->duration ?? '',
                 'duration_type' => $service->duration_type ?? '',
+                'staff_assigned' => $this->getStaffAssignedCount($service->id),
                 'rating' => round($service->averageRating(), 1),
                 'reviews' => $service->totalReviews(),
                 'category_id' => $service->category_id,
@@ -563,12 +564,14 @@ class FrontendController extends Controller
 
         // Transform the data
         $transformedServices = collect($services->items())->map(function ($service) {
+            $staffAssignedCount = $this->getStaffAssignedCount($service->id);
             return [
                 'id' => $service->id,
                 'name' => $service->name,
                 'price' => $service->sale_price,
                 'duration' => $service->duration ?? '',
                 'duration_type' => $service->duration_type ?? '',
+                'staff_assigned' => $staffAssignedCount,
                 'rating' => round($service->averageRating(), 1),
                 'reviews' => $service->totalReviews(),
                 'category_id' => $service->category_id,
@@ -588,6 +591,17 @@ class FrontendController extends Controller
             'to' => $services->lastItem(),
         ], 'Featured services fetched successfully');
     }
+
+    public function getStaffAssignedCount($serviceId)
+    {
+        $staffCount = User::where('company_id', 1)
+            ->where('del_status', 'Live')
+            ->whereRaw("FIND_IN_SET(?, service_id)", [$serviceId])
+            ->count();
+    
+        return $staffCount;
+    }
+
 
     public function getServicesByCategory(Request $request)
     {

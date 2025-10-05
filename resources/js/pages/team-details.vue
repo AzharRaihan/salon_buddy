@@ -79,7 +79,8 @@ onMounted(async () => {
       <div class="container">
         <div class="row">
           <div class="col-md-5 col-lg-6">
-            <div class="team-details-image">
+            <div class="team-details-image light-shadow-wrap">
+              <div class="light-shadow"></div>
               <img :src="memberDetails.photo_url" alt="Team Details Image">
             </div>
           </div>

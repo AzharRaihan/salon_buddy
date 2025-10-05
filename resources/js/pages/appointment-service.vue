@@ -161,7 +161,7 @@ const addToCart = async () => {
     return
   }
 
-  // ✅ Use nextTick + ref correctly
+  // Use nextTick + ref correctly
   await nextTick()
   if (bookingFormRef.value) {
     bookingFormRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -689,7 +689,6 @@ definePage({
                         <tr>
                           <th>{{ t('SN') }}</th>
                           <th>{{ t('Service Name') }}</th>
-                          <th class="text-center">{{ t('Price') }}</th>
                           <th class="text-center">{{ t('Action') }}</th>
                         </tr>
                       </thead>
@@ -703,7 +702,6 @@ definePage({
                               <small class="text-muted">{{ t('Duration') }}: {{ service.duration || '1hr' }}</small>
                             </div>
                           </td>
-                          <td class="text-center">{{ formatAmount(service.price || 0) }}</td>
                           <td class="text-center">
                             <button 
                               class="btn btn-sm remove-service-btn"
@@ -885,7 +883,6 @@ definePage({
                         <th>{{ t('Service Name') }}</th>
                         <th class="text-center">{{ t('Date') }}</th>
                         <th class="text-center">{{ t('Time') }}</th>
-                        <th class="text-center">{{ t('Price') }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -894,7 +891,6 @@ definePage({
                         <td>{{ service.name }}</td>
                         <td class="text-center">{{ formatDate(service.date) }}</td>
                         <td class="text-center">{{ service.time || selectedTime }}</td>
-                        <td class="text-center">{{ formatAmount(service.price || 0) }}</td>
                       </tr>
                     </tbody>
                   </table>

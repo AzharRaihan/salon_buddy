@@ -4,6 +4,10 @@ import { hexToRgb } from '@layouts/utils'
 import { ref, onMounted, computed } from 'vue'
 import { $api } from '@/utils/api'
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({ useScope: 'global' })
+
 const vuetifyTheme = useTheme()
 
 const series = ref([{
@@ -97,10 +101,10 @@ onMounted(() => {
   <VCard>
     <VCardItem class="pb-3">
       <VCardTitle>
-        Profit
+        {{ t('Profit') }}
       </VCardTitle>
       <VCardSubtitle>
-        Last Month
+        {{ t('Last Month') }}
       </VCardSubtitle>
     </VCardItem>
     <VCardText>

@@ -11,7 +11,7 @@
             </div>
           </div>
 
-          <transition-group name="fade-up" tag="div" class="row" >
+          <transition-group name="fade-up" tag="div" class="row" v-if="workingProcess.length > 0">
             <div class="col-md-4" v-for="(process, index) in workingProcess" :key="process.id" v-show="visible" :style="{ transitionDelay: (index * 0.4) + 's' }">
                 <div class="working-process-item">
                     <div class="working-process-item-icon">
@@ -26,6 +26,12 @@
                 </div>
             </div>
           </transition-group>
+          <div class="col-12" v-if="workingProcess.length == 0">
+            <div class="text-center">
+              <h5>{{ t('No working process found') }}</h5>
+              <VIcon size="45" icon="tabler-filter-search" />
+            </div>
+          </div>
         </div>
       </div>
     </section>

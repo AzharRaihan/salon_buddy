@@ -103,7 +103,7 @@ definePage({
                     </span>
                     <div class="second-el">
                       <p class="title">{{ t('Contact Us') }}</p>
-                      <p class="sub-title">{{ websiteStore.getPhone }}</p>
+                      <a :href="`tel:`+websiteStore.getPhone" class="sub-title text-decoration-none">{{ websiteStore.getPhone }}</a>
                     </div>
                   </li>
                 </ul>

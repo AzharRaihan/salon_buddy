@@ -110,3 +110,4 @@ ALTER TABLE `customers` CHANGE `photo` `photo` VARCHAR(500) CHARACTER SET utf8mb
 
 
 
+ALTER TABLE `website_settings` ADD `privacy_policy` TEXT NULL DEFAULT NULL AFTER `footer_logo`, ADD `terms_and_conditions` TEXT NULL DEFAULT NULL AFTER `privacy_policy`;

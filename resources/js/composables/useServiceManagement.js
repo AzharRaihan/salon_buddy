@@ -21,7 +21,7 @@ export function useServiceManagement() {
     'Price: High to Low',
     'Name: A to Z',
     'Name: Z to A',
-    'Rating: High to Low'
+    // 'Rating: High to Low'
   ]
 
   // Computed
@@ -33,7 +33,7 @@ export function useServiceManagement() {
     'Price: High to Low': 'price_desc',
     'Name: A to Z': 'name_asc',
     'Name: Z to A': 'name_desc',
-    'Rating: High to Low': 'rating_desc'
+    // 'Rating: High to Low': 'rating_desc'
   }
 
   // Methods

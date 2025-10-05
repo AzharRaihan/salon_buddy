@@ -71,13 +71,16 @@ const submitLogin = async () => {
     messageType.value = 'success'
     
     // Emit success event to parent
-    emit('success', result.data.customer)
+    closeModal()
     
     // Close modal after short delay
     setTimeout(() => {
-      closeModal()
       window.location.reload()
-    }, 1000)
+    }, 100)
+
+    emit('success', result.data.customer)
+
+
   } else {
     message.value = result.message || 'Login failed'
     messageType.value = 'error'

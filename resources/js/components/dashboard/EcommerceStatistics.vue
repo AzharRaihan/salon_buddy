@@ -3,7 +3,9 @@ import { ref, onMounted } from 'vue'
 import { $api } from '@/utils/api'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 const { fetchCompanySettings, formatDate, formatAmount, formatNumber, getSerialNumber } = useCompanyFormatters()
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n({ useScope: 'global' })
 
 const statistics = ref([
   {
@@ -81,9 +83,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard title="Statistics">
+  <VCard :title="t('Statistics')" >
     <template #append>
-      <span class="text-sm text-disabled">Current Month</span>
+      <span class="text-sm text-disabled">{{ t('Current Month') }}</span>
     </template>
 
     <VCardText>

@@ -129,6 +129,8 @@ class ConfigurationSeeder extends Seeder
             'open_day_end_time' => '18:00',
             'footer_copyright' => '© 2024 Salon Buddy. All rights reserved.',
             'footer_mini_description' => 'Your trusted partner for professional hair care services. We bring out the best in your hair with our expert stylists and premium products.',
+            'privacy_policy' => '',
+            'terms_and_conditions' => '',
             'company_id' => 1,
             'user_id' => 1,
             'del_status' => 'Live'

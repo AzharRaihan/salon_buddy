@@ -56,25 +56,66 @@
               </div>
             </div>
           </div>
+
+          <div class="col-12" v-if="displayedProducts.length == 0">
+            <div class="text-center">
+              <h5>{{ t('No product found') }}</h5>
+              <VIcon size="45" icon="tabler-filter-search" />
+            </div>
+          </div>
           
           <!-- View All Button (Homepage) -->
-          <div v-if="showViewAllButton" class="col-12 text-center mt-5" v-show="visible" :style="{ transitionDelay: (8 * 0.4) + 's' }">
+          <div v-if="showViewAllButton && displayedProducts.length > 0" class="col-12 text-center mt-5" v-show="visible" :style="{ transitionDelay: (8 * 0.4) + 's' }">
             <BookingSamllBtn  :link="'/product'" :text="t('View All Products')" />
           </div>
 
           <!-- Pagination (Product Page) -->
-          <div v-if="showPagination && paginationData" class="col-12 text-center mt-0">
+          <div v-if="showPagination && paginationData && displayedProducts.length > 0" class="col-12 text-center mt-0">
             <div class="pagination-wrapper">
               <div class="pagination-inner d-flex justify-content-center align-items-center">
                 <div class="pagination-item d-flex justify-content-center align-items-center">
+                  <!-- Previous Button -->
                   <a 
-                    v-for="page in paginationPages" 
-                    :key="page"
                     href="#" 
+                    @click.prevent="goToPage(currentPage - 1)"
+                    v-if="currentPage > 1"
+                    class="pagination-btn"
+                  >
+                    &laquo;
+                  </a>
+                  
+                  <!-- Page Numbers -->
+                  <a 
+                    href="#" 
+                    v-for="page in Math.min(paginationData.last_page, 5)" 
+                    :key="page"
                     @click.prevent="goToPage(page)"
-                    :class="{ active: page === currentPage }"
+                    :class="{ active: currentPage == page }"
                   >
                     {{ page }}
+                  </a>
+                  
+                  <!-- Show dots if there are more pages -->
+                  <span v-if="paginationData.last_page > 5">...</span>
+                  
+                  <!-- Last page -->
+                  <a 
+                    href="#" 
+                    v-if="paginationData.last_page > 5"
+                    @click.prevent="goToPage(paginationData.last_page)"
+                    :class="{ active: currentPage == paginationData.last_page }"
+                  >
+                    {{ paginationData.last_page }}
+                  </a>
+                  
+                  <!-- Next Button -->
+                  <a 
+                    href="#" 
+                    @click.prevent="goToPage(currentPage + 1)"
+                    v-if="currentPage < paginationData.last_page"
+                    class="pagination-btn"
+                  >
+                    &raquo;
                   </a>
                 </div>
               </div>
@@ -167,31 +208,6 @@ const displayedProducts = computed(() => {
   }
 })
 
-const paginationPages = computed(() => {
-  if (!paginationData.value) return []
-  
-  const totalPages = paginationData.value.last_page
-  const current = currentPage.value
-  const pages = []
-  
-  // Simple pagination logic - show up to 5 pages around current
-  const start = Math.max(1, current - 2)
-  const end = Math.min(totalPages, current + 2)
-  
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-  
-  // Add ellipsis and last page if needed
-  if (end < totalPages) {
-    if (end < totalPages - 1) {
-      pages.push('...')
-    }
-    pages.push(totalPages)
-  }
-  
-  return pages
-})
 
 // Methods
 const fetchProducts = async () => {
@@ -226,7 +242,7 @@ const fetchProductsPaginated = async (page = 1, search = '') => {
 }
 
 const goToPage = (page) => {
-  if (page === '...' || page === currentPage.value) return
+  if (page === currentPage.value) return
   fetchProductsPaginated(page, searchQuery.value)
 }
 
@@ -327,43 +343,23 @@ onMounted(async () => {
 }
 
 /* Pagination styles */
-/* .pagination-wrapper {
-  margin-top: 40px;
-}
-
-.pagination-inner {
-  gap: 10px;
-}
-
-.pagination-item a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid #E0E0E0;
-  background: white;
-  color: var(--title-color);
-  text-decoration: none;
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-
-.pagination-item a:hover {
-  background: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
 .pagination-item a.active {
-  background: var(--primary-color);
+  background-color: var(--primary-bg-color);
   color: white;
-  border-color: var(--primary-color);
 }
 
-.pagination-item a:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-} */
+.pagination-btn {
+  padding: 8px 12px;
+  margin: 0 2px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover {
+  background-color: var(--primary-bg-color);
+  color: white;
+  border-color: var(--primary-bg-color);
+}
 </style> 

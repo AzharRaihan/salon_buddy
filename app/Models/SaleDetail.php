@@ -69,4 +69,5 @@ class SaleDetail extends Model
     {
         return $query->where('del_status', 'Live');
     }
+
 }

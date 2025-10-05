@@ -19,23 +19,21 @@
           </div>
           <div class="col-4 col-md-6 col-lg-6 d-flex align-items-center justify-content-end text-end">
             <div class="topbar-right-sidebar">
-                <!-- <NavBarI18n v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
-                :languages="themeConfig.app.i18n.langConfig" /> -->
               <div class="dropdown" v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length">
                 <template v-for="lang in themeConfig.app.i18n.langConfig" :key="lang.i18nLang">
-                <a 
-                  v-if="locale === lang.i18nLang"
-                  class="text-white me-3 text-decoration-none" 
-                  href="#" 
-                  role="button" 
-                  id="languageDropdown" 
-                  data-bs-toggle="dropdown" 
-                  aria-expanded="false"
-                >
-                  <VIcon size="22" icon="tabler-language" />
-                  {{ lang.label }}
-                </a>
-              </template>
+                  <a 
+                    v-if="locale === lang.i18nLang"
+                    class="text-white me-3 text-decoration-none" 
+                    href="#" 
+                    role="button" 
+                    id="languageDropdown" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false"
+                  >
+                    <VIcon size="22" icon="tabler-language" />
+                    {{ lang.label }}
+                  </a>
+                </template>
                 <ul class="dropdown-menu" aria-labelledby="languageDropdown">
                   <li v-for="lang in themeConfig.app.i18n.langConfig" :key="lang.i18nLang">
                     <a class="dropdown-item" href="#" @click="setLanguage(lang.i18nLang)" :class="{ 'active-ln': locale === lang.i18nLang }" >{{ lang.label }}</a>
@@ -98,6 +96,19 @@
 
           <!-- CTA Button -->
           <div class="navbar-nav">
+            <div class="topheader-search" @click="toggleSearch">
+              <VIcon size="25" :icon="isSearchOpen ? 'tabler-x' : 'tabler-search'" />
+              <transition name="search-slide">
+                <div
+                  v-show="isSearchOpen"
+                  class="search-option"
+                  @click.stop
+                >
+                  <VIcon icon="tabler-search" class="search-icon" />
+                  <input type="text" placeholder="Search" class="form-control" @focus="$event.target.select()">
+                </div>
+              </transition>
+            </div>
             <a href="javascript:void(0)" class="d-flex align-items-center me-4 cart-wrapper shopping_cart_btn" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop" @click="removePadding(); disableScroll()">
               <span class="cart-badge">{{ cartStore.items.length }}</span>
               <VIcon size="25" icon="tabler-shopping-bag main-icon" />
@@ -267,22 +278,21 @@
     </div>
     <div class="offcanvas-body">
       <ul class="navbar-nav">
-        <li class="nav-item">
+        <li class="nav-item" data-bs-dismiss="offcanvas" aria-label="Close">
           <RouterLink class="nav-link" :class="{ active: $route.name == 'root' }" to="/">{{ t('Home') }}</RouterLink>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-bs-dismiss="offcanvas" aria-label="Close">
           <RouterLink class="nav-link" :class="{ active: $route.name == 'aboutus' }" to="/aboutus">{{ t('About Us') }}</RouterLink>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-bs-dismiss="offcanvas" aria-label="Close">
           <RouterLink class="nav-link" :class="{ active: $route.name == 'appointment-service' }" to="/appointment-service">{{ t('Booking') }}</RouterLink>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-bs-dismiss="offcanvas" aria-label="Close">
           <RouterLink class="nav-link" :class="{ active: $route.name == 'service' }" to="/service">{{ t('Service') }}</RouterLink>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" data-bs-dismiss="offcanvas" aria-label="Close">
           <RouterLink class="nav-link" :class="{ active: $route.name == 'package' }" to="/package">{{ t('Package') }}</RouterLink>
         </li>
-        
       </ul>
 
       <!-- Mobile Authentication -->
@@ -296,11 +306,11 @@
             >
             <span class="customer-name-mobile">{{ customerInfo.name }}</span>
           </div>
-          <RouterLink to="/dashboard" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas">
+          <RouterLink to="/dashboard" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas" aria-label="Close">
             <VIcon icon="tabler-dashboard" size="18" />
             {{ t('Dashboard') }}
           </RouterLink>
-          <RouterLink to="/profile-setting" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas">
+          <RouterLink to="/profile-setting" class="btn btn-outline-primary w-100 mb-2" data-bs-dismiss="offcanvas" aria-label="Close">
             <VIcon icon="tabler-user-cog" size="18" />
             {{ t('Profile Setting') }}
           </RouterLink>
@@ -310,15 +320,23 @@
           </button>
         </div>
         <div v-else class="guest-mobile-auth">
-          <RouterLink to="/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
-            {{ t('Login') }}
-          </RouterLink>
-          <RouterLink to="/register" class="btn btn-register w-100 mb-2">
-            {{ t('Register') }}
-          </RouterLink>
-          <RouterLink to="/admin-login" class="btn btn-register w-100">
-            {{ t('Login as Admin') }}
-          </RouterLink>
+          <ul class="ps-0 list-unstyled">
+            <li data-bs-dismiss="offcanvas" aria-label="Close">
+              <RouterLink to="/login" class="btn btn-primary btn-login w-100 mb-2 common-animation-button">
+                {{ t('Login') }}
+              </RouterLink>
+            </li>
+            <li data-bs-dismiss="offcanvas" aria-label="Close">
+              <RouterLink to="/register" class="btn btn-register w-100 mb-2">
+                {{ t('Register') }}
+              </RouterLink>
+            </li>
+            <li data-bs-dismiss="offcanvas" aria-label="Close">
+              <RouterLink to="/admin-login" class="btn btn-register w-100">
+                {{ t('Login as Admin') }}
+              </RouterLink>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -328,7 +346,9 @@
         <div class="social-icons">
           <template v-for="social in activeSocialMedia" :key="social.name">
             <a v-if="social.url" :href="social.url" target="_blank" class="social-link">
-              <VIcon size="22" :icon="getSocialIcon(social.name)" />
+              <span data-bs-dismiss="offcanvas" aria-label="Close">
+                <VIcon size="22" :icon="getSocialIcon(social.name)" />
+              </span>
             </a>
           </template>
         </div>
@@ -361,6 +381,13 @@ const cartStore = useShoppingCartStore()
 const router = useRouter()
 const { formatAmount } = useCompanyFormatters()
 
+// Search Option Animation State
+const isSearchOpen = ref(false)
+function toggleSearch(e) {
+  e && e.preventDefault && e.preventDefault()
+  isSearchOpen.value = !isSearchOpen.value
+}
+
 // Auth Area Show Hide
 const isOpen = ref(false)
 let hideTimeout = null
@@ -371,12 +398,15 @@ function showDropdown() {
 function hideDropdown() {
   hideTimeout = setTimeout(() => {
     isOpen.value = false
-  }, 200) // 👈 delay in ms (200ms here, you can adjust)
+  }, 200)
 }
-// Auth Area Show Hide End
 
-
-
+// if cart item length is 0 off canvas should be closed
+watch(() => cartStore.items.length, (newLength) => {
+  if (newLength === 0) {
+    document.querySelector('.cart-close').click()
+  }
+})
 
 // Customer Authentication
 const {  
@@ -415,12 +445,16 @@ const handleLogout = async () => {
 }
 function setLanguage(lang) {
   locale.value = lang
-  localStorage.setItem('selectedLanguage', lang) // save in localStorage
+  localStorage.setItem('selectedLanguage', lang)
   isOpen.value = false
 
   document.getElementById('languageDropdown').classList.remove('show')
   document.querySelector('.dropdown-menu').classList.remove('show')
 
+  document.querySelector('.dropdown-menu').style.display = 'none'
+  setTimeout(() => {
+    document.querySelector('.dropdown-menu').style.display = ''
+  }, 100)
 }
 // on mount, restore language
 onMounted(() => {
@@ -459,7 +493,7 @@ function enableScroll() {
 }
 function truncateWords(text, count) {
   if (!text) return ''
-  const words = text.trim().split(/\s+/) // split by spaces
+  const words = text.trim().split(/\s+/)
   return words.length > count
     ? words.slice(0, count).join(' ') + '..'
     : text
@@ -590,5 +624,62 @@ onMounted(async () => {
 }
 .customer-mobile-auth .btn:hover {
   transform: translateY(-1px);
+}
+
+.topheader-search {
+  position: relative;
+  z-index: 100;
+}
+.topheader-search .search-option {
+  position: absolute;
+  top: 60px;
+  right: 0px;
+  width: 400px;
+  display: block;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.10);
+  padding: 10px;
+  opacity: 1;
+  pointer-events: auto;
+}
+.topheader-search .search-option input{
+  height: 54px;
+}
+.topheader-search .search-option input:focus{
+  border: 1px solid var(--primary-bg-color);
+}
+.search-icon {
+  position: absolute;
+  right: 20px;
+  top: 27px;
+  color: gray;
+  font-size: 18px;
+}
+
+/* Animation for search-option */
+.search-slide-enter-active,
+.search-slide-leave-active {
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.search-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-30px) scaleY(0.95);
+  pointer-events: none;
+}
+.search-slide-enter-to {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+.search-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+.search-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-30px) scaleY(0.95);
+  pointer-events: none;
 }
 </style>

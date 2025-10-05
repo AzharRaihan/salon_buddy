@@ -11,12 +11,25 @@
         {{ service.name }}
       </h4>
       <p class="service-info" v-if="parseFloat(service.duration) > 0">
-        <span class="duration">{{ t('Duration') }}: {{ parseFloat(service.duration) > 1 ? service.duration + ' ' + service.duration_type + 's' : service.duration + ' ' + service.duration_type }}</span>
+        <VIcon icon="tabler-clock" size="20" />
+        <span class="duration">
+          {{ parseFloat(service.duration) > 1 ? service.duration + ' ' + service.duration_type + 's' : service.duration + ' ' + service.duration_type }}
+        </span>
       </p>
       <p class="service-info">
-        <span class="duration">{{ formatAmount(service.price) }}</span>
+        <VIcon icon="tabler-users" size="20" />
+        <span class="duration staff-assigned" v-if="service.staff_assigned > 0">
+          {{ service.staff_assigned }}
+        </span>
+        <span class="duration staff-assigned" v-else>
+          N/A
+        </span>
       </p>
-      <div class="service-footer d-flex justify-content-between align-items-center">
+      <p class="service-info">
+        <VIcon icon="tabler-coin" size="20" />
+        <span class="duration">{{ (service.price) }}</span>
+      </p>
+      <div class=" d-flex justify-content-between align-items-center">
         <BookNowBtn 
           :link="bookingLink" 
           :text="bookingText"
@@ -68,3 +81,4 @@ const handleImageError = (event) => {
 }
 
 </script>
+

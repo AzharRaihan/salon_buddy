@@ -220,4 +220,73 @@ class WebsiteSettingController extends Controller
             return $this->errorResponse('Failed to update About Us content: ' . $e->getMessage());
         }
     }
+
+    public function websiteTermsAndConditions() { 
+        try {
+            $websiteSettings = WebsiteSetting::where('company_id', Auth::user()->company_id)->first();
+            return $this->successResponse($websiteSettings, 'Website terms and conditions fetched successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to fetch terms and conditions: ' . $e->getMessage());
+        }
+    }
+
+    public function websiteTermsAndConditionsUpdate(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'terms_and_conditions' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        try {
+            $websiteSettings = WebsiteSetting::where('company_id', Auth::user()->company_id)->first();
+            
+            if (!$websiteSettings) {
+                return $this->errorResponse('Website settings not found');
+            }
+            
+            $websiteSettings->terms_and_conditions = $request->terms_and_conditions;
+            $websiteSettings->save();
+            
+            return $this->successResponse($websiteSettings->fresh(), 'Website terms and conditions updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to update terms and conditions: ' . $e->getMessage());
+        }
+    }
+
+    public function websitePrivacyPolicy() {
+        try {
+            $websiteSettings = WebsiteSetting::where('company_id', Auth::user()->company_id)->first();
+            return $this->successResponse($websiteSettings, 'Website privacy policy fetched successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to fetch privacy policy: ' . $e->getMessage());
+        }
+    }
+
+    public function websitePrivacyPolicyUpdate(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'privacy_policy' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        try {
+            $websiteSettings = WebsiteSetting::where('company_id', Auth::user()->company_id)->first();
+            
+            if (!$websiteSettings) {
+                return $this->errorResponse('Website settings not found');
+            }
+            
+            $websiteSettings->privacy_policy = $request->privacy_policy;
+            $websiteSettings->save();
+            
+            return $this->successResponse($websiteSettings->fresh(), 'Website privacy policy updated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to update privacy policy: ' . $e->getMessage());
+        }
+    }
+
 }

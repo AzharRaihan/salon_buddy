@@ -33,11 +33,9 @@
             </div>
             
             <!-- No data state -->
-            <div v-else class="text-center" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-              <div>
-                <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                <p class="text-muted">{{ t('No FAQs available at the moment.') }}</p>
-              </div>
+            <div v-else class="text-center">
+              <h5>{{ t('No FAQs found') }}</h5>
+              <VIcon size="45" icon="tabler-filter-search" />
             </div>
           </div>
         </div>

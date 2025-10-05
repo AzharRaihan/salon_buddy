@@ -776,6 +776,53 @@ class ReportController extends Controller
         ]);
     }
 
+
+
+    /**
+     * Get employee earning report with filters
+     */
+    public function employeeEarningReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $query = User::with('saleDetails:id,employee_id,SUM(subtotal_without_tax_discount) as subtotal, SUM(quantity) as quantity')
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereNotNull('employee_id');
+            
+
+        $query->groupBy('employee_id');
+        $result = $query->get();
+        return $this->successResponse([
+            'employee_earning' => $result,
+        ]);
+            
+    }
+
+
+    /**
+     * Get filter options for employee commission report
+     */
+    public function employeeEarningReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+        // Get employees (users with commission)
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->whereNotNull('commission')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+
     
 
     /**

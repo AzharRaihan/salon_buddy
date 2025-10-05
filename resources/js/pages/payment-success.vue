@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useShoppingCartStore } from '@/stores/shoppingCart.js'
 import CommonPageBanner from '@/components/frontend/CommonPageBanner.vue'
-import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
+import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
+
 
 definePage({
   meta: {
@@ -13,16 +14,56 @@ definePage({
 })
 
 const route = useRoute()
+const router = useRouter()
 const cartStore = useShoppingCartStore()
 const { formatAmount } = useCompanyFormatters()
-// Get order info from query parameters
-const orderReference = computed(() => route.query.order)
-const orderAmount = computed(() => route.query.amount)
+const userData = useCookie("userData").value
 
-onMounted(() => {
+// Get order info from query parameters
+const orderReference = computed(() => route.query.order || route.query.reference)
+const orderAmount = computed(() => route.query.amount)
+const paymentStatus = computed(() => route.query.status)
+const isLoading = ref(false)
+
+onMounted(async () => {
   // Ensure cart is cleared when visiting this page
   cartStore.clearCart()
+  
+  // Handle Paystack callback
+  if (route.query.reference && route.query.status === 'success') {
+    await handlePaystackCallback()
+  }
+  
+  // If user is logged in (POS context), redirect to POS after a delay
+  if (userData && paymentStatus.value === 'success') {
+    setTimeout(() => {
+      router.push('/pos')
+    }, 3000)
+  }
 })
+
+// Handle Paystack payment callback
+const handlePaystackCallback = async () => {
+  try {
+    isLoading.value = true
+    
+    // Send message to parent window if this is in a popup
+    if (window.opener) {
+      window.opener.postMessage({
+        type: 'PAYSTACK_SUCCESS',
+        reference: route.query.reference,
+        status: route.query.status
+      }, window.location.origin)
+      
+      // Close the popup
+      window.close()
+    }
+  } catch (error) {
+    console.error('Error handling Paystack callback:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -40,9 +81,19 @@ onMounted(() => {
                 <VIcon size="120" icon="tabler-circle-check" class="text-success" />
               </div>
               
-              <h2 class="success-title mb-3">Payment Successful!</h2>
+              <h2 class="success-title mb-3">
+                {{ paymentStatus === 'success' ? 'Payment Successful!' : 'Payment Processing...' }}
+              </h2>
               <p class="success-message mb-4">
-                Thank you for your purchase! Your order has been successfully placed and payment has been confirmed.
+                <span v-if="paymentStatus === 'success'">
+                  Thank you for your purchase! Your order has been successfully placed and payment has been confirmed.
+                </span>
+                <span v-else-if="isLoading">
+                  Processing your payment... Please wait.
+                </span>
+                <span v-else>
+                  Your payment is being processed. You will be redirected shortly.
+                </span>
               </p>
               
               <!-- Order Details -->
@@ -81,7 +132,15 @@ onMounted(() => {
                 </div>
               </div>
 
-              <div class="success-actions">
+              <!-- POS User Redirect Message -->
+              <div v-if="userData && paymentStatus === 'success'" class="pos-redirect-message mb-4">
+                <div class="alert alert-info text-center">
+                  <VIcon icon="tabler-info-circle" class="me-2" />
+                  You will be redirected to POS in a few seconds...
+                </div>
+              </div>
+
+              <div class="success-actions" v-if="!userData || paymentStatus !== 'success'">
                 <div class="row g-3">
                   <div class="col-md-6">
                     <RouterLink to="/product" class="btn btn-primary w-100 common-animation-button large-btn">
@@ -144,4 +203,8 @@ onMounted(() => {
   color: var(--color-white);
 }
 
+
+.order-info h6, .success-details ul li, .success-details h5 {
+  color: #333;
+}
 </style> 

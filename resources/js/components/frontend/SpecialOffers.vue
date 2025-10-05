@@ -12,7 +12,7 @@
       <!-- New Design -->
       <section class="about-area-one" id="ourServices">
         <div class="container-fluid">
-          <div class="row">
+          <div class="row" v-if="displayedOffers.length > 0">
             <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-4 pd-0" v-for="offer in displayedOffers" 
             :key="offer.id">
               <div class="about-list-right">
@@ -26,15 +26,13 @@
                     <div class="media">
                       <VIcon icon="tabler-clock" size="24" class="serviceInfoicon" />
                       <div class="media-body" v-if="parseFloat(offer.duration) > 0">
-                        <p class="serviceInfoHeading">{{ t('Duration') }}:</p>
-                        <p class="serviceInfoValue ps-1">{{ parseFloat(offer.duration) > 1 ? offer.duration + ' ' + offer.duration_type + 's' : offer.duration + ' ' + offer.duration_type }}</p>
+                        <p class="serviceInfoValue">{{ parseFloat(offer.duration) > 1 ? offer.duration + ' ' + offer.duration_type + 's' : offer.duration + ' ' + offer.duration_type }}</p>
                       </div>
                     </div>
                     <div class="media mb-3">
                       <VIcon icon="tabler-premium-rights" size="24" class="serviceInfoicon" />
                       <div class="media-body">
-                        <p class="serviceInfoHeading">{{ t('Price') }}:</p>
-                        <p class="serviceInfoValue ps-1">
+                        <p class="serviceInfoValue">
                           {{ formatAmount(offer.packagePrice) }}
                           <del class="regular-price">{{ formatAmount(offer.regularPrice) }}</del>
                         </p>
@@ -60,29 +58,69 @@
               </div>
             </div>
           </div>
+          <div v-if="displayedOffers.length == 0">
+            <div class="text-center">
+              <h5>{{ t('No package found') }}</h5>
+              <VIcon size="45" icon="tabler-filter-search" />
+            </div>
+          </div>
         </div>
       </section>
 
 
       <div class="row">
         <!-- View All Button (Homepage) -->
-        <div v-if="showViewAllButton" class="col-12 text-center mt-5">
+        <div v-if="showViewAllButton && displayedOffers.length > 0" class="col-12 text-center mt-5">
           <BookingSamllBtn :link="'/package'" :text="'All Packages'" />
         </div>
 
         <!-- Pagination (Package Page) -->
-        <div v-if="showPagination && paginationData" class="col-12 text-center mt-0">
+        <div v-if="showPagination && paginationData && displayedOffers.length > 0" class="col-12 text-center mt-0">
           <div class="pagination-wrapper">
             <div class="pagination-inner d-flex justify-content-center align-items-center">
               <div class="pagination-item d-flex justify-content-center align-items-center">
+                <!-- Previous Button -->
                 <a 
-                  v-for="page in paginationPages" 
-                  :key="page"
                   href="#" 
+                  @click.prevent="goToPage(currentPage - 1)"
+                  v-if="currentPage > 1"
+                  class="pagination-btn"
+                >
+                  &laquo;
+                </a>
+                
+                <!-- Page Numbers -->
+                <a 
+                  href="#" 
+                  v-for="page in Math.min(paginationData.last_page, 5)" 
+                  :key="page"
                   @click.prevent="goToPage(page)"
-                  :class="{ active: page === currentPage }"
+                  :class="{ active: currentPage == page }"
                 >
                   {{ page }}
+                </a>
+                
+                <!-- Show dots if there are more pages -->
+                <span v-if="paginationData.last_page > 5">...</span>
+                
+                <!-- Last page -->
+                <a 
+                  href="#" 
+                  v-if="paginationData.last_page > 5"
+                  @click.prevent="goToPage(paginationData.last_page)"
+                  :class="{ active: currentPage == paginationData.last_page }"
+                >
+                  {{ paginationData.last_page }}
+                </a>
+                
+                <!-- Next Button -->
+                <a 
+                  href="#" 
+                  @click.prevent="goToPage(currentPage + 1)"
+                  v-if="currentPage < paginationData.last_page"
+                  class="pagination-btn"
+                >
+                  &raquo;
                 </a>
               </div>
             </div>
@@ -148,31 +186,6 @@
     return specialOffers.value
   })
 
-  const paginationPages = computed(() => {
-    if (!paginationData.value) return []
-    
-    const totalPages = paginationData.value.last_page
-    const current = currentPage.value
-    const pages = []
-    
-    // Simple pagination logic - show up to 10 pages
-    const start = Math.max(1, current - 2)
-    const end = Math.min(totalPages, current + 2)
-    
-    for (let i = start; i <= end; i++) {
-      pages.push(i)
-    }
-    
-    // Add ellipsis and last page if needed
-    if (end < totalPages) {
-      if (end < totalPages - 1) {
-        pages.push('...')
-      }
-      pages.push(totalPages)
-    }
-    
-    return pages
-  })
 
   // Methods
   const fetchPackages = async () => {
@@ -239,7 +252,7 @@
   }
 
   const goToPage = (page) => {
-    if (page === '...' || page === currentPage.value) return
+    if (page === currentPage.value) return
     fetchPackagesPaginated(page)
   }
 
@@ -269,5 +282,24 @@
 </script>
 
 <style scoped>
+/* Pagination styles */
+.pagination-item a.active {
+  background-color: var(--primary-bg-color);
+  color: white;
+}
 
+.pagination-btn {
+  padding: 8px 12px;
+  margin: 0 2px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover {
+  background-color: var(--primary-bg-color);
+  color: white;
+  border-color: var(--primary-bg-color);
+}
 </style> 

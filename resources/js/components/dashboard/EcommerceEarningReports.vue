@@ -5,6 +5,11 @@ import { ref, onMounted, computed } from 'vue'
 import { $api } from '@/utils/api'
 // import VueApexCharts from 'vue3-apexcharts'
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({ useScope: 'global' })
+
+
 const vuetifyTheme = useTheme()
 
 const series = ref([{
@@ -149,8 +154,8 @@ onMounted(() => {
 
 <template>
   <VCard
-    title="Earning Reports"
-    subtitle="Weekly Earnings Overview"
+    :title="t('Earning Reports')"
+    :subtitle="t('Weekly Earnings Overview')"
   >
 
     <VCardText>

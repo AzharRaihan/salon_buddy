@@ -1392,11 +1392,34 @@
   "Transaction ID": "ID de transaction",
   "Login as Admin": "Se connecter en tant qu'administrateur",
   "Our Services": "Nos services",
+  "Damage": "Dommage",
+  "Add Damage": "Ajouter un dommage",
+  "Edit Damage": "Modifier le dommage",
+  "List Damage": "Liste des dommages",
+  "Email Settings": "Paramètres de l'e-mail",
+  "SMS Setting": "Paramètres de SMS",
+  "Whatsapp Settings": "Paramètres de Whatsapp",
+  "Social Auth Settings": "Paramètres de l'authentification sociale",
+  "Current Month": "Mois actuel",
+  "Profit": "Profit",
+  "Last Month": "Dernier mois",
+  "Expenses": "Dépenses",
+  "Revenue Report": "Reporte de ingresos",
+  "Earning Reports": "Reportes de ingresos",
+  "Weekly Earnings Overview": "Resumen de ingresos semanales",
+  "Earning": "Ingresos",
+  "This Month": "Mois actuel",
+  "Popular Products": "Produits populaires",
+
 
 
 
 
   "AI Generated Key will be started from here": "La clé générée par l'IA commencera ici", 
+
+
+
+
 
   "UI Elements": "Éléments d'interface utilisateur",
   "Forms & Tables": "Formulaires & Tableaux",

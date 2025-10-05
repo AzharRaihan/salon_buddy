@@ -455,6 +455,8 @@
     "useCountdown": true,
     "usePreferredReducedTransparency": true,
     "useSSRWidth": true,
-    "useTimeAgoIntl": true
+    "useTimeAgoIntl": true,
+    "useWebsitePolicyForm": true,
+    "useFrontendPolicy": true
   }
 }

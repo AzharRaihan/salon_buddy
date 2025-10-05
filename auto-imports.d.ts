@@ -270,7 +270,7 @@ declare global {
   const useElementHover: typeof import('@vueuse/core')['useElementHover']
   const useElementSize: typeof import('@vueuse/core')['useElementSize']
   const useElementVisibility: typeof import('@vueuse/core')['useElementVisibility']
-  const useEmployeeCommissionReport: typeof import('./resources/js/composables/useEmployeeCommissionReport.js')['useEmployeeCommissionReport']
+  const useEmployeeCommissionReport: typeof import('./resources/js/composables/useEmployeeEarningReport.js')['useEmployeeCommissionReport']
   const useEmployeeRating: typeof import('./resources/js/composables/useEmployeeRating.js')['useEmployeeRating']
   const useEmployees: typeof import('./resources/js/composables/useEmployees.js')['useEmployees']
   const useErrorHandler: typeof import('./resources/js/composables/useErrorHandler.js')['useErrorHandler']
@@ -290,6 +290,7 @@ declare global {
   const useFormAnimations: typeof import('./resources/js/composables/useFormAnimations.js')['useFormAnimations']
   const useFormValidation: typeof import('./resources/js/composables/useFormValidation.js')['useFormValidation']
   const useFps: typeof import('@vueuse/core')['useFps']
+  const useFrontendPolicy: typeof import('./resources/js/composables/useFrontendPolicy.js')['useFrontendPolicy']
   const useFullscreen: typeof import('@vueuse/core')['useFullscreen']
   const useGamepad: typeof import('@vueuse/core')['useGamepad']
   const useGenerateImageVariant: typeof import('./resources/js/@core/composable/useGenerateImageVariant.js')['useGenerateImageVariant']
@@ -433,6 +434,7 @@ declare global {
   const useWebSocket: typeof import('@vueuse/core')['useWebSocket']
   const useWebWorker: typeof import('@vueuse/core')['useWebWorker']
   const useWebWorkerFn: typeof import('@vueuse/core')['useWebWorkerFn']
+  const useWebsitePolicyForm: typeof import('./resources/js/composables/useWebsitePolicyForm.js')['useWebsitePolicyForm']
   const useWebsiteSettings: typeof import('./resources/js/composables/useWebsiteSettings.js')['useWebsiteSettings']
   const useWhatsappSettings: typeof import('./resources/js/composables/useWhatsappSettings.js')['useWhatsappSettings']
   const useWindowFocus: typeof import('@vueuse/core')['useWindowFocus']
@@ -707,7 +709,6 @@ declare module 'vue' {
     readonly useDailySummaryReport: UnwrapRef<typeof import('./resources/js/composables/useDailySummaryReport.js')['useDailySummaryReport']>
     readonly useDamageReport: UnwrapRef<typeof import('./resources/js/composables/useDamageReport.js')['useDamageReport']>
     readonly useDark: UnwrapRef<typeof import('@vueuse/core')['useDark']>
-    readonly useDataTable: UnwrapRef<typeof import('./resources/js/composables/useDataTable.js')['useDataTable']>
     readonly useDateFormat: UnwrapRef<typeof import('@vueuse/core')['useDateFormat']>
     readonly useDebounce: UnwrapRef<typeof import('@vueuse/core')['useDebounce']>
     readonly useDebounceFn: UnwrapRef<typeof import('@vueuse/core')['useDebounceFn']>
@@ -726,6 +727,7 @@ declare module 'vue' {
     readonly useElementSize: UnwrapRef<typeof import('@vueuse/core')['useElementSize']>
     readonly useElementVisibility: UnwrapRef<typeof import('@vueuse/core')['useElementVisibility']>
     readonly useEmployeeCommissionReport: UnwrapRef<typeof import('./resources/js/composables/useEmployeeCommissionReport.js')['useEmployeeCommissionReport']>
+    readonly useEmployeeCommissionReport: UnwrapRef<typeof import('./resources/js/composables/useEmployeeEarningReport.js')['useEmployeeCommissionReport']>
     readonly useEmployeeRating: UnwrapRef<typeof import('./resources/js/composables/useEmployeeRating.js')['useEmployeeRating']>
     readonly useEmployees: UnwrapRef<typeof import('./resources/js/composables/useEmployees.js')['useEmployees']>
     readonly useErrorHandler: UnwrapRef<typeof import('./resources/js/composables/useErrorHandler.js')['useErrorHandler']>
@@ -743,6 +745,7 @@ declare module 'vue' {
     readonly useFocusWithin: UnwrapRef<typeof import('@vueuse/core')['useFocusWithin']>
     readonly useFormValidation: UnwrapRef<typeof import('./resources/js/composables/useFormValidation.js')['useFormValidation']>
     readonly useFps: UnwrapRef<typeof import('@vueuse/core')['useFps']>
+    readonly useFrontendPolicy: UnwrapRef<typeof import('./resources/js/composables/useFrontendPolicy.js')['useFrontendPolicy']>
     readonly useFullscreen: UnwrapRef<typeof import('@vueuse/core')['useFullscreen']>
     readonly useGamepad: UnwrapRef<typeof import('@vueuse/core')['useGamepad']>
     readonly useGenerateImageVariant: UnwrapRef<typeof import('./resources/js/@core/composable/useGenerateImageVariant.js')['useGenerateImageVariant']>
@@ -876,6 +879,7 @@ declare module 'vue' {
     readonly useWebSocket: UnwrapRef<typeof import('@vueuse/core')['useWebSocket']>
     readonly useWebWorker: UnwrapRef<typeof import('@vueuse/core')['useWebWorker']>
     readonly useWebWorkerFn: UnwrapRef<typeof import('@vueuse/core')['useWebWorkerFn']>
+    readonly useWebsitePolicyForm: UnwrapRef<typeof import('./resources/js/composables/useWebsitePolicyForm.js')['useWebsitePolicyForm']>
     readonly useWebsiteSettings: UnwrapRef<typeof import('./resources/js/composables/useWebsiteSettings.js')['useWebsiteSettings']>
     readonly useWhatsappSettings: UnwrapRef<typeof import('./resources/js/composables/useWhatsappSettings.js')['useWhatsappSettings']>
     readonly useWindowFocus: UnwrapRef<typeof import('@vueuse/core')['useWindowFocus']>

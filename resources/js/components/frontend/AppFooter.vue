@@ -53,6 +53,8 @@
                 <ul class="footer-links">
                   <li><RouterLink to="/contact-us">{{ t('Contact Us') }}</RouterLink></li>
                   <li><RouterLink to="/faq">{{ t('Help & FAQ') }}</RouterLink></li>
+                  <li><RouterLink to="/policy">{{ t('Privacy Policy') }}</RouterLink></li>
+                  <li><RouterLink to="/terms-and-conditions">{{ t('Terms & Conditions') }}</RouterLink></li>
                 </ul>
               </div>
             </div>

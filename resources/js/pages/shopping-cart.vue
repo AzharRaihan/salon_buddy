@@ -105,7 +105,7 @@ onMounted(async () => {
                     <!-- Show Delivery Area  list -->
                     <li>
                       <div class="flex-grow-1">
-                        <label>{{ t('Delivery Area') }}</label>
+                        <label>{{ t('Delivery Area') }} <span class="required-star">*</span></label>
                         <AppAutocomplete 
                           class="delivery-area-selection" 
                           :items="cartStore.deliveryAreas"
@@ -118,7 +118,7 @@ onMounted(async () => {
                       </div>
                     </li>
                     <li>
-                      <span>{{ t('Delivery Charge') }}</span>
+                      <span>{{ t('Delivery Charge') }} </span>
                       <span class="text-end">
                         {{ cartStore.deliveryCharge.toFixed(2) }} 
                         <template v-if="cartStore.selectedDeliveryArea?.name">({{ cartStore.selectedDeliveryArea?.name }})</template>
@@ -130,7 +130,7 @@ onMounted(async () => {
                     </li>
                   </ul>
                   <div class="d-flex justify-content-center order-summary-button-group" v-if="cartStore.selectedDeliveryAreaId">
-                    <BookingSamllBtn :link="'/customer/checkout'" :text="t('Proceed to checkout')" />
+                    <BookingSamllBtn :link="'/checkout'" :text="t('Proceed to checkout')" />
                   </div>
                   <div class="d-flex justify-content-center order-summary-button-group" v-else>
                     <BookingSamllBtn2 :disabled="true" :text="t('Proceed to checkout')" />

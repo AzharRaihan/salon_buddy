@@ -1,7 +1,7 @@
 <template>
   <section ref="featuredServicesSection">
     <div class="featured-services default-section-padding">
-    <div class="container">
+      <div class="container">
         <div class="row">
           <div class="col-12">
             <div class="section-header">
@@ -49,12 +49,25 @@
                         </VTooltip>
                     </h4>
                     <p class="service-info" v-if="parseFloat(service.duration) > 0">
-                      <span class="duration">{{ t('Duration') }}: {{ parseFloat(service.duration) > 1 ? service.duration + ' ' + service.duration_type + 's' : service.duration + ' ' + service.duration_type }}</span>
+                      <VIcon icon="tabler-clock" size="20" />
+                      <span class="duration"> 
+                        {{ parseFloat(service.duration) > 1 ? service.duration + ' ' + service.duration_type + 's' : service.duration + ' ' + service.duration_type }}
+                      </span>
                     </p>
                     <p class="service-info">
-                      <span class="duration">{{ formatAmount(service.price) }}</span>
+                      <VIcon icon="tabler-users" size="20" />
+                      <span class="duration staff-assigned" v-if="service.staff_assigned > 0">
+                        {{ service.staff_assigned }} Staffs
+                      </span>
+                      <span class="duration staff-assigned" v-else>
+                        N/A
+                      </span>
                     </p>
-                    <div class="service-footer d-flex justify-content-between align-items-center">
+                    <p class="service-info">
+                      <VIcon icon="tabler-coin" size="20" />
+                      <span class="duration">{{ (service.price) }}</span>
+                    </p>
+                    <div class=" d-flex justify-content-between align-items-center">
                       <BookNowBtn :link="`/appointment-service?service_id=${encryptId(service.id)}`" :text="t('Book Now')" />
                     </div>
                   </div>
@@ -62,7 +75,12 @@
               </div>
             </transition-group>
           </div>
-          
+          <div v-if="featuredServices.length == 0">
+            <div class="text-center">
+              <h5>{{ t('No services found') }}</h5>
+              <VIcon size="45" icon="tabler-filter-search" />
+            </div>
+          </div>
           <!-- Navigation Buttons -->
           <div class="swiper-button-next common-swiper-button common-animation-button" v-if="featuredServices.length > 0">
             <VIcon size="22" icon="tabler-arrow-narrow-right" />
@@ -70,7 +88,6 @@
           <div class="swiper-button-prev common-swiper-button common-animation-button" v-if="featuredServices.length > 0">
             <VIcon size="22" icon="tabler-arrow-narrow-left" />
           </div>
-
         </div>
       </div>
     </div>
@@ -98,6 +115,10 @@ const selectedCategory = ref('all')
 const loading = ref(false)
 const websiteSettingsStore = useWebsiteSettingsStore()
 const currency = computed(() => websiteSettingsStore.getCurrency)
+
+
+
+
 
 // Watch for data changes to reinit swiper
 watch(featuredServices, async () => {
@@ -138,20 +159,17 @@ const fetchFeaturedServices = async (categoryId = 'all') => {
     loading.value = false
   }
 }
-
 // Filter services by category
 const filterByCategory = async (categoryId) => {
   selectedCategory.value = categoryId
   await fetchFeaturedServices(categoryId)
 }
-
 // Initialize swiper
 let swiperInstance = null
 const initSwiper = () => {
   if (swiperInstance) {
     swiperInstance.destroy(true, true)
   }
-
   swiperInstance = new Swiper('.featured-services-swiper', {
     modules: [Navigation, Pagination, Autoplay],
     slidesPerView: 1,
@@ -194,43 +212,32 @@ const initSwiper = () => {
     }
   })
 }
-
 // Component lifecycle
 onMounted(async () => {
   await fetchServiceCategories()
   await fetchFeaturedServices()
 })
-
 // IRUL ID Encryption
 function encryptId(id) {
   return btoa(id) // Base64 encode
 }
-
 </script>
-
 <style scoped>
 .features-category .btn.active {
   background-color: var(--primary-bg-color);
   color: white;
 }
-
 /* Transition animations */
 .fade-up-enter-active,
 .fade-up-leave-active {
   transition: all 0.5s ease;
 }
-
 .fade-up-enter-from,
 .fade-up-leave-to {
   opacity: 0;
   transform: translateY(30px);
 }
-
 .fade-up-move {
   transition: transform 0.5s ease;
 }
-
-
-
-
 </style>

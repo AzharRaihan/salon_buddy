@@ -38,10 +38,10 @@ const props = defineProps({
           <p class="hi-title-description">Ready to place your next order?</p>
         </template>
       </div>
-      <button class="customer-panel-header-button" @click="goToHome">
+      <!-- <button class="customer-panel-header-button" @click="goToHome">
         <VIcon icon="tabler-arrow-left" size="20" />
         Home
-      </button>
+      </button> -->
     </div>
   </div>
 </template>

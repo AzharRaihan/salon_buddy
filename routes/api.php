@@ -214,6 +214,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('stock-report-filters', 'stockReportFilters');
         Route::get('salary-report-filters', 'salaryReportFilters');
         Route::get('salary-report', 'salaryReport');
+
+        Route::get('employee-earning-report', 'employeeEarningReport');
+        Route::get('employee-earning-report-filters', 'employeeEarningReportFilters');
+
     });
 
     //  POS routes
@@ -322,6 +326,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('website-settings-update', 'websiteSettingsUpdate');
         Route::get('website-about-us', 'websiteAboutUs');
         Route::post('website-about-us-update', 'websiteAboutUsUpdate');
+        Route::get('website-terms-and-conditions', 'websiteTermsAndConditions');
+        Route::post('website-terms-and-conditions-update', 'websiteTermsAndConditionsUpdate');
+        Route::get('website-privacy-policy', 'websitePrivacyPolicy');
+        Route::post('website-privacy-policy-update', 'websitePrivacyPolicyUpdate');
     });
 });
 
@@ -444,6 +452,7 @@ Route::controller(PaymentGatewayController::class)->group(function () {
     // Paystack
     Route::post('create-paystack-order', 'createPaystackOrder');
     Route::post('verify-paystack-payment', 'verifyPaystackPayment');
+    Route::get('paystack-callback', 'paystackCallback');
 });
 
 // Route::get('/paytm-initiate', [PaytmController::class, 'initiatePayment']);

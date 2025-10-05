@@ -16,6 +16,14 @@ Route::controller(SocialAuthController::class)->group(function () {
     // GitHub OAuth
     Route::get('api/auth/github', 'redirectToGithub')->name('auth.github.redirect');
     Route::get('api/auth/github/callback', 'handleGithubCallback')->name('auth.github.callback');
+    // Privacy policy rules
+    Route::get('privacy-policy', 'privacyPolicy')->name('privacy-policy');
+
+    // Facebook OAuth
+    Route::get('api/auth/facebook', 'redirectToFacebook')->name('auth.facebook.redirect');
+    Route::get('api/auth/facebook/callback', 'handleFacebookCallback')->name('auth.facebook.callback');
+
+    
 });
 
 Route::get('{any?}', function () {

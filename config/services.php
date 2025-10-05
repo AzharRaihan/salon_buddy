@@ -43,11 +43,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'), // e.g., http://localhost/salon_buddy/api/customer/auth/google/callback
     ],
 
-    // 'facebook' => [
-    //     'client_id' => env('FACEBOOK_CLIENT_ID'),
-    //     'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-    //     'redirect' => env('FACEBOOK_REDIRECT_URI'), // e.g., http://localhost:8000/api/auth/facebook/callback
-    // ],
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect' => env('FACEBOOK_REDIRECT_URI'), // e.g., http://localhost:8000/api/auth/facebook/callback
+    ],
 
     'github' => [
         'client_id' => env('GITHUB_CLIENT_ID'),

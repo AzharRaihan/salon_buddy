@@ -155,6 +155,7 @@ export default [
       { title: "Purchase Report", to: { name: "report-purchase-report" }, permission: ["report-purchase"] },
       { title: "Stock Report", to: { name: "report-stock-report" }, permission: ["report-stock"] },
       { title: "Employee Commission Report", to: { name: "report-employee-commission-report" }, permission: ["report-commission"] },
+      { title: "Employee Earning Report", to: { name: "report-employee-earning-report" }, permission: ["report-earning"] },
       { title: "Expense Report", to: { name: "report-expense-report" }, permission: ["report-expense"] },
       { title: "Damage Report", to: { name: "report-damage-report" }, permission: ["report-damage"] },
       { title: "Salary Report", to: { name: "report-salary-report" }, permission: ["report-salary"] },
@@ -183,6 +184,8 @@ export default [
     children: [
       { title: "Website Settings", to: { name: "website-settings" }, permission: ["website-settings"] },
       { title: "About Us", to: { name: "website-about-us" }, permission: ["website-aboutus"] },
+      { title: "Terms & Conditions", to: { name: "website-terms-and-conditions" }, permission: ["website-terms_and_conditions"] },
+      { title: "Privacy Policy", to: { name: "website-privacy-policy" }, permission: ["website-privacy_policy"] },
       { title: "Add Delivery Area", to: { name: "website-delivery-area-create" }, permission: ["website-delivery_area"] },
       { title: "List Delivery Area", to: { name: "website-delivery-area" }, permission: ["website-delivery_area"] },
       { title: "Add Delivery Partner", to: { name: "website-delivery-partner-create" }, permission: ["website-delivery_partner"] },

@@ -2,6 +2,9 @@
 import navigation from '@/navigation/vertical'
 import { useConfigStore } from '@core/stores/config'
 import Shepherd from 'shepherd.js'
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({ useScope: 'global' })
 
 defineOptions({
   // 👉 Is App Search Bar Visible
@@ -68,9 +71,13 @@ const searchNavigation = (query) => {
   const results = []
 
   const searchInItems = (items, parentTitle = '') => {
+    console.log(items)
     items.forEach(item => {
       // Check if item title matches search query
-      if (item.title.toLowerCase().includes(query.toLowerCase())) {
+      if (item.title &&
+          query &&
+          item.title.toLowerCase().includes(query.toLowerCase())
+        ) {
         results.push({
           title: parentTitle || 'Navigation',
           children: [{
@@ -128,7 +135,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
 
     <span v-if="configStore.appContentLayoutNav === 'vertical'" class="d-none d-md-flex align-center text-disabled ms-2"
       @click="Shepherd.activeTour?.cancel()">
-      <span class="me-2">Search</span>
+      <span class="me-2">{{ t('Search') }}</span>
       <span class="meta-key">&#8984;K</span>
     </span>
   </div>

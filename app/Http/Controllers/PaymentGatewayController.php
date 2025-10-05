@@ -7,15 +7,15 @@ use App\Models\Setting;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PayPal\PayPalAPI\PaypalServerSdkClientBuilder;
-use PayPal\PayPalAPI\ClientCredentialsAuthCredentialsBuilder;
-use PayPal\PayPalAPI\Environment;
-use PayPal\PayPalAPI\OrdersController;
-use PayPal\PayPalAPI\Models\OrderRequest;
-use PayPal\PayPalAPI\Models\PurchaseUnitRequest;
-use PayPal\PayPalAPI\Models\AmountWithBreakdown;
-use PayPal\PayPalAPI\Models\Money;
-use PayPal\PayPalAPI\Models\ApplicationContext;
+use PaypalServerSdkLib\PaypalServerSdkClientBuilder;
+use PaypalServerSdkLib\Authentication\ClientCredentialsAuthCredentialsBuilder;
+use PaypalServerSdkLib\Environment;
+use PaypalServerSdkLib\Controllers\OrdersController;
+use PaypalServerSdkLib\Models\OrderRequest;
+use PaypalServerSdkLib\Models\PurchaseUnitRequest;
+use PaypalServerSdkLib\Models\AmountWithBreakdown;
+use PaypalServerSdkLib\Models\Money;
+use PaypalServerSdkLib\Models\OrderApplicationContext;
 
 class PaymentGatewayController extends Controller
 {
@@ -177,6 +177,7 @@ class PaymentGatewayController extends Controller
     // PayPal - Using paypal-server-sdk
     public function createPaypalOrder(Request $request)
     {
+        // dd($this->companyPaymentConfig['paypal_client_id']);
         try {
             // Initialize PayPal client using the new SDK
             $client = PaypalServerSdkClientBuilder::init()
@@ -189,28 +190,24 @@ class PaymentGatewayController extends Controller
                 ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
                 ->build();
 
-            // Create orders controller
-            $ordersController = new OrdersController($client);
+            // Get orders controller from the client
+            $ordersController = $client->getOrdersController();
 
-            // Create order request
-            $orderRequest = new OrderRequest();
-            $orderRequest->setIntent('CAPTURE');
-
-            // Create purchase unit
-            $purchaseUnit = new PurchaseUnitRequest();
+            // Create amount with required parameters
+            $amount = new AmountWithBreakdown(
+                $request->currency ?? 'USD',
+                number_format((float)$request->amount, 2, '.', '')
+            );
             
-            // Set amount
-            $amount = new AmountWithBreakdown();
-            $amount->setCurrencyCode($request->currency ?? 'USD');
-            $amount->setValue(number_format((float)$request->amount, 2, '.', ''));
-            
-            $purchaseUnit->setAmount($amount);
+            // Create purchase unit with amount
+            $purchaseUnit = new PurchaseUnitRequest($amount);
             $purchaseUnit->setDescription('POS Payment - Order: ' . ($request->order_id ?? 'Unknown'));
 
-            $orderRequest->setPurchaseUnits([$purchaseUnit]);
+            // Create order request with required parameters
+            $orderRequest = new OrderRequest('CAPTURE', [$purchaseUnit]);
 
             // Set application context
-            $applicationContext = new ApplicationContext();
+            $applicationContext = new OrderApplicationContext();
             $applicationContext->setReturnUrl(url('/payment-success'));
             $applicationContext->setCancelUrl(url('/payment-cancel'));
             $applicationContext->setBrandName('Salon Buddy');
@@ -220,7 +217,7 @@ class PaymentGatewayController extends Controller
             $orderRequest->setApplicationContext($applicationContext);
 
             // Create the order
-            $response = $ordersController->createOrder($orderRequest);
+            $response = $ordersController->createOrder(['body' => $orderRequest]);
             $order = $response->getResult();
 
             // Get approval URL
@@ -256,8 +253,8 @@ class PaymentGatewayController extends Controller
                 ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
                 ->build();
 
-            // Create orders controller
-            $ordersController = new OrdersController($client);
+            // Get orders controller from the client
+            $ordersController = $client->getOrdersController();
 
             $orderId = $request->order_id;
             $token = $request->token;
@@ -267,7 +264,7 @@ class PaymentGatewayController extends Controller
             }
 
             // Capture the order
-            $response = $ordersController->captureOrder($orderId);
+            $response = $ordersController->captureOrder(['id' => $orderId]);
             $capturedOrder = $response->getResult();
 
             if ($capturedOrder->getStatus() === 'COMPLETED') {
@@ -295,8 +292,8 @@ class PaymentGatewayController extends Controller
                 ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
                 ->build();
 
-            // Create orders controller
-            $ordersController = new OrdersController($client);
+            // Get orders controller from the client
+            $ordersController = $client->getOrdersController();
 
             $orderId = $request->order_id;
             
@@ -305,7 +302,7 @@ class PaymentGatewayController extends Controller
             }
 
             // Get order details from PayPal
-            $response = $ordersController->getOrder($orderId);
+            $response = $ordersController->getOrder(['id' => $orderId]);
             $order = $response->getResult();
 
             $status = $order->getStatus();
@@ -431,84 +428,203 @@ class PaymentGatewayController extends Controller
     // Paystack Integration
     public function createPaystackOrder(Request $request)
     {
+        try {
+            // Check if Paystack is enabled and configured
+            if (!$this->companyPaymentConfig['paystack_enabled']) {
+                return $this->errorResponse('Paystack payment is not enabled');
+            }
 
-        $rawAmount = $request->amount;
+            // $paystackSecret = $this->companyPaymentConfig['paystack_key'];
+            $paystackSecret = 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b';
+            if (empty($paystackSecret)) {
+                return $this->errorResponse('Paystack secret key is not configured');
+            }
 
-        // Remove commas, cast to float, then convert to kobo
-        $amount = (int) round(((float) str_replace(',', '', $rawAmount)) * 100);
-        // $amount = (int)$request->amount * 100; // Convert to kobo
-        $email = $request->email ?? 'customer@example.com';
+            $rawAmount = $request->amount;
 
-        $reference = 'PAYSTACK_' . uniqid();
+            // Remove commas, cast to float, then convert to kobo
+            $amount = (int) round(((float) str_replace(',', '', $rawAmount)) * 100);
+            $email = $request->email ?? 'customer@example.com';
 
-        $url = 'https://api.paystack.co/transaction/initialize';
+            $reference = 'PAYSTACK_' . uniqid();
 
+            // Determine callback URL based on context
+            $callbackUrl = $request->callback_url ?? url('/payment-success');
+            $redirectUrl = $request->redirect_url ?? url('/pos');
 
+            $url = 'https://api.paystack.co/transaction/initialize';
 
-
-        // 'Authorization: Bearer ' . 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-        // // 'Authorization: Bearer ' . config('services.paystack.secret'),
-        // 'Cache-Control: no-cache',
-        $headers = [
-            'Authorization: Bearer sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-            'Content-Type: application/json',
-            'Cache-Control: no-cache',
-        ];
-        $fields = [
-            'email' => $email,
-            'amount' => $amount,
-            'reference' => $reference,
-            'callback_url' => url('/pos'),
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-
-        if ($result['status']) {
-            return $this->successResponse([
-                'authorization_url' => $result['data']['authorization_url'],
+            $headers = [
+                'Authorization: Bearer ' . $paystackSecret,
+                'Content-Type: application/json',
+                'Cache-Control: no-cache',
+            ];
+            
+            $fields = [
+                'email' => $email,
+                'amount' => $amount,
                 'reference' => $reference,
-                's_k' => 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-                'p_k' => 'pk_test_4ce4113cc2899b24a65cbe3ee16669dd161d7a91'	
-            ], 'Paystack order created');
-        } else {
-            return $this->errorResponse('Failed to create Paystack order');
+                'callback_url' => $callbackUrl,
+                'metadata' => [
+                    'order_id' => $request->order_id ?? 'pos_order_' . uniqid(),
+                    'customer_name' => $request->customer_name ?? 'POS Customer',
+                    'redirect_url' => $redirectUrl,
+                    'payment_method_id' => $request->payment_method_id ?? null,
+                ]
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $response = curl_exec($ch);
+
+
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($response === false) {
+                return $this->errorResponse('Failed to connect to Paystack API');
+            }
+
+            $result = json_decode($response, true);
+
+            if ($result && $result['status'] && isset($result['data']['authorization_url'])) {
+                return $this->successResponse([
+                    'authorization_url' => $result['data']['authorization_url'],
+                    'reference' => $reference,
+                    'access_code' => $result['data']['access_code'],
+                ], 'Paystack order created');
+            } else {
+                $errorMessage = $result['message'] ?? 'Failed to create Paystack order';
+                return $this->errorResponse($errorMessage);
+            }
+        } catch (\Exception $e) {
+            return $this->errorResponse('Paystack order creation failed: ' . $e->getMessage());
         }
     }
 
     public function verifyPaystackPayment(Request $request)
     {
-        $reference = $request->reference;
+        try {
 
-        $url = 'https://api.paystack.co/transaction/verify/' . $reference;
-        $headers = [
-            // 'Authorization: Bearer ' . config('services.paystack.secret'),
-            'Authorization: Bearer ' . 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b',
-            'Content-Type: application/json',
-            'Cache-Control: no-cache',
-        ];
+            // Check if Paystack is enabled and configured
+            if (!$this->companyPaymentConfig['paystack_enabled']) {
+                return $this->errorResponse('Paystack payment is not enabled');
+            }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            // $paystackSecret = $this->companyPaymentConfig['paystack_key'];
+            $paystackSecret = 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b';
+            if (empty($paystackSecret)) {
+                return $this->errorResponse('Paystack secret key is not configured');
+            }
 
-        $response = curl_exec($ch);
-        curl_close($ch);
+            $reference = $request->reference;
+            if (empty($reference)) {
+                return $this->errorResponse('Payment reference is required');
+            }
 
-        $result = json_decode($response, true);
+            $url = 'https://api.paystack.co/transaction/verify/' . $reference;
+            $headers = [
+                'Authorization: Bearer ' . $paystackSecret,
+                'Content-Type: application/json',
+                'Cache-Control: no-cache',
+            ];
 
-        if ($result['status'] && $result['data']['status'] === 'success') {
-            return $this->successResponse(['success' => true], 'Payment verified successfully');
-        } else {
-            return $this->errorResponse('Payment verification failed');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($response === false) {
+                return $this->errorResponse('Failed to connect to Paystack API');
+            }
+
+            $result = json_decode($response, true);
+
+            if ($result && $result['status'] && isset($result['data']['status']) && $result['data']['status'] == 'success') {
+                return $this->successResponse([
+                    'success' => true,
+                    'transaction_id' => $result['data']['reference'],
+                    'amount' => $result['data']['amount'] / 100, // Convert from kobo
+                    'currency' => $result['data']['currency'],
+                    'customer_email' => $result['data']['customer']['email'] ?? null,
+                    'metadata' => $result['data']['metadata'] ?? []
+                ], 'Payment verified successfully');
+            } else {
+                $errorMessage = $result['message'] ?? 'Payment verification failed';
+                return $this->errorResponse($errorMessage);
+            }
+        } catch (\Exception $e) {
+            return $this->errorResponse('Paystack verification failed: ' . $e->getMessage());
+        }
+    }
+
+    // Paystack callback handler
+    public function paystackCallback(Request $request)
+    {
+        try {
+            // Log the callback for debugging
+            \Log::info('Paystack callback received', [
+                'all_params' => $request->all(),
+                'reference' => $request->reference,
+                'trxref' => $request->trxref,
+                'status' => $request->status
+            ]);
+            
+            // Get reference from either 'reference' or 'trxref' parameter
+            $reference = $request->reference ?? $request->trxref;
+            $status = $request->status;
+            
+            // If no status is provided, we need to verify the payment
+            if (!$status && $reference) {
+                // Verify the payment to get the status
+                $verificationRequest = new Request(['reference' => $reference]);
+                $verificationResult = $this->verifyPaystackPayment($verificationRequest);
+                
+                if ($verificationResult->getData()->success) {
+                    $status = 'success';
+                } else {
+                    $status = 'failed';
+                }
+            }
+            
+            // Get redirect URL from metadata if available
+            $redirectUrl = $request->redirect_url;
+            if (!$redirectUrl && $reference) {
+                // Try to get redirect URL from stored metadata
+                // For now, we'll use default URLs based on context
+                $redirectUrl = url('/payment-success');
+            }
+            
+            \Log::info('Paystack callback redirect', [
+                'reference' => $reference,
+                'status' => $status,
+                'redirect_url' => $redirectUrl
+            ]);
+            
+            if ($status === 'success' && $reference) {
+                // Payment successful - redirect to success page
+                return redirect($redirectUrl . '?reference=' . $reference . '&status=success');
+            } else {
+                // Payment failed or cancelled
+                $cancelUrl = url('/payment-cancel');
+                return redirect($cancelUrl . '?reference=' . $reference . '&status=' . ($status ?: 'cancelled'));
+            }
+        } catch (\Exception $e) {
+            // Error occurred
+            \Log::error('Paystack callback error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $redirectUrl = $request->redirect_url ?? url('/payment-cancel');
+            return redirect($redirectUrl . '?error=' . urlencode($e->getMessage()));
         }
     }
 }

@@ -60,6 +60,11 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
           i18nLang: "bn",
           isRTL: false,
         },
+        {
+          label: "Hindi",
+          i18nLang: "hi",
+          isRTL: false,
+        },
       ],
     },
     theme: "light",

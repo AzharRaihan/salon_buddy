@@ -201,8 +201,8 @@ definePage({
               </div>
               <div class="contact-us-info contact-info">
                 <h3>{{ t('Contact') }}</h3>
-                <p>{{ t('Phone') }} : {{ websiteStore.getPhone }}</p>
-                <p>{{ t('Email') }} : {{ websiteStore.getEmail }}</p>
+                <a :href="`tel:${websiteStore.getPhone}`" class="pe-2">{{ t('Phone') }}: {{ websiteStore.getPhone }}</a>
+                <a :href="`mailto:${websiteStore.getEmail}`">{{ t('Email') }}: {{ websiteStore.getEmail }}</a>
               </div>
               <div class="contact-us-info open-close-info">
                 <h3>{{ t('Open Time') }}</h3>
@@ -219,12 +219,13 @@ definePage({
         <div class="row store-card-wrapper">
           <div class="col-md-4" v-for="branch in branches" :key="branch.id">
             <div class="store-card">
-              <div class="store-card-image">
+              <div class="store-card-image light-shadow-wrap">
                 <img :src="branch.photo_url" alt="branch-image">
+                <div class="light-shadow"></div>
               </div>
               <div class="store-card-content">
                 <p><VIcon icon="tabler-building-warehouse" /> {{ branch.branch_name }}</p>
-                <p><VIcon icon="tabler-phone" />{{ branch.phone }}</p>
+                <a :href="`tel:${branch.phone}`" class="pe-2"><VIcon icon="tabler-phone" />{{ branch.phone }}</a>
                 <p><VIcon icon="tabler-clock" />{{ branch.open_day_start }} - {{ branch.open_day_end }} : {{ formatTime(branch.open_day_start_time) }} - {{ formatTime(branch.open_day_end_time) }}</p>
                 <p><VIcon icon="tabler-map-pin" />{{ branch.address }}</p>
               </div>

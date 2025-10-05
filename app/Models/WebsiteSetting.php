@@ -27,6 +27,8 @@ class WebsiteSetting extends Model
         'footer_mini_description',
         'header_logo',
         'footer_logo',
+        'privacy_policy',
+        'terms_and_conditions',
         'company_id',
         'user_id',
         'del_status'

@@ -1389,11 +1389,27 @@
   "must not exceed": "يجب أن يكون على الأكثر",
   "characters": "حروف",
   "Enter your email address": "أدخل البريد الإلكتروني",
-  "Transaction ID": "Transaction ID",	
-  "Login as Admin": "Login as Admin",
-  "Our Services": "Our Services",
-
-
+  "Transaction ID": "رقم المعاملة",	
+  "Login as Admin": "تسجيل الدخول كمدير",
+  "Our Services": "خدماتنا",
+  "Damage": "الضرر",
+  "Add Damage": "إضافة الضرر",
+  "Edit Damage": "تعديل الضرر",
+  "List Damage": "قائمة الضرر",
+  "Email Settings": "إعدادات البريد الإلكتروني",
+  "SMS Setting": "إعدادات الرسائل النصية",
+  "Whatsapp Settings": "إعدادات الواتساب",
+  "Social Auth Settings": "إعدادات المصادقة الاجتماعية",
+  "Current Month": "الشهر الحالي",
+  "Profit": "الربح",
+  "Last Month": "الشهر السابق",
+  "Expenses": "المصاريف",
+  "Revenue Report": "تقرير الإيرادات",
+  "Earning Reports": "تقرير الإيرادات",
+  "Weekly Earnings Overview": "ملخص الإيرادات الأسبوعية",
+  "Earning": "الإيرادات",
+  "This Month": "الشهر الحالي",
+  "Popular Products": "المنتجات الشعبية",
 
 
 

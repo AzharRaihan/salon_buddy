@@ -176,7 +176,8 @@ function encryptId(id) {
                   v-if="currentPage > 1"
                   class="pagination-btn"
                 >
-                  &laquo;
+                <VIcon icon="tabler-arrow-narrow-left"/>
+
                 </a>
                 
                 <!-- Page Numbers -->
@@ -210,7 +211,7 @@ function encryptId(id) {
                   v-if="currentPage < totalPages"
                   class="pagination-btn"
                 >
-                  &raquo;
+                  <VIcon icon="tabler-arrow-narrow-right"/>
                 </a>
               </div>
             </div>

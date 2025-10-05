@@ -187,6 +187,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', {
         this.items.splice(index, 1)
         this.saveToStorage()
       }
+      
     },
     
     // Update item quantity

@@ -8,6 +8,10 @@ import iphone from '@images/eCommerce/iphone.png'
 import nike from '@images/eCommerce/nike.png'
 import sonyDualsense from '@images/eCommerce/sony-dualsense.png'
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({ useScope: 'global' })
+
 const popularProducts = ref([
   {
     avatarImg: '',
@@ -62,7 +66,7 @@ onMounted(() => {
 
 <template>
   <VCard
-    title="Popular Products"
+    :title="t('Popular Products')"
   >
 
     <VCardText>

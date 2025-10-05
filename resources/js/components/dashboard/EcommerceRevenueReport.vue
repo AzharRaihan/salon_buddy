@@ -4,26 +4,31 @@ import { hexToRgb } from '@layouts/utils'
 import { ref, onMounted, computed } from 'vue'
 import { $api } from '@/utils/api'
 
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n({ useScope: 'global' })
+
+
 const vuetifyTheme = useTheme()
 
 const series = ref({
   bar: [
     {
-      name: 'Earning',
+      name: t('Earning'),
       data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
-      name: 'Expense',
+      name: t('Expense'),
       data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
   ],
   line: [
     {
-      name: 'Last Month',
+      name: t('Last Month'),
       data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
-      name: 'This Month',
+      name: t('This Month'),
       data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
   ],
@@ -323,21 +328,21 @@ const fetchRevenueData = async () => {
       series.value = {
         bar: response.barSeries || [
           {
-            name: 'Earning',
+            name: t('Earning'),
             data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
           },
           {
-            name: 'Expense',
+            name: t('Expense'),
             data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
           },
         ],
         line: response.lineSeries || [
           {
-            name: 'Last Month',
+            name: t('Last Month'),
             data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           },
           {
-            name: 'This Month',
+            name: t('This Month'),
             data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           },
         ],
@@ -366,7 +371,7 @@ onMounted(() => {
       >
         <VCardText>
           <h6 class="text-h5 mb-sm-n8">
-            Revenue Report
+            {{ t('Revenue Report') }}
           </h6>
 
           <VueApexCharts

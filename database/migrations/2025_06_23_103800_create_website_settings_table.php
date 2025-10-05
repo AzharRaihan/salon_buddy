@@ -46,6 +46,10 @@ return new class extends Migration
             $table->string('footer_mini_description', 255)->nullable();
             $table->string('header_logo', 100)->nullable();
             $table->string('footer_logo', 100)->nullable();
+
+            // Privacy Policy and Terms & Conditions
+            $table->text('privacy_policy')->nullable();
+            $table->text('terms_and_conditions')->nullable();
             
 
             $table->unsignedInteger('user_id')->nullable();

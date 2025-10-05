@@ -41,9 +41,13 @@
             </div>
             
             <!-- Empty State -->
-            <div v-else class="testimonials-empty">
-              <p>{{ t('No testimonials available at the moment.') }}</p>
+            <div v-else>
+              <div class="text-center">
+                <h5>{{ t('No testimonials found') }}</h5>
+                <VIcon size="45" icon="tabler-filter-search" />
+              </div>
             </div>
+
           </div>
         </div>
       </div>

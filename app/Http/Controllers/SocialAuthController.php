@@ -131,11 +131,8 @@ class SocialAuthController extends Controller
             if ($request->has('return_url')) {
                 session(['social_return_url' => $request->get('return_url')]);
             }
-            
             // Force Facebook to always show account selection screen
-            return Socialite::driver('facebook')
-                ->with(['auth_type' => 'reauthenticate'])
-                ->redirect();
+            return Socialite::driver('facebook')->redirect();
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to redirect to Facebook: ' . $e->getMessage());
         }
@@ -148,6 +145,7 @@ class SocialAuthController extends Controller
     {
         try {
             $facebookUser = Socialite::driver('facebook')->user();
+            // $facebookUser = Socialite::driver('facebook')->stateless()->user();
 
             $customer = $this->findOrCreateCustomer($facebookUser, 'facebook');
 
@@ -158,7 +156,7 @@ class SocialAuthController extends Controller
             session()->forget('social_return_url'); // Clear the return URL
 
             // Redirect to frontend with token and customer data
-            $frontendUrl = config('app.frontend_url', config('app.url'));
+            $frontendUrl = config('app.url', config('app.url'));
             $customerEncoded = urlencode(json_encode([
                 'id' => $customer->id,
                 'name' => $customer->name,
@@ -178,62 +176,6 @@ class SocialAuthController extends Controller
         }
     }
 
-    /**
-     * Redirect to GitHub OAuth
-     */
-    public function redirectToGithub(Request $request)
-    {
-        try {
-            // Store return URL in session if provided
-            if ($request->has('return_url')) {
-                session(['social_return_url' => $request->get('return_url')]);
-            }
-            
-            // Force GitHub to always show account selection screen
-            return Socialite::driver('github')
-                ->with(['prompt' => 'select_account'])
-                ->redirect();
-        } catch (\Exception $e) {
-            return $this->errorResponse('Failed to redirect to GitHub: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Handle GitHub OAuth callback
-     */
-    public function handleGithubCallback(Request $request)
-    {
-        try {
-            $githubUser = Socialite::driver('github')->user();
-
-            $customer = $this->findOrCreateCustomer($githubUser, 'github');
-
-            $token = $customer->createToken('customer_auth_token')->plainTextToken;
-
-            // Get return URL from session or use default
-            $returnUrl = session('social_return_url', '/login');
-            session()->forget('social_return_url'); // Clear the return URL
-
-            // Redirect to frontend with token and customer data
-            $frontendUrl = config('app.frontend_url', config('app.url'));
-            $customerEncoded = urlencode(json_encode([
-                'id' => $customer->id,
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'phone' => $customer->phone ?? '',
-                'address' => $customer->address ?? ''
-            ]));
-            
-            return redirect($frontendUrl . $returnUrl . '?token=' . $token . '&status=success&customer=' . $customerEncoded);
-
-        } catch (\Exception $e) {
-            $returnUrl = session('social_return_url', '/login');
-            session()->forget('social_return_url');
-            
-            $frontendUrl = config('app.frontend_url', config('app.url'));
-            return redirect($frontendUrl . $returnUrl . '?status=error&message=' . urlencode('GitHub authentication failed'));
-        }
-    }
 
     /**
      * Find or create customer from social provider
