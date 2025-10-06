@@ -1,115 +1,140 @@
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
 
-const searchQuery = ref('')
-const searchResults = ref([])
-const isLoading = ref(false)
-const searchType = ref('all') // 'all', 'products', 'services', 'packages'
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalResults = ref(0)
 
 export function useSearch() {
-  const router = useRouter()
+  const searchQuery = ref('')
+  const searchResults = ref([])
+  const isSearching = ref(false)
+  const searchError = ref(null)
+  const searchType = ref('services') // Default to services for the service page
+  const searchPagination = ref({
+    current_page: 1,
+    per_page: 12,
+    total: 0,
+    last_page: 1,
+    from: 0,
+    to: 0
+  })
 
-  // Perform search
-  const performSearch = async (query, type = 'all', page = 1) => {
-    if (!query.trim()) {
+  // Debounced search function
+  let searchTimeout = null
+  const performSearch = async (query, type = 'services', page = 1, perPage = 12) => {
+    if (!query || query.trim().length < 1) {
+      searchResults.value = []
+      searchPagination.value = {
+        current_page: 1,
+        per_page: perPage,
+        total: 0,
+        last_page: 1,
+        from: 0,
+        to: 0
+      }
+      return
+    }
+
+    isSearching.value = true
+    searchError.value = null
+
+    try {
+      const response = await $api('/search', {
+        params: {
+          q: query.trim(),
+          type: type,
+          page: page,
+          per_page: perPage
+        }
+      })
+
+      if (response.success) {
+        searchResults.value = response.data.results || []
+        searchPagination.value = {
+          current_page: response.data.current_page,
+          per_page: response.data.per_page,
+          total: response.data.total,
+          last_page: response.data.last_page,
+          from: response.data.from,
+          to: response.data.to
+        }
+      } else {
+        searchError.value = response.message || 'Search failed'
+        searchResults.value = []
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+      searchError.value = error.response?.message || 'Search failed'
+      searchResults.value = []
+    } finally {
+      isSearching.value = false
+    }
+  }
+
+  // Debounced search with delay
+  const debouncedSearch = (query, type = 'services', page = 1, perPage = 12, delay = 500) => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout)
+    }
+
+    // Don't search for very short queries
+    if (query && query.trim().length < 2) {
       searchResults.value = []
       return
     }
 
-    isLoading.value = true
-    searchQuery.value = query
-    searchType.value = type
-    currentPage.value = page
-
-    try {
-
-      const response = await $api('/search', {
-        params: {
-          q: query,
-          type: type,
-          page: page,
-          per_page: 12
-        }
-      })
-
-
-      if (response.success) {
-        console.log(response.data.results)
-        searchResults.value = response.data.results
-        currentPage.value = response.data.current_page
-        totalPages.value = response.data.last_page
-        totalResults.value = response.data.total
-      } else {
-        searchResults.value = []
-        totalResults.value = 0
-      }
-    } catch (error) {
-      console.error('Search error:', error)
-      searchResults.value = []
-      totalResults.value = 0
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  // Navigate to search results page
-  const navigateToSearch = (query) => {
-    if (!query.trim()) return
-    
-    router.push({
-      name: 'search-result',
-      query: { q: query }
-    })
+    searchTimeout = setTimeout(() => {
+      performSearch(query, type, page, perPage)
+    }, delay)
   }
 
   // Clear search
   const clearSearch = () => {
     searchQuery.value = ''
     searchResults.value = []
-    currentPage.value = 1
-    totalPages.value = 1
-    totalResults.value = 0
-    searchType.value = 'all'
-  }
-
-  // Load more results (pagination)
-  const loadMore = () => {
-    if (currentPage.value < totalPages.value && !isLoading.value) {
-      performSearch(searchQuery.value, searchType.value, currentPage.value + 1)
+    searchError.value = null
+    searchPagination.value = {
+      current_page: 1,
+      per_page: 12,
+      total: 0,
+      last_page: 1,
+      from: 0,
+      to: 0
+    }
+    if (searchTimeout) {
+      clearTimeout(searchTimeout)
     }
   }
 
-  // Computed properties
-  const hasResults = computed(() => searchResults.value.length > 0)
-  const hasMorePages = computed(() => currentPage.value < totalPages.value)
-  const searchSummary = computed(() => {
-    if (totalResults.value === 0) return 'No results found'
-    return `Found ${totalResults.value} result${totalResults.value === 1 ? '' : 's'} for "${searchQuery.value}"`
+  // Check if we have search results
+  const hasSearchResults = computed(() => {
+    return searchResults.value.length > 0
+  })
+
+  // Check if search is active
+  const isSearchActive = computed(() => {
+    return searchQuery.value.trim().length > 0
+  })
+
+  // Get search result count
+  const searchResultCount = computed(() => {
+    return searchPagination.value.total
   })
 
   return {
     // State
     searchQuery,
     searchResults,
-    isLoading,
+    isSearching,
+    searchError,
     searchType,
-    currentPage,
-    totalPages,
-    totalResults,
+    searchPagination,
     
     // Computed
-    hasResults,
-    hasMorePages,
-    searchSummary,
+    hasSearchResults,
+    isSearchActive,
+    searchResultCount,
     
     // Methods
     performSearch,
-    navigateToSearch,
-    clearSearch,
-    loadMore
+    debouncedSearch,
+    clearSearch
   }
 }

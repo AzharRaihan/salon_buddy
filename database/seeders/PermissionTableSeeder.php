@@ -118,6 +118,7 @@ class PermissionTableSeeder extends Seeder
                 'report-stock',
                 'report-alert',
                 'report-daily_summary',
+                'report-payout',
             ],
             'role-management' => [
                 'role-create',
@@ -148,6 +149,12 @@ class PermissionTableSeeder extends Seeder
                 'settings-white_label',
                 'settings-vacation',
                 'settings-holiday',
+            ],
+            'staff_payment-management' => [
+                'staff_payment-create',
+                'staff_payment-delete', 
+                'staff_payment-edit',
+                'staff_payment-list',
             ],
             'stock-management' => [
                 'stock-stock',

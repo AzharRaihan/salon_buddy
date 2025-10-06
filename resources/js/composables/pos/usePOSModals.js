@@ -272,6 +272,7 @@ export function usePOSModals() {
     await openEmployeeAssignmentModal(item);
   };
 
+
   const handleEmployeeAssignmentConfirm = () => {
     modal.closeModal("employee-assignment");
   };

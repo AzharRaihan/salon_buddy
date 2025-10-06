@@ -1,15 +1,15 @@
 <script setup>
 import { computed } from 'vue'
-import { useEmployeeEarningReport } from '@/composables/useEmployeeEarningReport'
-import EmployeeCommissionReportFilters from '@/components/report/EmployeeCommissionReportFilters.vue'
-import EmployeeCommissionSummaryCards from '@/components/report/EmployeeCommissionSummaryCards.vue'
-import EmployeeCommissionReportTable from '@/components/report/EmployeeCommissionReportTable.vue'
-import ExportTableEmployeeCommissionReport from '@/components/ExportTableEmployeeCommissionReport.vue'
+import { useStaffPayoutReport } from '@/composables/useStaffPayoutReport'
+import StaffPayoutReportFilters from '@/components/report/StaffPayoutReportFilters.vue'
+import StaffPayoutSummaryCards from '@/components/report/StaffPayoutSummaryCards.vue'
+import StaffPayoutReportTable from '@/components/report/StaffPayoutReportTable.vue'
+import ExportTableStaffPayoutReport from '@/components/ExportTableStaffPayoutReport.vue'
 
-// Use the employee commission report composable
+// Use the staff payout report composable
 const {
     // State
-    earningData,
+    payoutData,
     isLoading,
     branchId,
     employeeId,
@@ -20,14 +20,14 @@ const {
     
     // Methods
     fetchFilterOptions,
-    fetchCommissionReport,
+    fetchPayoutReport,
     resetFilters,
     
     // Computed
-    commissions,
-    totalCommissions,
+    payouts,
+    totalPayouts,
     summary,
-} = useEmployeeEarningReport()
+} = useStaffPayoutReport()
 
 // Computed properties
 const selectedBranchName = computed(() => {
@@ -44,12 +44,12 @@ const selectedEmployeeName = computed(() => {
 
 // Export headers for ExportTable component
 const exportHeaders = computed(() => [
-    { title: 'Date', key: 'order_date' },
+    { title: 'Date', key: 'date' },
+    { title: 'Reference No', key: 'reference_no' },
     { title: 'Employee', key: 'employee.name' },
-    { title: 'Subtotal', key: 'subtotal' },
-    { title: 'Quantity', key: 'quantity' },
-    { title: 'Commission', key: 'commission' },
-
+    { title: 'Payment Method', key: 'payment_method.name' },
+    { title: 'Amount', key: 'amount' },
+    { title: 'Note', key: 'note' },
 ])
 
 const handleResetFilters = () => {
@@ -63,7 +63,7 @@ const handleResetFilters = () => {
         <!-- Filter Section -->
         <VCard class="mb-4">
             <VCardText>
-                <EmployeeCommissionReportFilters
+                <StaffPayoutReportFilters
                     v-model:date-from="dateFrom"
                     v-model:date-to="dateTo"
                     v-model:branch-id="branchId"
@@ -77,15 +77,15 @@ const handleResetFilters = () => {
         <!-- Summary Cards -->
         <VCard class="mb-4">
             <VCardText>
-                <EmployeeCommissionSummaryCards
+                <StaffPayoutSummaryCards
                     :summary="summary"
-                    :total-filtered="totalCommissions"
+                    :total-filtered="totalPayouts"
                 />
             </VCardText>
         </VCard>
 
         <!-- Action Buttons -->
-        <div class="table-action action">
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
                 prepend-icon="tabler-refresh" 
                 variant="outlined" 
@@ -94,18 +94,18 @@ const handleResetFilters = () => {
                 Reset Filters
             </VBtn>
 
-            <ExportTableEmployeeCommissionReport 
-                :data="commissions" 
+            <ExportTableStaffPayoutReport 
+                :data="payouts" 
                 :headers="exportHeaders" 
                 :summary-data="summary"
-                filename="employee-commission-report"
-                title="Employee Commission Report"
+                filename="staff-payout-report"
+                title="Staff Payout Report"
             />
         </div>
 
-        <!-- Employee Commission Report Table -->
-        <EmployeeCommissionReportTable
-            :commissions="commissions"
+        <!-- Staff Payout Report Table -->
+        <StaffPayoutReportTable
+            :payouts="payouts"
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-branch-name="selectedBranchName"
@@ -124,13 +124,5 @@ const handleResetFilters = () => {
     &:hover {
         color: rgba(var(--v-theme-primary), 0.8);
     }
-}
-
-.table-action {
-    display: flex;
-    justify-content: end;
-    gap: 10px;
-    padding-right: 24px;
-    padding-bottom: 24px;
 }
 </style>

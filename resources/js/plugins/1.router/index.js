@@ -165,6 +165,10 @@ router.beforeEach(async (to, from, next) => {
     return next({ path: "/admin-dashboard" });
   }
 
+  if (!userData && (to.path == "/pos") ) {
+    return next({ path: "/admin-login" });
+  }
+
   // Handle customer dashboard redirect
   if (customerData && (to.path == "/login" || to.path == "/register" || to.path == "/admin-login" || to.path == "/forgot-password")) {
     return next({ path: "/dashboard" });
@@ -222,7 +226,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // URL Protection if Branch is not set at cookie (Admin/Staff only)
-  const branchPaths = ["/purchase/create", "/purchase", "/stock/stock", "/stock/alert-stock", "/sale", "/customer-receive/create", "/customer-receive", "/supplier-payment/create", "/supplier-payment", "/expense/create", "/expense", "/salary/create", "/salary", "/booking/calendar", "/booking/create", "/booking", "/promotion/create", "/promotion", "/dashboard", "/pos"];
+  const branchPaths = ["/purchase/create", "/purchase", "/stock/stock", "/stock/alert-stock", "/sale", "/customer-receive/create", "/customer-receive", "/supplier-payment/create", "/supplier-payment", "/expense/create", "/expense", "/salary/create", "/salary", "/booking/calendar", "/booking/create", "/booking", "/promotion/create", "/promotion", "/dashboard", "/pos", "/staff-payment/create", "/staff-payment"];
   
   if (branch_info == 0 && branchPaths.includes(to.path)) {
     toast("Please select your branch first", {

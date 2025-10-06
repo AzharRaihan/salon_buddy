@@ -265,7 +265,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useSearch } from '@/composables/useSearch'
+import { useSearchGlobal } from '@/composables/useSearchGlobal'
 import { useShoppingCartStore } from '@/stores/shoppingCart'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
 import { toast } from 'vue3-toastify'
@@ -318,7 +318,7 @@ const {
   performSearch: performSearchComposable,
   clearSearch,
   loadMore: loadMoreComposable
-} = useSearch()
+} = useSearchGlobal()
 
 // Filtered results by type
 const filteredResults = computed(() => {

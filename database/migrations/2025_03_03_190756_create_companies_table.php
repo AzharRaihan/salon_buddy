@@ -40,6 +40,7 @@ return new class extends Migration
             $table->string('tax_string')->nullable();
             $table->enum('print_formate', ['56mm', '80mm'])->default('56mm');
             $table->enum('over_sale', ['Yes', 'No'])->default('No');
+            $table->enum('use_website', ['Yes', 'No'])->default('Yes');
             $table->string('timezone', 55)->nullable();
             $table->string('logo')->nullable();
             $table->enum('del_status', ['Live', 'Deleted'])->default('Live');

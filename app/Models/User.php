@@ -110,7 +110,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(SaleDetail::class, 'employee_id', 'id');
     }
-    
+
+    public function staffPayments(): HasMany
+    {
+        return $this->hasMany(StaffPayment::class, 'employee_id', 'id');
+    }
+
 
 
 }

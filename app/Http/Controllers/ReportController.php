@@ -16,6 +16,7 @@ use App\Models\Attendance;
 use App\Models\ItemDetail;
 use App\Models\DamageDetail;
 use App\Models\SaleDetail;
+use App\Models\StaffPayment;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethod;
@@ -800,7 +801,7 @@ class ReportController extends Controller
 
 
     /**
-     * Get filter options for employee commission report
+     * Get filter options for employee earning report
      */
     public function employeeEarningReportFilters(Request $request)
     {
@@ -816,6 +817,192 @@ class ReportController extends Controller
             ->whereNotNull('commission')
             ->select('id', 'name', 'email', 'phone')
             ->get();
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get staff earning report with filters
+     */
+    public function staffEarningReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        $query = SaleDetail::selectRaw('
+                employee_id,
+                SUM(subtotal) as subtotal,
+                SUM(quantity) as quantity
+            ')
+            ->with([
+                'employee:id,name,phone,commission',
+            ])
+            ->whereHas('sale', function($q) use ($companyId) {
+                $q->where('del_status', 'Live')
+                ->where('company_id', $companyId);
+            })
+            ->whereNotNull('employee_id')
+            ->whereHas('employee', function($q) {
+                $q->whereNotNull('commission');
+            });
+
+        // Branch filter
+        if ($request->filled('branch_id')) {
+            $query->whereHas('employee', function($q) use ($request) {
+                $q->where('branch_id', 'like', '%' . $request->branch_id . '%');
+            });
+        }
+
+        // Employee filter
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->filled('date_from')) {
+            $query->whereHas('sale', function($q) use ($request) {
+                $q->whereDate('order_date', '>=', $request->date_from);
+            });
+        }
+        if ($request->filled('date_to')) {
+            $query->whereHas('sale', function($q) use ($request) {
+                $q->whereDate('order_date', '<=', $request->date_to);
+            });
+        }
+
+        // group by employee
+        $query->groupBy('employee_id');
+
+        $earnings = $query->get();
+
+        // Calculate commission for each employee
+        $earnings->map(function($earning) {
+            $commission = 0;
+            if ($earning->employee && $earning->employee->commission) {
+                $commissionPercent = floatval(str_replace('%', '', $earning->employee->commission));
+                $commission = ($earning->subtotal * $commissionPercent) / 100;
+            }
+            $earning->commission = $commission;
+            $earning->commission_rate = $commissionPercent . '%';
+            return $earning;
+        });
+
+        // Summary
+        $totalEmployees = $earnings->count();
+        $totalSales = $earnings->sum('subtotal');
+        $totalCommission = $earnings->sum('commission');
+        $avgSales = $totalEmployees > 0 ? $totalSales / $totalEmployees : 0;
+
+        return $this->successResponse([
+            'earnings' => $earnings,
+            'total' => $totalEmployees,
+            'summary' => [
+                'totalEmployees' => $totalEmployees,
+                'totalSales' => $totalSales,
+                'totalCommission' => $totalCommission,
+                'avgSales' => $avgSales,
+            ],
+        ]);
+    }
+
+    /**
+     * Get filter options for staff earning report
+     */
+    public function staffEarningReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+            
+        // Get employees (users with commission)
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->whereNotNull('commission')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+            
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get staff payout report with filters
+     */
+    public function staffPayoutReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        
+        // Base query for staff payments
+        $query = StaffPayment::with([
+            'employee:id,name,phone',
+            'paymentMethod:id,name'
+        ])
+        ->where('del_status', 'Live')
+        ->where('company_id', $companyId);
+
+        // Branch filter
+        if ($request->has('branch_id') && !empty($request->branch_id)) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        // Employee filter
+        if ($request->has('employee_id') && !empty($request->employee_id)) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Get payouts data
+        $payouts = $query->get();
+
+        // Calculate summary
+        $totalPayouts = $payouts->count();
+        $totalAmount = $payouts->sum('amount');
+        $avgAmount = $totalPayouts > 0 ? $totalAmount / $totalPayouts : 0;
+
+        return $this->successResponse([
+            'payouts' => $payouts,
+            'total' => $totalPayouts,
+            'summary' => [
+                'totalPayouts' => $totalPayouts,
+                'totalAmount' => $totalAmount,
+                'avgAmount' => $avgAmount,
+            ],
+        ]);
+    }
+
+    /**
+     * Get filter options for staff payout report
+     */
+    public function staffPayoutReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+            
+        // Get employees
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+            
         return $this->successResponse([
             'branches' => $branches,
             'employees' => $employees,

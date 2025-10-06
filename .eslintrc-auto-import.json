@@ -458,6 +458,9 @@
     "useTimeAgoIntl": true,
     "useWebsitePolicyForm": true,
     "useFrontendPolicy": true,
-    "useSearch": true
+    "useSearch": true,
+    "useSearchGlobal": true,
+    "useStaffEarningReport": true,
+    "useStaffPayoutReport": true
   }
 }

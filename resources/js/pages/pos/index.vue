@@ -110,6 +110,12 @@
                         :title="orderStore.selectedItem?.isFree ? t('Cannot edit free items') : t('Edit item')">
                         <VIcon icon="tabler-pencil" />
                     </button>
+                    <button class="btn btn-dark" 
+                        @click="handleTipsClick"
+                        :disabled="orderStore.selectedItem?.isFree"
+                        :title="orderStore.selectedItem?.isFree ? t('Cannot edit free items') : t('Tips')">
+                        <VIcon icon="tabler-coin" />
+                    </button>
                     <button class="btn btn-dark delete" 
                         @click="handleRemoveSelectedItem"
                         :disabled="orderStore.selectedItem?.isFree"
@@ -303,6 +309,8 @@ const handleSearchClose = () => {
 
 
 
+
+
 // Initialize composables
 const { handleError, notifications, dismissNotification } = useErrorHandler()
 const forms = usePOSForms()
@@ -485,6 +493,23 @@ const handleItemEditClick = () => {
         }
         if (selectedItem && selectedItem.id) {
             modals.toggleEmployeeAssignmentModal({ ...selectedItem })
+        } else {
+            console.warn('Selected item has no id:', selectedItem)
+        }
+    } catch (error) {
+        handleError('item-edit-open', error)
+    }
+}
+
+const handleTipsClick = () => {
+    try {
+        const selectedItem = orderStore.selectedItem
+        if (selectedItem && selectedItem.isFree) {
+            console.log('Cannot edit free item:', selectedItem.name)
+            return
+        }
+        if (selectedItem && selectedItem.id) {
+            modals.toggleTipsModal({ ...selectedItem })
         } else {
             console.warn('Selected item has no id:', selectedItem)
         }
@@ -1078,6 +1103,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
     window.removeEventListener("popstate", handleBackButton);
 });
+
 
 </script>
 

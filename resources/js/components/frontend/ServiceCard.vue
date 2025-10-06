@@ -19,7 +19,7 @@
       <p class="service-info">
         <VIcon icon="tabler-users" size="20" />
         <span class="duration staff-assigned" v-if="service.staff_assigned > 0">
-          {{ service.staff_assigned }}
+          {{ service.staff_assigned }} <span v-if="service.staff_assigned > 1">Staffs</span> <span v-else>Staff</span>
         </span>
         <span class="duration staff-assigned" v-else>
           N/A

@@ -71,7 +71,12 @@
   .righ-side-overlay {
       width: 420px;
   }
-
+  .banner-content-section::after {
+    top: -74px;
+    right: 94px;
+    width: 187px;
+    height: 160%;
+  }
   /* Header Part */
   .header-section .top-bar {
     height: 45px;
@@ -493,6 +498,12 @@
 /* Medium devices (tablets, less than 992px) */
 @media only screen and (max-width: 991.98px) {
   /* Header Part */
+  .banner-content-section::after {
+    top: -101px;
+    right: 63px;
+    width: 187px;
+    height: 183%;
+  }
   .righ-side-overlay {
     width: 430px;
   }
@@ -1014,6 +1025,12 @@
 /* Small devices (landscape phones, less than 768px) */
 @media only screen and (max-width: 767.98px) {
   /* Header Part */
+  .banner-content-section::after {
+    top: -63px;
+    right: 55px;
+    width: 132px;
+    height: 176%;
+  }
   .righ-side-overlay {
     width: 250px;
   }
@@ -1594,6 +1611,12 @@
   }
   nav.navbar {
     height: 70px;
+  }
+  .banner-content-section::after {
+    top: -63px;
+    right: 55px;
+    width: 132px;
+    height: 176%;
   }
   /* Header Part */
   .top-bar .phone-number i, .top-bar .email-address i{
@@ -2179,6 +2202,20 @@
   }
   nav.navbar {
     height: 70px;
+  }
+  .righ-side-overlay {
+    width: 155px;
+  }
+  .topheader-search .search-option {
+    top: 60px;
+    right: -104px;
+    width: 326px;
+  }
+  .banner-content-section::after {
+    top: -94px;
+    right: 67px;
+    width: 117px;
+    height: 275%;
   }
   /* Header Part */
   .top-bar .phone-number i, .top-bar .email-address i{

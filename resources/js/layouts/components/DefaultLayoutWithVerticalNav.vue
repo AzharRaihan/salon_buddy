@@ -2,6 +2,7 @@
 import navItems from '@/navigation/vertical'
 import { themeConfig } from '@themeConfig'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify';
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -29,10 +30,19 @@ if(userData.id === 1){
   }
 }
 
+
+
 function handlePosClick() {
-  router.push('/pos').then(() => {
-    window.location.reload();
-  });
+  const branch_info = useCookie("branch_info").value || 0;
+
+  if(branch_info == 0 || branch_info == null || branch_info == undefined){
+    router.push('/branch');
+    toast('Please select your branch first', { type: 'error' });
+  }else {
+    router.push('/pos').then(() => {
+      window.location.reload();
+    });
+  }
 }
 
 </script>

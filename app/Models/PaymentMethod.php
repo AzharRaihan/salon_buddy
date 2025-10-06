@@ -50,6 +50,9 @@ class PaymentMethod extends Model
         return $this->hasMany(SalaryPayment::class, 'payment_method_id', 'id');
     }
 
-    
+    public function staffPayments(): HasMany
+    {
+        return $this->hasMany(StaffPayment::class, 'payment_method_id', 'id');
+    }
 
 }

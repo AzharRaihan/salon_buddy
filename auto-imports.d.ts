@@ -376,6 +376,7 @@ declare global {
   const useScroll: typeof import('@vueuse/core')['useScroll']
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
   const useSearch: typeof import('./resources/js/composables/useSearch.js')['useSearch']
+  const useSearchGlobal: typeof import('./resources/js/composables/useSearchGlobal.js')['useSearchGlobal']
   const useServiceApi: typeof import('./resources/js/composables/useServiceApi.js')['useServiceApi']
   const useServiceFiltering: typeof import('./resources/js/composables/useServiceFiltering.js')['useServiceFiltering']
   const useServiceManagement: typeof import('./resources/js/composables/useServiceManagement.js')['useServiceManagement']
@@ -388,6 +389,8 @@ declare global {
   const useSorted: typeof import('@vueuse/core')['useSorted']
   const useSpeechRecognition: typeof import('@vueuse/core')['useSpeechRecognition']
   const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
+  const useStaffEarningReport: typeof import('./resources/js/composables/useStaffEarningReport.js')['useStaffEarningReport']
+  const useStaffPayoutReport: typeof import('./resources/js/composables/useStaffPayoutReport.js')['useStaffPayoutReport']
   const useStepper: typeof import('@vueuse/core')['useStepper']
   const useStockReport: typeof import('./resources/js/composables/useStockReport.js')['useStockReport']
   const useStorageAsync: typeof import('@vueuse/core')['useStorageAsync']
@@ -828,6 +831,7 @@ declare module 'vue' {
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
     readonly useSearch: UnwrapRef<typeof import('./resources/js/composables/useSearch.js')['useSearch']>
+    readonly useSearchGlobal: UnwrapRef<typeof import('./resources/js/composables/useSearchGlobal.js')['useSearchGlobal']>
     readonly useServiceApi: UnwrapRef<typeof import('./resources/js/composables/useServiceApi.js')['useServiceApi']>
     readonly useServiceManagement: UnwrapRef<typeof import('./resources/js/composables/useServiceManagement.js')['useServiceManagement']>
     readonly useServiceOrders: UnwrapRef<typeof import('./resources/js/composables/useServiceOrders.js')['useServiceOrders']>
@@ -838,6 +842,8 @@ declare module 'vue' {
     readonly useSorted: UnwrapRef<typeof import('@vueuse/core')['useSorted']>
     readonly useSpeechRecognition: UnwrapRef<typeof import('@vueuse/core')['useSpeechRecognition']>
     readonly useSpeechSynthesis: UnwrapRef<typeof import('@vueuse/core')['useSpeechSynthesis']>
+    readonly useStaffEarningReport: UnwrapRef<typeof import('./resources/js/composables/useStaffEarningReport.js')['useStaffEarningReport']>
+    readonly useStaffPayoutReport: UnwrapRef<typeof import('./resources/js/composables/useStaffPayoutReport.js')['useStaffPayoutReport']>
     readonly useStepper: UnwrapRef<typeof import('@vueuse/core')['useStepper']>
     readonly useStockReport: UnwrapRef<typeof import('./resources/js/composables/useStockReport.js')['useStockReport']>
     readonly useStorageAsync: UnwrapRef<typeof import('@vueuse/core')['useStorageAsync']>

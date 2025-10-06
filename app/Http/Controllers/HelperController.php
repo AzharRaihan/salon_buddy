@@ -18,6 +18,7 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Traits\ApiResponse;
 use App\Models\Notification;
+use App\Models\StaffPayment;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethod;
 use App\Models\CustomerReceive;
@@ -94,6 +95,16 @@ class HelperController extends Controller
         $expense_reference_no = str_pad($nextId, 6, '0', STR_PAD_LEFT);
         return $this->successResponse($expense_reference_no, 'Expense reference no generated successfully');
     }
+    
+    public function generateStaffPaymentReferenceNo()
+    {
+        $lastStaffPayment = StaffPayment::where('company_id', Auth::user()->company_id)->where('del_status', 'Live')->orderBy('id', 'desc')->first();
+        $nextId = $lastStaffPayment ? $lastStaffPayment->id + 1 : 1;
+        $staff_payment_reference_no = str_pad($nextId, 6, '0', STR_PAD_LEFT);
+        return $this->successResponse($staff_payment_reference_no, 'Staff payment reference no generated successfully');
+    }
+
+
     public function getExpenseCategoryList()
     {
         $expenseCategoryList = ExpenseCategory::where('company_id', Auth::user()->company_id)->where('del_status', 'Live')->get();

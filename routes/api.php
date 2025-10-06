@@ -18,6 +18,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\StaffPaymentController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
@@ -160,6 +161,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('expense-categories', ExpenseCategoryController::class);
     Route::apiResource('expenses', ExpenseController::class);
+    Route::apiResource('staff-payments', StaffPaymentController::class);
     Route::apiResource('suppliers', SupplierController::class);
     Route::apiResource('payment-methods', PaymentMethodController::class);
     Route::apiResource('attendances', AttendanceController::class);
@@ -218,6 +220,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('employee-earning-report', 'employeeEarningReport');
         Route::get('employee-earning-report-filters', 'employeeEarningReportFilters');
 
+        Route::get('staff-earning-report', 'staffEarningReport');
+        Route::get('staff-earning-report-filters', 'staffEarningReportFilters');
+        Route::get('staff-payout-report', 'staffPayoutReport');
+        Route::get('staff-payout-report-filters', 'staffPayoutReportFilters');
+
     });
 
     //  POS routes
@@ -253,6 +260,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('generate-branch-code', 'generateBranchCode');
         Route::get('generate-item-code', 'generateItemCode');
         Route::get('generate-expense-reference-no', 'generateExpenseReferenceNo');
+        Route::get('generate-staff-payment-reference-no', 'generateStaffPaymentReferenceNo');
         Route::get('get-unit-list', 'getUnitList');
         Route::get('get-category-list', 'getCategoryList');
         Route::get('get-service-category-list', 'getServiceCategoryList');

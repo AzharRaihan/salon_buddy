@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Expense;
+use App\Models\StaffPayment;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ExpenseController extends Controller
+class StaffPaymentController extends Controller
 {
     use ApiResponse;
 
@@ -18,22 +18,22 @@ class ExpenseController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Expense::query();
+        $query = StaffPayment::query();
 
         // Join with users table
-        $query->join('users as employees', 'expenses.employee_id', '=', 'employees.id')
-              ->join('payment_methods', 'expenses.payment_method_id', '=', 'payment_methods.id')
-              ->select('expenses.*', 'employees.name as employee_name', 'employees.phone as employee_phone', 'payment_methods.name as payment_method_name');
+        $query->join('users as employees', 'staff_payments.employee_id', '=', 'employees.id')
+              ->join('payment_methods', 'staff_payments.payment_method_id', '=', 'payment_methods.id')
+              ->select('staff_payments.*', 'employees.name as employee_name', 'employees.phone as employee_phone', 'payment_methods.name as payment_method_name');
 
         // Filter by del_status
-        $query->where('expenses.del_status', 'Live');
-        $query->where('expenses.branch_id', $request->branch_id);
-        $query->where('expenses.company_id', Auth::user()->company_id);
+        $query->where('staff_payments.del_status', 'Live');
+        $query->where('staff_payments.branch_id', $request->branch_id);
+        $query->where('staff_payments.company_id', Auth::user()->company_id);
         
         // Search functionality
         if ($request->has('q') && !empty($request->q)) {
-            $query->where('expenses.reference_no', 'like', '%' . $request->q . '%')
-                ->orWhere('expenses.note', 'like', '%' . $request->q . '%')
+            $query->where('staff_payments.reference_no', 'like', '%' . $request->q . '%')
+                ->orWhere('staff_payments.note', 'like', '%' . $request->q . '%')
                 ->orWhere('employees.name', 'like', '%' . $request->q . '%')
                 ->orWhere('employees.phone', 'like', '%' . $request->q . '%');
         }
@@ -43,16 +43,18 @@ class ExpenseController extends Controller
             $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
             $query->orderBy($request->sortBy, $direction);
         } else {
-            $query->orderBy('expenses.id', 'desc');
+            $query->orderBy('staff_payments.id', 'desc');
         }
 
         // Pagination
         $perPage = $request->itemsPerPage ?? 10;
-        $expenses = $query->paginate($perPage);
+        $staffPayments = $query->paginate($perPage);
+
+
 
         return $this->successResponse([
-            'expenses' => $expenses->items(),
-            'total' => $expenses->total(),
+            'staff_payments' => $staffPayments->items(),
+            'total' => $staffPayments->total(),
         ]);
     }
 
@@ -68,7 +70,6 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:255',
             'payment_method_id' => 'required|exists:payment_methods,id',
-            'category_id' => 'required|exists:expense_categories,id',
             'employee_id' => 'required|exists:users,id',
         ];
 
@@ -83,9 +84,9 @@ class ExpenseController extends Controller
             $validatedData['user_id'] = Auth::id();
             $validatedData['branch_id'] = $request->branch_id;
             $validatedData['company_id'] = Auth::user()->company_id;
-            $expense = Expense::create($validatedData);
+            $staffPayment = StaffPayment::create($validatedData);
             DB::commit();
-            return $this->successResponse($expense, 'Expense created successfully');
+            return $this->successResponse($staffPayment, 'Staff payment created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse($e->getMessage());
@@ -97,11 +98,11 @@ class ExpenseController extends Controller
      */
     public function show(string $id)
     {
-        $expense = Expense::with(['paymentMethod:id,name', 'employee:id,name', 'category:id,name'])->find($id);
-        if (!$expense) {
-            return $this->errorResponse('Expense not found', 404);
+        $staffPayment = StaffPayment::with(['paymentMethod:id,name', 'employee:id,name'])->find($id);
+        if (!$staffPayment) {
+            return $this->errorResponse('Staff payment not found', 404);
         }
-        return $this->successResponse($expense);
+        return $this->successResponse($staffPayment);
     }
 
     /**
@@ -116,7 +117,6 @@ class ExpenseController extends Controller
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:255',
             'payment_method_id' => 'required|exists:payment_methods,id',
-            'category_id' => 'required|exists:expense_categories,id',
             'employee_id' => 'required|exists:users,id',
         ];
 
@@ -125,9 +125,9 @@ class ExpenseController extends Controller
             return $this->validationErrorResponse($validator->errors());
         }
 
-        $expense = Expense::find($id);
-        if (!$expense) {
-            return $this->errorResponse('Expense not found', 404);
+        $staffPayment = StaffPayment::find($id);
+        if (!$staffPayment) {
+            return $this->errorResponse('Staff payment not found', 404);
         }
 
         DB::beginTransaction();
@@ -139,9 +139,9 @@ class ExpenseController extends Controller
             $validatedData['branch_id'] = $request->branch_id;
             $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['updated_at'] = now();
-            $expense->update($validatedData);
+            $staffPayment->update($validatedData);
             DB::commit();
-            return $this->successResponse($expense, 'Expense updated successfully');
+            return $this->successResponse($staffPayment, 'Staff payment updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse($e->getMessage());
@@ -153,15 +153,28 @@ class ExpenseController extends Controller
      */
     public function destroy(string $id)
     {
-        $expense = Expense::find($id);
-        if (!$expense) {
-            return $this->errorResponse('Expense not found', 404);
+
+        $staffPayment = StaffPayment::find($id);
+        if (!$staffPayment) {
+            return $this->errorResponse('Staff payment not found', 404);
         }
+
+        DB::beginTransaction();
         try {
-            $expense->update(['del_status' => 'Deleted']);
-            return $this->successResponse(null, 'Expense deleted successfully');
+            // Delete staff payment
+            StaffPayment::where('id', $id)->update([
+                'del_status' => 'Deleted'
+            ]);
+            // Delete main staff payment
+            $staffPayment->update([
+                'del_status' => 'Deleted'
+            ]);
+            DB::commit();
+            return $this->successResponse(null, 'Staff payment deleted successfully');
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage());
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage(), 500);
         }
+
     }
 }

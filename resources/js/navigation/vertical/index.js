@@ -144,6 +144,14 @@ export default [
       { title: "List Salary", to: { name: "salary" }, permission: ["salary-list"] },
     ],
   },
+  {
+    title: "Staff Payment",
+    icon: { icon: "tabler-user-dollar" },
+    children: [
+      { title: "Add Staff Payment", to: { name: "staff-payment-create" }, permission: ["staff_payment-create"] },
+      { title: "List Staff Payment", to: { name: "staff-payment" }, permission: ["staff_payment-list"] },
+    ],
+  },
   { heading: 'Settings & Reports' },
   {
     title: "Report",
@@ -155,7 +163,8 @@ export default [
       { title: "Purchase Report", to: { name: "report-purchase-report" }, permission: ["report-purchase"] },
       { title: "Stock Report", to: { name: "report-stock-report" }, permission: ["report-stock"] },
       { title: "Employee Commission Report", to: { name: "report-employee-commission-report" }, permission: ["report-commission"] },
-      { title: "Employee Earning Report", to: { name: "report-employee-earning-report" }, permission: ["report-earning"] },
+      { title: "Staff Earning Report", to: { name: "report-staff-earning-report" }, permission: ["report-earning"] },
+      { title: "Staff Payout Report", to: { name: "report-staff-payout-report" }, permission: ["report-payout"] },
       { title: "Expense Report", to: { name: "report-expense-report" }, permission: ["report-expense"] },
       { title: "Damage Report", to: { name: "report-damage-report" }, permission: ["report-damage"] },
       { title: "Salary Report", to: { name: "report-salary-report" }, permission: ["report-salary"] },

@@ -36,31 +36,5 @@ defineProps({
 </script>
 
 <style scoped>
-.banner-content-section {
-    position: relative;
-    /* z-index: 1; */
-    overflow: hidden;
-}
-.banner-content-section::after {
-    position: absolute;
-    content: '';
-    top: -120px;
-    right: 166px;
-    background-color: #00738099;
-    background-size: cover;
-    width: 187px;
-    height: 160%;
-    transform: rotate(222deg);
-}
-.banner-content-section::before {
-    position: absolute;
-    content: '';
-    top: -236px;
-    left: -143px;
-    background-color: #00738099;
-    background-size: cover;
-    width: 187px;
-    height: 160%;
-    transform: rotate(211deg);
-}
+
 </style>
