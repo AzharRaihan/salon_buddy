@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('order_status', ['Pending', 'Confirmed', 'Cancelled', 'Completed'])->nullable();
             $table->decimal('subtotal_without_tax_discount', 10, 3)->nullable();
             $table->decimal('grandtotal_with_tax_discount', 10, 3)->nullable();
+            $table->decimal('total_tips', 10, 3)->default(0)->nullable();
             $table->decimal('discount', 10, 3)->nullable();
             $table->decimal('delivery_charge', 10, 3)->nullable();
             $table->unsignedInteger('delivery_area_id')->nullable();
@@ -32,6 +33,7 @@ return new class extends Migration
             $table->decimal('loyalty_points_earned', 10, 3)->default(0)->nullable();
             $table->decimal('loyalty_points_redeemed', 10, 3)->default(0)->nullable();
             $table->decimal('loyalty_points_value', 10, 3)->default(0)->nullable();
+            $table->decimal('total_tips', 10, 3)->default(0)->nullable();
             $table->unsignedInteger('customer_id')->nullable();
             $table->unsignedInteger('payment_method_id')->nullable();
             $table->string('transaction_id')->nullable();

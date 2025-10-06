@@ -120,11 +120,13 @@ export const useOrderStore = defineStore("pos-order", () => {
   const grandTotal = computed(() => {
     // Don't subtract promotion discount again since it's already applied to individual items
     // But DO subtract manual discount from the final total
-    const total = subtotal.value + taxAmount.value + parseFloat(serviceCharge.value) - discountValue.value;
+    // Add tips to the total
+    const total = subtotal.value + taxAmount.value + parseFloat(serviceCharge.value) + totalTips.value - discountValue.value;
     console.log('Grand Total calculation:', {
       subtotal: subtotal.value,
       tax: taxAmount.value,
       serviceCharge: parseFloat(serviceCharge.value),
+      tips: totalTips.value,
       manualDiscount: discountValue.value,
       grandTotal: total
     });
@@ -151,12 +153,23 @@ export const useOrderStore = defineStore("pos-order", () => {
     return calculateOrderDiscount(orderItems.value);
   });
 
+  // Calculate total tips from all order items
+  const totalTips = computed(() => {
+    return orderItems.value.reduce((total, item) => {
+      if (item.tips && item.tips.amount) {
+        return total + parseFloat(item.tips.amount);
+      }
+      return total;
+    }, 0);
+  });
+
   const orderSummary = computed(() => ({
     subtotal: subtotal.value,
     discount: discountValue.value,
     promotionDiscount: promotionDiscountValue.value,
     tax: taxAmount.value,
     charge: serviceCharge.value,
+    tips: totalTips.value,
     grandTotal: grandTotal.value,
     itemCount: orderItems.value.length,
     totalQuantity: orderItems.value.reduce((total, item) => total + item.qty, 0),
@@ -398,6 +411,19 @@ export const useOrderStore = defineStore("pos-order", () => {
         orderItems.value[itemIndex].price = price;
         orderItems.value[itemIndex].sale_price = price;
       }
+    }
+  };
+
+  const assignTipsToService = (itemId, employeeId, employee, tipsAmount) => {
+    const itemIndex = orderItems.value.findIndex(item => item.id === itemId);
+    if (itemIndex >= 0) {
+      saveToHistory();
+      // Add tips information to the item
+      orderItems.value[itemIndex].tips = {
+        employeeId: employeeId,
+        employee: employee ? { id: employee.id, name: employee.name } : null,
+        amount: parseFloat(tipsAmount) || 0
+      };
     }
   };
 
@@ -644,6 +670,7 @@ export const useOrderStore = defineStore("pos-order", () => {
     promotionDiscountValue,
     taxAmount,
     taxBreakdown,
+    totalTips,
     grandTotal,
     orderSummary,
     isOrderEmpty,
@@ -660,6 +687,7 @@ export const useOrderStore = defineStore("pos-order", () => {
     removeItem,
     updateItemNote,
     assignEmployeeToService,
+    assignTipsToService,
     updateServicePrice,
     setDiscount,
     clearDiscount,

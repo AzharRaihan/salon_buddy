@@ -130,6 +130,7 @@
                     :tax="orderTax" 
                     :discount="orderDiscount"
                     :promotion-discount="orderStore.promotionDiscountValue"
+                    :tips="orderStore.totalTips"
                     :charge="orderStore.serviceCharge" 
                     :grand-total="orderTotal" 
                     :loading="orderLoading" 
@@ -208,6 +209,14 @@
             @close="handleEmployeeAssignmentClose" 
         />
 
+        <TipsModal 
+            :show="modals.isModalOpen('tips-selection')" 
+            :item="modals.selectedServiceItem"
+            :employees="employees"
+            @confirm="handleTipsConfirm" 
+            @close="handleTipsClose" 
+        />
+
         <!-- Loading Overlay -->
         <LoadingSpinner v-if="globalLoading || isLoadingSaleData" :size="'large'" :message="loadingMessage" overlay />
 
@@ -263,6 +272,7 @@ import DiscountModal from '@/components/pos/modals/DiscountModal.vue'
 import PaymentModal from '@/components/pos/modals/PaymentModal.vue'
 import EmployeeSelectionModal from '@/components/pos/modals/EmployeeSelectionModal.vue'
 import EmployeeAssignmentModal from '@/components/pos/modals/EmployeeAssignmentModal.vue'
+import TipsModal from '@/components/pos/modals/TipsModal.vue'
 import AddEditCustomerModal from '@/components/pos/modals/AddEditCustomerModal.vue'
 import BillModal from '@/components/pos/modals/BillModal.vue'
 import { toast } from 'vue3-toastify';
@@ -514,7 +524,7 @@ const handleTipsClick = () => {
             console.warn('Selected item has no id:', selectedItem)
         }
     } catch (error) {
-        handleError('item-edit-open', error)
+        handleError('tips-open', error)
     }
 }
 
@@ -805,6 +815,24 @@ const handleEmployeeAssignmentConfirm = (assignmentData) => {
 
 const handleEmployeeAssignmentClose = () => {
     modals.handleEmployeeAssignmentClose()
+}
+
+const handleTipsConfirm = (tipsData) => {
+    try {
+        // Defensive: ensure itemId and tipsData are valid
+        if (tipsData) {
+            orderStore.assignTipsToService(tipsData.itemId, tipsData.employeeId, tipsData.employee, tipsData.tipsAmount)
+        } else {
+            console.warn('Invalid tipsData:', tipsData)
+        }
+        modals.handleTipsClose()
+    } catch (error) {
+        handleError('tips-assignment', error)
+    }
+}
+
+const handleTipsClose = () => {
+    modals.handleTipsClose()
 }
 
 // Handle cancel edit

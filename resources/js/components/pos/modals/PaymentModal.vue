@@ -23,6 +23,10 @@
                             <span class="label">{{ t('Discount') }}</span>
                             <span class="value">{{ formatNumberInvoice(orderDiscount) }}</span>
                         </div>
+                        <div class="summary-row" v-if="totalTipsAmount > 0">
+                            <span class="label">{{ t('Tips') }}</span>
+                            <span class="value">{{ formatNumberInvoice(totalTipsAmount) }}</span>
+                        </div>
                         <div class="summary-row">
                             <span class="label">{{ t('Tax') }}</span>
                             <span class="value">{{ formatNumberInvoice(orderTax) }}</span>
@@ -324,6 +328,16 @@ const selectedPaymentMethod = computed(() => {
     return availablePaymentMethods.value.find(method => method.id == props.formData.method)
 });
 
+// Calculate total tips from all order items
+const totalTipsAmount = computed(() => {
+    return props.orderItems.reduce((total, item) => {
+        if (item.tips && item.tips.amount) {
+            return total + parseFloat(item.tips.amount);
+        }
+        return total;
+    }, 0);
+});
+
 // Keep paidAmount and formData.amount in sync
 watch(paidAmount, (newVal) => {
   props.formData.amount = parseFloat(newVal) || 0
@@ -465,6 +479,14 @@ const handleConfirm = async () => {
     try {
         loading.value = true
 
+        // Calculate total tips from all items
+        const totalTipsAmount = props.orderItems.reduce((total, item) => {
+            if (item.tips && item.tips.amount) {
+                return total + parseFloat(item.tips.amount);
+            }
+            return total;
+        }, 0);
+
         // Prepare order data for saving to sales table
         const orderData = {
             items: props.orderItems.map(item => ({
@@ -473,6 +495,7 @@ const handleConfirm = async () => {
                 price: item.price,
                 employee_id: item.assignedEmployee ? item.assignedEmployee.id : null,
                 is_free: item.isFree ? 'Yes' : 'No',
+                tips: item.tips || null,
                 promotion_id: item.promotionId || null,
                 promotion_discount: item.discount || 0
             })),
@@ -484,6 +507,7 @@ const handleConfirm = async () => {
             tax_breakdown: props.orderTaxBreakdown || {},
             discount: props.orderDiscount,
             promotionDiscount: props.promotionDiscount || 0,
+            total_tips: totalTipsAmount,
             total: totalWithTip.value,
             payment_method_id: selectedMethodId.value,
             branch_id: branch_info.id,

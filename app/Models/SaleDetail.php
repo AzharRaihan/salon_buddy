@@ -22,6 +22,7 @@ class SaleDetail extends Model
         'promotion_discount',
         'is_free',
         'promotion_id',
+        'tips',
         'loyalty_point_earn',
         'user_id',
         'branch_id',
@@ -36,6 +37,7 @@ class SaleDetail extends Model
         'total_tax' => 'decimal:3',
         'total_payable' => 'decimal:3',
         'promotion_discount' => 'decimal:3',
+        'tips' => 'array',
     ];
 
     // Relationships

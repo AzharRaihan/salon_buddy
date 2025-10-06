@@ -39,6 +39,10 @@
                             {{ (promotionDiscount ?? 0).toFixed(2) }}
                          </td>
                     </tr> -->
+                    <tr v-if="tips > 0">
+                        <td>{{ t('Tips') }}</td>
+                        <td class="text-end">{{ (tips ?? 0).toFixed(2) }}</td>
+                    </tr>
                     <tr>
                         <td>{{ t('Tax') }}</td>
                         <td class="text-end">{{ (tax ?? 0).toFixed(2) }}</td>
@@ -115,6 +119,10 @@ const props = defineProps({
         default: 0
     },
     promotionDiscount: {
+        type: Number,
+        default: 0
+    },
+    tips: {
         type: Number,
         default: 0
     },

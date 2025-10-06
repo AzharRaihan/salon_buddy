@@ -28,7 +28,7 @@
   font-style: normal;
 } */
 .cursor-dot, .cursor-ring { display: none !important; }
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 /* Scroll Sommoth */
 /* Firefox */
 * {
@@ -450,7 +450,7 @@ ul {
 }
 .order-table .table-body {
   /* height: calc(70vh - 150px); */
-  height: calc(70vh - 185px);
+  height: calc(70vh - 195px);
   overflow-y: auto;
 }
 
@@ -629,7 +629,7 @@ ul {
   margin-bottom: 15px;
   justify-content: space-between;
   position: absolute;
-  bottom: 168px;
+  bottom: 200px;
   padding-top: 8px;
   left: 0px;
   right: 0;
@@ -888,6 +888,7 @@ ul {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: "Inter", sans-serif;
 }
 .item-grid .item-price {
   font-style: normal;

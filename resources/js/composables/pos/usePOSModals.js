@@ -211,16 +211,21 @@ export function usePOSModals() {
   };
 
   // Tips Modal Management
-  const openTipsModal = async () => {
+  const openTipsModal = async (item) => {
+    selectedServiceItem.value = item;
     return await openModalWithAutoClose("tips-selection");
   };
 
-  const toggleTipsModal = async () => {
+  const toggleTipsModal = async (item) => {
+    // Always close first to force prop update
     if (modal.isModalOpen("tips-selection")) {
-      modal.closeModal("tips-selection");
-    } else {
-      await openTipsModal();
+      selectedServiceItem.value = null;
+      await modal.closeModal("tips-selection");
+      // Wait for next tick to ensure reactivity
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
+    selectedServiceItem.value = item;
+    await openTipsModal(item);
   };
 
   const handleTipsConfirm = () => {
@@ -229,6 +234,7 @@ export function usePOSModals() {
 
   const handleTipsClose = (resetHandler) => {
     if (resetHandler) resetHandler();
+    selectedServiceItem.value = null;
     modal.closeModal("tips-selection");
   };
 

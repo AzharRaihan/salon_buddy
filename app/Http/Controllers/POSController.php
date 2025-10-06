@@ -59,8 +59,6 @@ class POSController extends Controller
 
     public function saveOrder(Request $request)
     {
-        // dd($request->all());
-
         $company = Company::find(Auth::user()->company_id);
         $validator = Validator::make($request->all(), [
             'items' => 'required|array|min:1',
@@ -71,6 +69,9 @@ class POSController extends Controller
             'items.*.is_free' => 'required|in:Yes,No',
             'items.*.promotion_id' => 'nullable|exists:promotions,id',
             'items.*.promotion_discount' => 'nullable|numeric|min:0',
+            'items.*.tips' => 'nullable|array',
+            'items.*.tips.employeeId' => 'nullable|exists:users,id',
+            'items.*.tips.amount' => 'nullable|numeric|min:0',
             'subtotal' => 'required|numeric|min:0',
             'tax' => 'required|numeric|min:0',
             'tax_breakdown' => 'nullable|array',
@@ -81,8 +82,9 @@ class POSController extends Controller
             'payment_amount' => 'required|numeric|min:0',
             'due_amount' => 'nullable|numeric',
             'branch_id' => 'required|exists:branches,id',
-            'order_date' => 'nullable|date', // Add order_date validation
+            'order_date' => 'nullable|date',
             'transaction_id' => 'nullable|string',
+            'total_tips' => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -153,6 +155,7 @@ class POSController extends Controller
                 'total_payable' => $validatedData['total'],
                 'total_paid' => $validatedData['payment_amount'],
                 'total_due' => $validatedData['due_amount'],
+                'total_tips' => $validatedData['total_tips'],
                 'customer_id' => $request->customer_id ?? null, // Use customer_id from request
                 'payment_method_id' => $validatedData['payment_method_id'] ?? null,
                 'transaction_id' => $validatedData['transaction_id'] ?? null,
@@ -201,11 +204,30 @@ class POSController extends Controller
                     }
                 }
 
+
+                $employee_id = NULL;
+                $tipsAmount = 0;
+
+                if(is_array($item['tips'])){
+                    $tips = $item['tips'];
+                    $tipsAmount = $tips['amount'];
+                    $tipsEmployeeId = $tips['employeeId'];
+
+                    if($tipsEmployeeId){
+                        $employee_id = $tipsEmployeeId;
+                    }else {
+                        $employee_id = $item['employee_id'];
+                    }
+                } else {
+                    $employee_id = $item['employee_id'];
+                }
+
+
                 // Prepare sale detail data
                 $saleDetailData = [
                     'sale_id' => $sale->id,
                     'item_id' => $item['id'],
-                    'employee_id' => $item['employee_id'] ?? null,
+                    'employee_id' => $employee_id,
                     'unit_price' => $unitPrice,
                     'quantity' => $quantity,
                     'subtotal' => $itemSubtotalAfterPromotion,
@@ -216,6 +238,7 @@ class POSController extends Controller
                     'is_free' => $item['is_free'],
                     'loyalty_point_earn' => $itemRecord->loyalty_point ?? null,
                     'promotion_id' => $item['promotion_id'] ?? null,
+                    'tips' => $tipsAmount,
                     'user_id' => $request->user_id ?? Auth::id(),
                     'company_id' => Auth::user()->company_id,
                     'branch_id' => $validatedData['branch_id'],
@@ -398,6 +421,7 @@ class POSController extends Controller
                     'subtotal' => $detail->subtotal,
                     'total_tax' => $detail->total_tax,
                     'total_payable' => $detail->total_payable,
+                    'tips' => $detail->tips ? json_decode($detail->tips, true) : null,
                 ];
             }
 
@@ -444,6 +468,9 @@ class POSController extends Controller
             'items.*.is_free' => 'required|in:Yes,No',
             'items.*.promotion_id' => 'nullable|exists:promotions,id',
             'items.*.promotion_discount' => 'nullable|numeric|min:0',
+            'items.*.tips' => 'nullable|array',
+            'items.*.tips.employee_id' => 'nullable|exists:users,id',
+            'items.*.tips.amount' => 'nullable|numeric|min:0',
             'subtotal' => 'required|numeric|min:0',
             'tax' => 'required|numeric|min:0',
             'tax_breakdown' => 'nullable|array',
@@ -594,6 +621,7 @@ class POSController extends Controller
                     'is_free' => $item['is_free'],
                     'loyalty_point_earn' => $itemRecord->loyalty_point ?? null,
                     'promotion_id' => $item['promotion_id'] ?? null,
+                    'tips' => !empty($item['tips']) ? json_encode($item['tips']) : null,
                     'user_id' => $request->user_id ?? Auth::id(),
                     'company_id' => Auth::user()->company_id,
                     'branch_id' => $validatedData['branch_id'],

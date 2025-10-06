@@ -84,6 +84,7 @@ const processPayment = async () => {
         price: item.price,
         employee_id: null,
         is_free: 'No',
+        tips: null,
         promotion_id: null,
         promotion_discount: 0
       })),

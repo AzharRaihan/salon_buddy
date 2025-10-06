@@ -20,6 +20,7 @@ class Sale extends Model
         'total_payable',
         'total_paid',
         'total_due',
+        'total_tips',
         'subtotal_without_tax_discount',
         'grandtotal_with_tax_discount',
         'discount',

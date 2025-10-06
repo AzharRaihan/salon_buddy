@@ -111,3 +111,6 @@ ALTER TABLE `customers` CHANGE `photo` `photo` VARCHAR(500) CHARACTER SET utf8mb
 
 
 ALTER TABLE `website_settings` ADD `privacy_policy` TEXT NULL DEFAULT NULL AFTER `footer_logo`, ADD `terms_and_conditions` TEXT NULL DEFAULT NULL AFTER `privacy_policy`;
+
+ALTER TABLE `sale_details` ADD `tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `promotion_id`;
+ALTER TABLE `sales` ADD `total_tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `grandtotal_with_tax_discount`;

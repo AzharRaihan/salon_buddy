@@ -34,13 +34,16 @@
           <div><span>{{ t('Subtotal') }}:</span> <span>{{ formatNumberInvoice(order.subtotal ?? calcSubtotal(order.sale_details)) }}</span></div>
           <!-- <div v-if="order.total_tax"><span>{{ t('Tax') }}:</span> <span>{{ formatNumberInvoice(order.total_tax) }}</span></div> -->
 
-          <div class="devider" v-if="order.tax_breakdown"></div>
-          <div v-if="order.tax_breakdown" class="tax-breakdown" v-for="(amount, taxName) in parseTaxBreakdown(order.tax_breakdown)" :key="taxName">
-            <span>{{ taxName }}:</span> <span>{{ formatNumberInvoice(amount) }}</span>
-          </div>
-          <div class="devider" v-if="order.tax_breakdown"></div>
+          <template v-if="order.tax_breakdown">
+            <div class="devider"></div>
+            <div class="tax-breakdown" v-for="(amount, taxName) in parseTaxBreakdown(order.tax_breakdown)" :key="taxName">
+              <span>{{ taxName }}:</span> <span>{{ formatNumberInvoice(amount) }}</span>
+            </div>
+            <div class="devider"></div>
+          </template>
 
           <div v-if="order.discount > 0"><span>{{ t('Discount') }}:</span> <span>{{ formatNumberInvoice(order.discount) }}</span></div>
+          <div v-if="order.total_tips > 0"><span>{{ t('Tips') }}:</span> <span>{{ formatNumberInvoice(order.total_tips) }}</span></div>
           <div class="grand"><span>{{ t('Total') }}:</span> <span>{{ formatNumberInvoice(order.total_payable) }}</span></div>
           <div v-if="order.total_paid"><span>{{ t('Paid') }}:</span> <span>{{ formatNumberInvoice(order.total_paid) }}</span></div>
           <div v-if="order.total_due > 0"><span>{{ t('Due') }}:</span> <span>{{ formatNumberInvoice(order.total_due) }}</span></div>
@@ -63,7 +66,7 @@
   </template>
   
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 import { useI18n } from 'vue-i18n';
 

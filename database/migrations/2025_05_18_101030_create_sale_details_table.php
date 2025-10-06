@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('total_payable', 10, 3)->nullable();
             $table->enum('is_free', ['Yes', 'No'])->default('No');
             $table->unsignedInteger('promotion_id')->nullable();
+            $table->decimal('tips', 10, 3)->nullable();
             $table->decimal('loyalty_point_earn', 10, 3)->nullable();
             $table->unsignedInteger('branch_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();
