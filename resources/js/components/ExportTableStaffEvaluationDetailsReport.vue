@@ -52,11 +52,11 @@ const props = defineProps({
   },
   filename: {
     type: String,
-    default: 'staff-earning-report'
+    default: 'staff-evaluation-details-report'
   },
   title: {
     type: String,
-    default: 'Staff Earning Report'
+    default: 'Staff Evaluation Details Report'
   },
   summaryData: {
     type: Object,
@@ -74,18 +74,28 @@ const getNestedValue = (obj, path) => {
 // Helper function to format data for export
 const formatDataForExport = () => {
   const exportHeaders = props.headers
-    .filter(header => header.key !== 'actions')
+    .filter(header => header.key !== 'actions' && header.key !== 'rating')
     .map(header => header.title)
 
   const exportData = props.data.map(item => {
     const row = {}
     props.headers.forEach(header => {
-      if (header.key !== 'actions') {
+      if (header.key !== 'actions' && header.key !== 'rating') {
         let value = getNestedValue(item, header.key)
         
         // Handle special formatting
-        if (header.key.includes('employee') && typeof value === 'object' && value?.name) {
-          value = value.name
+        if (header.key === 'employee.name' && item.employee) {
+          value = item.employee.phone 
+            ? `${item.employee.name} (${item.employee.phone})` 
+            : item.employee.name
+        } else if (header.key === 'customer.name' && item.customer) {
+          value = item.customer.phone 
+            ? `${item.customer.name} (${item.customer.phone})` 
+            : item.customer.name
+        } else if (header.key === 'item.name' && item.item) {
+          value = item.item.name
+        } else if (header.key === 'created_at' && item.rating_date) {
+          value = item.rating_date
         } else if (value === null || value === undefined) {
           value = 'N/A'
         }
@@ -100,17 +110,15 @@ const formatDataForExport = () => {
   if (props.summaryData) {
     const summaryRow = {}
     props.headers.forEach(header => {
-      if (header.key != 'actions') {
-        if (header.key == 'employee.name') {
+      if (header.key !== 'actions' && header.key !== 'rating') {
+        if (header.key === 'employee.name') {
           summaryRow[header.title] = 'TOTAL SUMMARY'
-        } else if (header.key == 'subtotal') {
-          summaryRow[header.title] = props.summaryData?.totalSales || 0
-        } else if (header.key == 'quantity') {
-          summaryRow[header.title] = props.summaryData?.totalEmployees || 0
-        } else if (header.key == 'tips') {
-          summaryRow[header.title] = props.summaryData?.totalTips || 0
-        } else if (header.key == 'commission') {
-          summaryRow[header.title] = props.summaryData?.totalCommission || 0
+        } else if (header.key === 'customer.name') {
+          summaryRow[header.title] = ''
+        } else if (header.key === 'item.name') {
+          summaryRow[header.title] = `Total: ${props.summaryData?.totalRatings || 0}`
+        } else if (header.key === 'rating_number') {
+          summaryRow[header.title] = `Avg: ${props.summaryData?.avgRating || 0}`
         } else {
           summaryRow[header.title] = ''
         }

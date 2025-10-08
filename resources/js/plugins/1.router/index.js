@@ -133,7 +133,9 @@ router.beforeEach(async (to, from, next) => {
     "/appointment-service",
     "/appointment-service/:id",
     "/booking/success",
-    "/not-found"
+    "/not-found",
+    "/ratting"
+
   ];
 
   // Define customer-only pages that require customer authentication
@@ -193,7 +195,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // Example usage
-  if (getUseWebsite.value === 'No' && (to.path == '/' || to.path == '/login' || to.path == '/register' || to.path == '/forgot-password' || to.path == '/aboutus' || to.path == '/contact-us' || to.path == '/service' || to.path == '/gallery' || to.path == '/product' || to.path == '/package' || to.path == '/team-members' || to.path == '/team-details/:id' || to.path == '/faq' || to.path == '/shopping-cart' || to.path == '/appointment-service' || to.path == '/appointment-service/:id' || to.path == '/booking/success' || to.path == '/not-found' || to.path == '/dashboard' || to.path == '/booking-history' || to.path == '/product-order' || to.path == '/transaction-history' || to.path == '/package-order' || to.path == '/package-details' || to.path == '/profile-setting' || to.path == '/policy' || to.path == '/terms-and-conditions')) {
+  if (getUseWebsite.value === 'No' && (to.path == '/' || to.path == '/login' || to.path == '/register' || to.path == '/forgot-password' || to.path == '/aboutus' || to.path == '/contact-us' || to.path == '/service' || to.path == '/gallery' || to.path == '/product' || to.path == '/package' || to.path == '/team-members' || to.path == '/team-details/:id' || to.path == '/faq' || to.path == '/shopping-cart' || to.path == '/appointment-service' || to.path == '/appointment-service/:id' || to.path == '/booking/success' || to.path == '/not-found' || to.path == '/ratting' || to.path == '/dashboard' || to.path == '/booking-history' || to.path == '/product-order' || to.path == '/transaction-history' || to.path == '/package-order' || to.path == '/package-details' || to.path == '/profile-setting' || to.path == '/policy' || to.path == '/terms-and-conditions')) {
     return next({ path: '/admin-login' })
   }
 

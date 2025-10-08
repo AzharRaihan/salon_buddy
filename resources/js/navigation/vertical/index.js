@@ -165,6 +165,8 @@ export default [
       { title: "Employee Commission Report", to: { name: "report-employee-commission-report" }, permission: ["report-commission"] },
       { title: "Staff Earning Report", to: { name: "report-staff-earning-report" }, permission: ["report-earning"] },
       { title: "Staff Payout Report", to: { name: "report-staff-payout-report" }, permission: ["report-payout"] },
+      { title: "Staff Evaluation Report", to: { name: "report-staff-evaluation-report" }, permission: ["report-evaluation"] },
+      { title: "Staff Evaluation Details Report", to: { name: "report-staff-evaluation-details-report" }, permission: ["report-evaluation_details"] },
       { title: "Expense Report", to: { name: "report-expense-report" }, permission: ["report-expense"] },
       { title: "Damage Report", to: { name: "report-damage-report" }, permission: ["report-damage"] },
       { title: "Salary Report", to: { name: "report-salary-report" }, permission: ["report-salary"] },

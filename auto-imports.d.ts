@@ -390,6 +390,8 @@ declare global {
   const useSpeechRecognition: typeof import('@vueuse/core')['useSpeechRecognition']
   const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
   const useStaffEarningReport: typeof import('./resources/js/composables/useStaffEarningReport.js')['useStaffEarningReport']
+  const useStaffEvaluationDetailsReport: typeof import('./resources/js/composables/useStaffEvaluationDetailsReport.js')['useStaffEvaluationDetailsReport']
+  const useStaffEvaluationReport: typeof import('./resources/js/composables/useStaffEvaluationReport.js')['useStaffEvaluationReport']
   const useStaffPayoutReport: typeof import('./resources/js/composables/useStaffPayoutReport.js')['useStaffPayoutReport']
   const useStepper: typeof import('@vueuse/core')['useStepper']
   const useStockReport: typeof import('./resources/js/composables/useStockReport.js')['useStockReport']
@@ -843,6 +845,8 @@ declare module 'vue' {
     readonly useSpeechRecognition: UnwrapRef<typeof import('@vueuse/core')['useSpeechRecognition']>
     readonly useSpeechSynthesis: UnwrapRef<typeof import('@vueuse/core')['useSpeechSynthesis']>
     readonly useStaffEarningReport: UnwrapRef<typeof import('./resources/js/composables/useStaffEarningReport.js')['useStaffEarningReport']>
+    readonly useStaffEvaluationDetailsReport: UnwrapRef<typeof import('./resources/js/composables/useStaffEvaluationDetailsReport.js')['useStaffEvaluationDetailsReport']>
+    readonly useStaffEvaluationReport: UnwrapRef<typeof import('./resources/js/composables/useStaffEvaluationReport.js')['useStaffEvaluationReport']>
     readonly useStaffPayoutReport: UnwrapRef<typeof import('./resources/js/composables/useStaffPayoutReport.js')['useStaffPayoutReport']>
     readonly useStepper: UnwrapRef<typeof import('@vueuse/core')['useStepper']>
     readonly useStockReport: UnwrapRef<typeof import('./resources/js/composables/useStockReport.js')['useStockReport']>

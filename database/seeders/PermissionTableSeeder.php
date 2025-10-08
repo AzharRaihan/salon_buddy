@@ -119,6 +119,8 @@ class PermissionTableSeeder extends Seeder
                 'report-alert',
                 'report-daily_summary',
                 'report-payout',
+                'report-evaluation',
+                'report-evaluation_details',
             ],
             'role-management' => [
                 'role-create',

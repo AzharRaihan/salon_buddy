@@ -1,41 +1,33 @@
 <script setup>
 import { computed } from 'vue'
-import { useStaffEarningReport } from '@/composables/useStaffEarningReport'
-import StaffEarningReportFilters from '@/components/report/StaffEarningReportFilters.vue'
-import StaffEarningSummaryCards from '@/components/report/StaffEarningSummaryCards.vue'
-import StaffEarningReportTable from '@/components/report/StaffEarningReportTable.vue'
-import ExportTableStaffEarningReport from '@/components/ExportTableStaffEarningReport.vue'
+import { useStaffEvaluationDetailsReport } from '@/composables/useStaffEvaluationDetailsReport'
+import StaffEvaluationReportFilters from '@/components/report/StaffEvaluationReportFilters.vue'
+import StaffEvaluationDetailsSummaryCards from '@/components/report/StaffEvaluationDetailsSummaryCards.vue'
+import StaffEvaluationDetailsReportTable from '@/components/report/StaffEvaluationDetailsReportTable.vue'
+import ExportTableStaffEvaluationDetailsReport from '@/components/ExportTableStaffEvaluationDetailsReport.vue'
 
-// Use the staff earning report composable
+// Use the staff evaluation details report composable
 const {
     // State
-    earningData,
+    evaluationDetailsData,
     isLoading,
-    branchId,
     employeeId,
     dateFrom,
     dateTo,
-    branches,
     employees,
     
     // Methods
     fetchFilterOptions,
-    fetchEarningReport,
+    fetchEvaluationDetailsReport,
     resetFilters,
     
     // Computed
-    earnings,
-    totalEarnings,
+    evaluationDetails,
+    totalEvaluationDetails,
     summary,
-} = useStaffEarningReport()
+} = useStaffEvaluationDetailsReport()
 
 // Computed properties
-const selectedBranchName = computed(() => {
-    if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
-})
-
 const selectedEmployeeName = computed(() => {
     if (!employeeId.value) return 'All Employees'
     const employee = employees.value.find(e => e.id == employeeId.value)
@@ -45,11 +37,11 @@ const selectedEmployeeName = computed(() => {
 // Export headers for ExportTable component
 const exportHeaders = computed(() => [
     { title: 'Staff Name', key: 'employee.name' },
-    { title: 'Done Service', key: 'quantity' },
-    { title: 'Total Earning', key: 'subtotal' },
-    { title: 'Tips', key: 'tips' },
-    { title: 'Commission Rate', key: 'commission_rate' },
-    { title: 'Staff Earning', key: 'commission' },
+    { title: 'Customer Name', key: 'customer.name' },
+    { title: 'Item Name', key: 'item.name' },
+    { title: 'Rating', key: 'rating_number' },
+    { title: 'Rating Visual', key: 'rating' },
+    { title: 'Created Date', key: 'created_at' },
 ])
 
 const handleResetFilters = () => {
@@ -63,13 +55,13 @@ const handleResetFilters = () => {
         <!-- Filter Section -->
         <VCard class="mb-4">
             <VCardText>
-                <StaffEarningReportFilters
+                <StaffEvaluationReportFilters
                     v-model:date-from="dateFrom"
                     v-model:date-to="dateTo"
-                    v-model:branch-id="branchId"
                     v-model:employee-id="employeeId"
-                    :branches="branches"
                     :employees="employees"
+                    :hide-branch="true"
+                    :employee-required="true"
                 />
             </VCardText>
         </VCard>
@@ -77,9 +69,9 @@ const handleResetFilters = () => {
         <!-- Summary Cards -->
         <VCard class="mb-4">
             <VCardText>
-                <StaffEarningSummaryCards
+                <StaffEvaluationDetailsSummaryCards
                     :summary="summary"
-                    :total-filtered="totalEarnings"
+                    :total-filtered="totalEvaluationDetails"
                 />
             </VCardText>
         </VCard>
@@ -94,21 +86,20 @@ const handleResetFilters = () => {
                 Reset Filters
             </VBtn>
 
-            <ExportTableStaffEarningReport 
-                :data="earnings" 
+            <ExportTableStaffEvaluationDetailsReport 
+                :data="evaluationDetails" 
                 :headers="exportHeaders" 
                 :summary-data="summary"
-                filename="staff-earning-report"
-                title="Staff Earning Report"
+                filename="staff-evaluation-details-report"
+                title="Staff Evaluation Details Report"
             />
         </div>
 
-        <!-- Staff Earning Report Table -->
-        <StaffEarningReportTable
-            :earnings="earnings"
+        <!-- Staff Evaluation Details Report Table -->
+        <StaffEvaluationDetailsReportTable
+            :evaluation-details="evaluationDetails"
             :date-from="dateFrom"
             :date-to="dateTo"
-            :selected-branch-name="selectedBranchName"
             :selected-employee-name="selectedEmployeeName"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
@@ -127,3 +118,4 @@ const handleResetFilters = () => {
 }
 
 </style>
+

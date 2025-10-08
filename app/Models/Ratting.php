@@ -7,7 +7,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ratting extends Model
 {
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'item_id',
+        'customer_id',
+        'employee_id',
+        'rating',
+        'company_id',
+        'del_status'
+    ];
+
+    protected $casts = [
+        'rating' => 'decimal:2',
+    ];
 
     public function item(): BelongsTo
     {

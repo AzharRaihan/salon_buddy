@@ -1,16 +1,13 @@
 <template>
-    <div class="staff-earning-report-table">
+    <div class="staff-evaluation-details-report-table">
         <VCard>
             <VCardText>
                 <!-- Report Header -->
                 <div class="d-flex justify-space-between align-center mb-6">
                     <div>
-                        <h4 class="text-h4 mb-2">Staff Earning Report</h4>
+                        <h4 class="text-h4 mb-2">Staff Evaluation Details Report</h4>
                         <div class="text-body-1 text-medium-emphasis">
                             Date Range: {{ formatDateRange(dateFrom, dateTo) }}
-                        </div>
-                        <div class="text-body-1 text-medium-emphasis">
-                            Outlet: {{ selectedBranchName }}
                         </div>
                         <div class="text-body-1 text-medium-emphasis">
                             Employee: {{ selectedEmployeeName }}
@@ -18,9 +15,9 @@
                     </div>
                 </div>
 
-                <!-- Earning Table -->
+                <!-- Evaluation Details Table -->
                 <VDataTable
-                    :items="earnings"
+                    :items="evaluationDetails"
                     :headers="exportHeaders"
                     class="text-no-wrap"
                     :loading="isLoading"
@@ -37,44 +34,67 @@
                         <div class="d-flex align-center justify-center pa-4">
                             <VIcon icon="tabler-alert-circle" class="me-2" />
                             <div>
-                                No earning records found with current filters
+                                No evaluation records found with current filters
                             </div>
                         </div>
                     </template>
 
-
-                    <!-- Employee name -->
+                    <!-- Staff Name with Phone -->
                     <template #[`item.employee.name`]="{ item }">
                         <span class="text-high-emphasis">
                             {{ item.employee?.name || 'N/A' }}
+                            <span v-if="item.employee?.phone" class="text-medium-emphasis">
+                                ({{ item.employee.phone }})
+                            </span>
                         </span>
                     </template>
 
-                    <!-- Subtotal formatting -->
-                    <template #[`item.subtotal`]="{ item }">
+                    <!-- Customer Name with Phone -->
+                    <template #[`item.customer.name`]="{ item }">
+                        <span class="text-high-emphasis">
+                            {{ item.customer?.name || 'N/A' }}
+                            <span v-if="item.customer?.phone" class="text-medium-emphasis">
+                                ({{ item.customer.phone }})
+                            </span>
+                        </span>
+                    </template>
+
+                    <!-- Item Name -->
+                    <template #[`item.item.name`]="{ item }">
+                        <VChip 
+                            color="primary" 
+                            variant="tonal" 
+                            size="small"
+                        >
+                            {{ item.item?.name || 'N/A' }}
+                        </VChip>
+                    </template>
+
+                    <!-- Rating Number -->
+                    <template #[`item.rating_number`]="{ item }">
                         <span class="font-weight-medium text-primary">
-                            {{ formatAmount(item.subtotal) }}
+                            {{ item.rating }}
                         </span>
                     </template>
 
-                    <!-- Quantity formatting -->
-                    <template #[`item.quantity`]="{ item }">
+                    <!-- Rating with Stars (Visual Rating) -->
+                    <template #[`item.rating`]="{ item }">
+                        <div class="d-flex align-center">
+                            <VRating
+                                :model-value="item.rating"
+                                color="warning"
+                                half-increments
+                                readonly
+                                density="compact"
+                                size="small"
+                            />
+                        </div>
+                    </template>
+
+                    <!-- Created Date formatting -->
+                    <template #[`item.created_at`]="{ item }">
                         <span class="font-weight-medium">
-                            {{ formatNumber(item.quantity) }}
-                        </span>
-                    </template>
-
-                    <!-- Tips formatting -->
-                    <template #[`item.tips`]="{ item }">
-                        <span class="font-weight-medium">
-                            {{ formatAmount(item.tips) }}
-                        </span>
-                    </template>
-
-                    <!-- Commission formatting -->
-                    <template #[`item.commission`]="{ item }">
-                        <span class="font-weight-medium text-success">
-                            {{ formatAmount(item.commission) }}
+                            {{ formatDate(item.rating_date) }}
                         </span>
                     </template>
 
@@ -87,16 +107,10 @@
                                         Summary
                                     </th>
                                     <th>
-                                        Total Subtotal
+                                        Total Ratings
                                     </th>
-                                    <th>
-                                        Total Services
-                                    </th>
-                                    <th>
-                                        Total Tips
-                                    </th>
-                                    <th>
-                                        Total Earning
+                                    <th colspan="2">
+                                        Average Rating
                                     </th>
                                 </tr>
                             </thead>
@@ -109,16 +123,10 @@
                                         </span>
                                     </td>
                                     <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('subtotal')) }}
+                                        {{ evaluationDetails.length }}
                                     </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatNumber(calculateTotal('quantity')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('tips')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('commission')) }}
+                                    <td class="text-h6 font-weight-bold text-primary" colspan="2">
+                                        {{ calculateAvgRating() }}
                                     </td>
                                 </tr>
                             </tbody>
@@ -132,10 +140,10 @@
 
 <script setup>
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate, formatAmount, formatNumber } = useCompanyFormatters()
+const { formatDate } = useCompanyFormatters()
 
 const props = defineProps({
-    earnings: {
+    evaluationDetails: {
         type: Array,
         default: () => []
     },
@@ -146,10 +154,6 @@ const props = defineProps({
     dateTo: {
         type: String,
         default: ''
-    },
-    selectedBranchName: {
-        type: String,
-        default: 'All Outlets'
     },
     selectedEmployeeName: {
         type: String,
@@ -173,15 +177,17 @@ const formatDateRange = (from, to) => {
     return `${formatDate(from)} - ${formatDate(to)}`
 }
 
-const calculateTotal = (field) => {
-    return props.earnings.reduce((sum, item) => {
-        return sum + (parseFloat(item[field]) || 0)
+const calculateAvgRating = () => {
+    if (props.evaluationDetails.length === 0) return '0.00'
+    const totalRating = props.evaluationDetails.reduce((sum, item) => {
+        return sum + (parseFloat(item.rating) || 0)
     }, 0)
+    return (totalRating / props.evaluationDetails.length).toFixed(2)
 }
 </script>
 
 <style lang="scss" scoped>
-.staff-earning-report-table {
+.staff-evaluation-details-report-table {
     .v-data-table {
         .v-data-table__wrapper {
             border-radius: 8px;
@@ -198,3 +204,4 @@ const calculateTotal = (field) => {
     }
 }
 </style>
+

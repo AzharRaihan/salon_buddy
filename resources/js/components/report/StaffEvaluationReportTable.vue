@@ -1,11 +1,11 @@
 <template>
-    <div class="staff-earning-report-table">
+    <div class="staff-evaluation-report-table">
         <VCard>
             <VCardText>
                 <!-- Report Header -->
                 <div class="d-flex justify-space-between align-center mb-6">
                     <div>
-                        <h4 class="text-h4 mb-2">Staff Earning Report</h4>
+                        <h4 class="text-h4 mb-2">Staff Evaluation Report</h4>
                         <div class="text-body-1 text-medium-emphasis">
                             Date Range: {{ formatDateRange(dateFrom, dateTo) }}
                         </div>
@@ -18,9 +18,9 @@
                     </div>
                 </div>
 
-                <!-- Earning Table -->
+                <!-- Evaluation Table -->
                 <VDataTable
-                    :items="earnings"
+                    :items="evaluations"
                     :headers="exportHeaders"
                     class="text-no-wrap"
                     :loading="isLoading"
@@ -37,45 +37,47 @@
                         <div class="d-flex align-center justify-center pa-4">
                             <VIcon icon="tabler-alert-circle" class="me-2" />
                             <div>
-                                No earning records found with current filters
+                                No evaluation records found with current filters
                             </div>
                         </div>
                     </template>
 
-
-                    <!-- Employee name -->
+                    <!-- Staff Name with Phone -->
                     <template #[`item.employee.name`]="{ item }">
                         <span class="text-high-emphasis">
                             {{ item.employee?.name || 'N/A' }}
+                            <span v-if="item.employee?.phone" class="text-medium-emphasis">
+                                ({{ item.employee.phone }})
+                            </span>
                         </span>
                     </template>
 
-                    <!-- Subtotal formatting -->
-                    <template #[`item.subtotal`]="{ item }">
+                    <!-- Total Ratings -->
+                    <template #[`item.total_ratings`]="{ item }">
+                        <span class="font-weight-medium">
+                            {{ formatNumber(item.total_ratings) }}
+                        </span>
+                    </template>
+
+                    <!-- Average Rating -->
+                    <template #[`item.avg_rating`]="{ item }">
                         <span class="font-weight-medium text-primary">
-                            {{ formatAmount(item.subtotal) }}
+                            {{ item.avg_rating }}
                         </span>
                     </template>
 
-                    <!-- Quantity formatting -->
-                    <template #[`item.quantity`]="{ item }">
-                        <span class="font-weight-medium">
-                            {{ formatNumber(item.quantity) }}
-                        </span>
-                    </template>
-
-                    <!-- Tips formatting -->
-                    <template #[`item.tips`]="{ item }">
-                        <span class="font-weight-medium">
-                            {{ formatAmount(item.tips) }}
-                        </span>
-                    </template>
-
-                    <!-- Commission formatting -->
-                    <template #[`item.commission`]="{ item }">
-                        <span class="font-weight-medium text-success">
-                            {{ formatAmount(item.commission) }}
-                        </span>
+                    <!-- Rating with Stars -->
+                    <template #[`item.rating`]="{ item }">
+                        <div class="d-flex align-center">
+                            <VRating
+                                :model-value="item.avg_rating"
+                                color="warning"
+                                half-increments
+                                readonly
+                                density="compact"
+                                size="small"
+                            />
+                        </div>
                     </template>
 
                     <!-- Summary Row -->
@@ -83,42 +85,36 @@
                         <VTable>
                             <thead>
                                 <tr>
-                                    <th colspan="3">
+                                    <th>
                                         Summary
                                     </th>
                                     <th>
-                                        Total Subtotal
+                                        Total Ratings
                                     </th>
                                     <th>
-                                        Total Services
+                                        Average Rating
                                     </th>
                                     <th>
-                                        Total Tips
-                                    </th>
-                                    <th>
-                                        Total Earning
+                                        
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="3">
+                                    <td class="text-h6 font-weight-bold text-primary">
                                         <span class="d-flex align-center">
                                             <VIcon icon="tabler-calculator" class="me-2" />
                                             Total Summary
                                         </span>
                                     </td>
                                     <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('subtotal')) }}
+                                        {{ formatNumber(calculateTotal('total_ratings')) }}
                                     </td>
                                     <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatNumber(calculateTotal('quantity')) }}
+                                        {{ calculateAvgRating() }}
                                     </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('tips')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('commission')) }}
+                                    <td>
+                                        
                                     </td>
                                 </tr>
                             </tbody>
@@ -132,10 +128,10 @@
 
 <script setup>
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate, formatAmount, formatNumber } = useCompanyFormatters()
+const { formatDate, formatNumber } = useCompanyFormatters()
 
 const props = defineProps({
-    earnings: {
+    evaluations: {
         type: Array,
         default: () => []
     },
@@ -174,14 +170,22 @@ const formatDateRange = (from, to) => {
 }
 
 const calculateTotal = (field) => {
-    return props.earnings.reduce((sum, item) => {
+    return props.evaluations.reduce((sum, item) => {
         return sum + (parseFloat(item[field]) || 0)
     }, 0)
+}
+
+const calculateAvgRating = () => {
+    if (props.evaluations.length === 0) return '0.00'
+    const totalAvg = props.evaluations.reduce((sum, item) => {
+        return sum + (parseFloat(item.avg_rating) || 0)
+    }, 0)
+    return (totalAvg / props.evaluations.length).toFixed(2)
 }
 </script>
 
 <style lang="scss" scoped>
-.staff-earning-report-table {
+.staff-evaluation-report-table {
     .v-data-table {
         .v-data-table__wrapper {
             border-radius: 8px;
@@ -198,3 +202,4 @@ const calculateTotal = (field) => {
     }
 }
 </style>
+

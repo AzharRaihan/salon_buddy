@@ -224,6 +224,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('staff-earning-report-filters', 'staffEarningReportFilters');
         Route::get('staff-payout-report', 'staffPayoutReport');
         Route::get('staff-payout-report-filters', 'staffPayoutReportFilters');
+        Route::get('staff-evaluation-report', 'staffEvaluationReport');
+        Route::get('staff-evaluation-report-filters', 'staffEvaluationReportFilters');
+        Route::get('staff-evaluation-details-report', 'staffEvaluationDetailsReport');
 
     });
 
@@ -424,6 +427,12 @@ Route::controller(FrontendController::class)->group(function () {
 
     // Search API
     Route::get('search', 'search');
+
+    // Service rating submission from email
+    Route::post('submit-service-ratings', 'submitServiceRatings');
+    
+    // Get sale details for rating page
+    Route::get('sale-details-for-rating', 'getSaleDetailsForRating');
 
 });
 

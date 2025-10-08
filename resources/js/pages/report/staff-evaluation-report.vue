@@ -1,15 +1,15 @@
 <script setup>
 import { computed } from 'vue'
-import { useStaffEarningReport } from '@/composables/useStaffEarningReport'
-import StaffEarningReportFilters from '@/components/report/StaffEarningReportFilters.vue'
-import StaffEarningSummaryCards from '@/components/report/StaffEarningSummaryCards.vue'
-import StaffEarningReportTable from '@/components/report/StaffEarningReportTable.vue'
-import ExportTableStaffEarningReport from '@/components/ExportTableStaffEarningReport.vue'
+import { useStaffEvaluationReport } from '@/composables/useStaffEvaluationReport'
+import StaffEvaluationReportFilters from '@/components/report/StaffEvaluationReportFilters.vue'
+import StaffEvaluationSummaryCards from '@/components/report/StaffEvaluationSummaryCards.vue'
+import StaffEvaluationReportTable from '@/components/report/StaffEvaluationReportTable.vue'
+import ExportTableStaffEvaluationReport from '@/components/ExportTableStaffEvaluationReport.vue'
 
-// Use the staff earning report composable
+// Use the staff evaluation report composable
 const {
     // State
-    earningData,
+    evaluationData,
     isLoading,
     branchId,
     employeeId,
@@ -20,14 +20,14 @@ const {
     
     // Methods
     fetchFilterOptions,
-    fetchEarningReport,
+    fetchEvaluationReport,
     resetFilters,
     
     // Computed
-    earnings,
-    totalEarnings,
+    evaluations,
+    totalEvaluations,
     summary,
-} = useStaffEarningReport()
+} = useStaffEvaluationReport()
 
 // Computed properties
 const selectedBranchName = computed(() => {
@@ -45,11 +45,9 @@ const selectedEmployeeName = computed(() => {
 // Export headers for ExportTable component
 const exportHeaders = computed(() => [
     { title: 'Staff Name', key: 'employee.name' },
-    { title: 'Done Service', key: 'quantity' },
-    { title: 'Total Earning', key: 'subtotal' },
-    { title: 'Tips', key: 'tips' },
-    { title: 'Commission Rate', key: 'commission_rate' },
-    { title: 'Staff Earning', key: 'commission' },
+    { title: 'Total Ratings', key: 'total_ratings' },
+    { title: 'Average Rating', key: 'avg_rating' },
+    { title: 'Rating Visual', key: 'rating' },
 ])
 
 const handleResetFilters = () => {
@@ -63,7 +61,7 @@ const handleResetFilters = () => {
         <!-- Filter Section -->
         <VCard class="mb-4">
             <VCardText>
-                <StaffEarningReportFilters
+                <StaffEvaluationReportFilters
                     v-model:date-from="dateFrom"
                     v-model:date-to="dateTo"
                     v-model:branch-id="branchId"
@@ -77,9 +75,9 @@ const handleResetFilters = () => {
         <!-- Summary Cards -->
         <VCard class="mb-4">
             <VCardText>
-                <StaffEarningSummaryCards
+                <StaffEvaluationSummaryCards
                     :summary="summary"
-                    :total-filtered="totalEarnings"
+                    :total-filtered="totalEvaluations"
                 />
             </VCardText>
         </VCard>
@@ -94,18 +92,18 @@ const handleResetFilters = () => {
                 Reset Filters
             </VBtn>
 
-            <ExportTableStaffEarningReport 
-                :data="earnings" 
+            <ExportTableStaffEvaluationReport 
+                :data="evaluations" 
                 :headers="exportHeaders" 
                 :summary-data="summary"
-                filename="staff-earning-report"
-                title="Staff Earning Report"
+                filename="staff-evaluation-report"
+                title="Staff Evaluation Report"
             />
         </div>
 
-        <!-- Staff Earning Report Table -->
-        <StaffEarningReportTable
-            :earnings="earnings"
+        <!-- Staff Evaluation Report Table -->
+        <StaffEvaluationReportTable
+            :evaluations="evaluations"
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-branch-name="selectedBranchName"

@@ -461,6 +461,8 @@
     "useSearch": true,
     "useSearchGlobal": true,
     "useStaffEarningReport": true,
-    "useStaffPayoutReport": true
+    "useStaffPayoutReport": true,
+    "useStaffEvaluationReport": true,
+    "useStaffEvaluationDetailsReport": true
   }
 }

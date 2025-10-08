@@ -59,19 +59,35 @@
                             </td>
                         </tr>
 
+                        <tr>
+                            <td class="font-weight-medium">5.</td>
+                            <td class="font-weight-medium">Tips</td>
+                            <td class="text-right">
+                                {{ formatAmount(reportData.total_tips || 0) }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="font-weight-medium">6.</td>
+                            <td class="font-weight-medium">Delivery Charge</td>
+                            <td class="text-right">
+                                {{ formatAmount(reportData.delivery_charge || 0) }}
+                            </td>
+                        </tr>
+
                         <tr class="gross-profit-row">
-                            <td class="font-weight-bold">5.</td>
+                            <td class="font-weight-bold">7.</td>
                             <td class="font-weight-bold">
-                                Gross Profit (1) - (2+3+4)
+                                Gross Profit (1) - (2+3+4+5+6)
                             </td>
                             <td class="text-right">
                                 {{ formatAmount(reportData.gross_profit || 0) }}
                             </td>
                         </tr>
 
-                        <!-- 6. Total Salaries -->
+
                         <tr>
-                            <td class="font-weight-medium">6.</td>
+                            <td class="font-weight-medium">8.</td>
                             <td class="font-weight-medium">Total Salaries</td>
                             <td class="text-right">
                                 {{ formatAmount(reportData.total_salaries || 0) }}
@@ -80,7 +96,7 @@
 
                         <!-- 7. Expense -->
                         <tr>
-                            <td class="font-weight-medium">7.</td>
+                            <td class="font-weight-medium">9.</td>
                             <td class="font-weight-medium">Expense</td>
                             <td class="text-right">
                                 {{ formatAmount(reportData.expense || 0) }}
@@ -89,9 +105,9 @@
 
                         <!-- 8. Net Profit (5) - (6+7) -->
                         <tr class="net-profit-row">
-                            <td class="font-weight-bold">8.</td>
+                            <td class="font-weight-bold">10.</td>
                             <td class="font-weight-bold">
-                                Net Profit (5) - (6+7)
+                                Net Profit (7) - (8+9)
                             </td>
                             <td class="text-right">
                                 {{ formatAmount(reportData.net_profit || 0) }}

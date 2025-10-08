@@ -833,7 +833,8 @@ class ReportController extends Controller
         $query = SaleDetail::selectRaw('
                 employee_id,
                 SUM(subtotal) as subtotal,
-                SUM(quantity) as quantity
+                SUM(quantity) as quantity,
+                SUM(tips) as tips
             ')
             ->with([
                 'employee:id,name,phone,commission',
@@ -879,6 +880,7 @@ class ReportController extends Controller
         // Calculate commission for each employee
         $earnings->map(function($earning) {
             $commission = 0;
+            $commissionPercent = 0;
             if ($earning->employee && $earning->employee->commission) {
                 $commissionPercent = floatval(str_replace('%', '', $earning->employee->commission));
                 $commission = ($earning->subtotal * $commissionPercent) / 100;
@@ -1054,6 +1056,8 @@ class ReportController extends Controller
         $totalSales = $salesQuery->sum('grandtotal_with_tax_discount') ?? 0;
         $totalTax = $salesQuery->sum('total_tax') ?? 0;
         $totalDiscount = $salesQuery->sum('discount') ?? 0;
+        $totalTips = $salesQuery->sum('total_tips') ?? 0;
+        $deliveryCharge = $salesQuery->sum('delivery_charge') ?? 0;
         $totalExpenses = $expensesQuery->sum('amount') ?? 0;
         $totalSalaries = $salariesQuery->sum('total_amount') ?? 0;
 
@@ -1062,7 +1066,7 @@ class ReportController extends Controller
 
 
         // GorssProfit
-        $grossProfit = $totalSales - ($costOfSale + $totalTax + $totalDiscount);
+        $grossProfit = $totalSales - ($costOfSale + $totalTax + $totalDiscount + $totalTips + $deliveryCharge);
 
         // Calculate Net Profit: (10) - (11+12)
         $netProfit = $grossProfit - ($totalSalaries + $totalExpenses);
@@ -1071,8 +1075,10 @@ class ReportController extends Controller
             'total_sales' => $totalSales,
             'total_cost_of_sale' => $costOfSale,
             'tax' => $totalTax,
+            'total_tips' => $totalTips,
             'discount' => $totalDiscount,
             'gross_profit' => $grossProfit,
+            'delivery_charge' => $deliveryCharge,
             'total_salaries' => $totalSalaries,
             'expense' => $totalExpenses,
             'net_profit' => $netProfit,
@@ -1525,6 +1531,193 @@ class ReportController extends Controller
             ->select('id', 'name', 'phone')
             ->get();
 
+        return $this->successResponse([
+            'branches' => $branches,
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get staff evaluation report with filters
+     */
+    public function staffEvaluationReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        $query = \App\Models\Ratting::selectRaw('
+                employee_id,
+                COUNT(*) as total_ratings,
+                AVG(rating) as avg_rating,
+                SUM(rating) as total_rating
+            ')
+            ->with([
+                'employee:id,name,phone',
+            ])
+            ->whereNotNull('employee_id')
+            ->whereHas('employee', function($q) use ($companyId) {
+                $q->where('company_id', $companyId)
+                  ->where('status', 'Active');
+            });
+
+        // Branch filter
+        if ($request->filled('branch_id')) {
+            $query->whereHas('employee', function($q) use ($request) {
+                $q->where('branch_id', 'like', '%' . $request->branch_id . '%');
+            });
+        }
+
+        // Employee filter
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Group by employee
+        $query->groupBy('employee_id');
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('avg_rating', 'desc');
+        }
+
+        $evaluations = $query->get();
+
+        // Format the data
+        $evaluations->map(function($evaluation) {
+            $evaluation->avg_rating = round($evaluation->avg_rating, 2);
+            return $evaluation;
+        });
+
+        // Summary
+        $totalEmployees = $evaluations->count();
+        $totalRatings = $evaluations->sum('total_ratings');
+        $avgRating = $evaluations->count() > 0 ? $evaluations->avg('avg_rating') : 0;
+
+        return $this->successResponse([
+            'evaluations' => $evaluations,
+            'total' => $totalEmployees,
+            'summary' => [
+                'totalEmployees' => $totalEmployees,
+                'totalRatings' => $totalRatings,
+                'avgRating' => round($avgRating, 2),
+            ],
+        ]);
+    }
+
+    /**
+     * Get staff evaluation details report with filters
+     */
+    public function staffEvaluationDetailsReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        $query = \App\Models\Ratting::with([
+            'employee:id,name,phone',
+            'customer:id,name,phone',
+            'item:id,name',
+        ])
+        ->whereNotNull('employee_id')
+        ->whereHas('employee', function($q) use ($companyId) {
+            $q->where('company_id', $companyId)
+              ->where('status', 'Active');
+        });
+
+        // Branch filter
+        if ($request->filled('branch_id')) {
+            $query->whereHas('employee', function($q) use ($request) {
+                $q->where('branch_id', 'like', '%' . $request->branch_id . '%');
+            });
+        }
+
+        // Employee filter
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // Date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Search functionality
+        if ($request->has('q') && !empty($request->q)) {
+            $query->where(function($q) use ($request) {
+                $q->whereHas('employee', function($empQuery) use ($request) {
+                    $empQuery->where('name', 'like', '%' . $request->q . '%')
+                             ->orWhere('phone', 'like', '%' . $request->q . '%');
+                })
+                ->orWhereHas('customer', function($custQuery) use ($request) {
+                    $custQuery->where('name', 'like', '%' . $request->q . '%')
+                              ->orWhere('phone', 'like', '%' . $request->q . '%');
+                });
+            });
+        }
+
+        // Sorting
+        if ($request->has('sortBy') && !empty($request->sortBy)) {
+            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
+            $query->orderBy($request->sortBy, $direction);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $evaluationDetails = $query->get();
+
+        // Add formatted date and time
+        $evaluationDetails->map(function($detail) {
+            $detail->rating_date = $detail->created_at->format('Y-m-d');
+            $detail->rating_time = $detail->created_at->format('H:i:s');
+            return $detail;
+        });
+
+        // Summary
+        $totalRatings = $evaluationDetails->count();
+        $avgRating = $evaluationDetails->count() > 0 ? $evaluationDetails->avg('rating') : 0;
+        $totalRatingSum = $evaluationDetails->sum('rating');
+
+        return $this->successResponse([
+            'evaluationDetails' => $evaluationDetails,
+            'total' => $totalRatings,
+            'summary' => [
+                'totalRatings' => $totalRatings,
+                'avgRating' => round($avgRating, 2),
+                'totalRatingSum' => $totalRatingSum,
+            ],
+        ]);
+    }
+
+    /**
+     * Get filter options for staff evaluation reports
+     */
+    public function staffEvaluationReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+            
+        // Get employees
+        $employees = User::where('company_id', $companyId)
+            ->where('status', 'Active')
+            ->select('id', 'name', 'email', 'phone')
+            ->get();
+            
         return $this->successResponse([
             'branches' => $branches,
             'employees' => $employees,

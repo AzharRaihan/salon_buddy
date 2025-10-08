@@ -141,6 +141,7 @@ class EmailService
                 $data = [
                     'subject' => $config['subject'],
                     'customerName' => $config['result']->customer->name ?? '',
+                    'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
                     'date' => isset($config['result']->order_date) ? \Carbon\Carbon::parse($config['result']->order_date)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->order_status ?? '',
@@ -154,6 +155,7 @@ class EmailService
                 $data = [
                     'subject' => $config['subject'],    
                     'customerName' => $config['result']->customer->name ?? '',
+                    'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
                     'date' => isset($config['result']->date) ? \Carbon\Carbon::parse($config['result']->date)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->status ?? '',
@@ -224,6 +226,7 @@ class EmailService
                 $data = [
                     'subject' => $config['subject'],
                     'customerName' => $config['result']->customer->name ?? '',
+                    'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
                     'date' => isset($config['result']->order_date) ? \Carbon\Carbon::parse($config['result']->order_date)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->order_status ?? '',
@@ -237,6 +240,7 @@ class EmailService
                 $data = [
                     'subject' => $config['subject'],    
                     'customerName' => $config['result']->customer->name ?? '',
+                    'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
                     'date' => isset($config['result']->date) ? \Carbon\Carbon::parse($config['result']->date)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->status ?? '',
@@ -296,6 +300,7 @@ class EmailService
                 $data = [
                     'subject' => $config['subject'],
                     'customerName' => $config['result']->customer->name ?? '',
+                    'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
                     'date' => isset($config['result']->order_date) ? \Carbon\Carbon::parse($config['result']->order_date)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->order_status ?? '',
@@ -309,6 +314,7 @@ class EmailService
                 $data = [
                     'subject' => $config['subject'],    
                     'customerName' => $config['result']->customer->name ?? '',
+                    'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
                     'date' => isset($config['result']->date) ? \Carbon\Carbon::parse($config['result']->date)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->status ?? '',

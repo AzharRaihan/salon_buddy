@@ -85,6 +85,10 @@
         .footer p {
             margin-bottom: 10px;
         }
+
+        .rating-section a:hover {
+            background-color: #5a5fcf !important;
+        }
     </style>
 </head>
 <body>
@@ -109,10 +113,22 @@
                 <p>💰 <strong>Total Due:</strong> <span class="highlight">{{ $totalDue }}</span></p>
             </div>
 
+            <!-- Rating Section -->
+            <div class="rating-section" style="text-align: center; margin: 30px 0;">
+                <h3 style="color: #333; margin-bottom: 20px;">Rate Your Services</h3>
+                <p style="color: #666; margin-bottom: 25px;">We value your feedback! Please take a moment to rate the services you received.</p>
+                <!-- send customer id  with encrypted -->
+                <a href="{{ url('/ratting') . '?reference=' . urlencode(Crypt::encrypt($referenceNo)) . '&customerId=' . urlencode(Crypt::encrypt($customerId)) }}"
+                style="background-color: #7367f0; color: white; padding: 15px 35px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 500; display: inline-block; transition: background-color 0.3s;">
+                    Give Rating
+                </a>
+            </div>
+
             <div class="footer">
                 <p>🎉 Thank you for your purchase! 🎉</p>
             </div>
         </div>
     </div>
+
 </body>
 </html>

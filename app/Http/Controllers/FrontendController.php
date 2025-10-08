@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\PackageUsagesSummary;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
@@ -2467,6 +2468,222 @@ class FrontendController extends Controller
 
         } catch (\Exception $e) {
             return $this->errorResponse('Debug failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get sale details for rating page
+     */
+    public function getSaleDetailsForRating(Request $request)
+    {
+        // Basic validation for encrypted data
+        $validator = Validator::make($request->all(), [
+            'reference' => 'required|string',
+            'customerId' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        try {
+            // Decrypt the values first
+            $referenceNo = Crypt::decrypt($request->get('reference'));
+            $customerId = Crypt::decrypt($request->get('customerId'));
+        } catch (\Exception $e) {
+            return $this->errorResponse('Invalid or corrupted data. Please request a new rating link.', 400);
+        }
+
+        // Now validate the decrypted values
+        $decryptedValidator = Validator::make([
+            'reference' => $referenceNo,
+            'customerId' => $customerId,
+        ], [
+            'reference' => 'required|string|exists:sales,reference_no',
+            'customerId' => 'required|exists:customers,id',
+        ]);
+
+        if ($decryptedValidator->fails()) {
+            return $this->validationErrorResponse($decryptedValidator->errors());
+        }
+
+
+
+        try {
+            // Get sale with related data
+            $sale = DB::table('sales')
+                ->join('customers', 'sales.customer_id', '=', 'customers.id')
+                ->join('branches', 'sales.branch_id', '=', 'branches.id')
+                ->join('companies', 'sales.company_id', '=', 'companies.id')
+                ->where('sales.reference_no', $referenceNo)
+                ->where('sales.del_status', 'Live')
+                ->where('sales.customer_id', $customerId)
+                ->select(
+                    'sales.id as sale_id',
+                    'sales.reference_no',
+                    'sales.order_date',
+                    'sales.order_status',
+                    'sales.total_payable',
+                    'sales.total_paid',
+                    'sales.total_due',
+                    'sales.created_at',
+                    'customers.id as customer_id',
+                    'customers.name as customer_name',
+                    'customers.email as customer_email',
+                    'customers.phone as customer_phone',
+                    'branches.id as branch_id',
+                    'branches.branch_name',
+                    'branches.address as branch_address',
+                    'branches.phone as branch_phone',
+                    'companies.name as company_name',
+                    'companies.currency'
+                )
+                ->first();
+
+            if (!$sale) {
+                return $this->errorResponse('Sale not found', 404);
+            }
+
+            // Get sale details (services only)
+            $saleDetails = DB::table('sale_details')
+                ->join('items', 'sale_details.item_id', '=', 'items.id')
+                ->where('sale_details.sale_id', $sale->sale_id)
+                ->where('sale_details.del_status', 'Live')
+                ->where('items.del_status', 'Live')
+                ->where('items.type', 'Service')
+                ->select(
+                    'sale_details.id as sale_detail_id',
+                    'sale_details.quantity',
+                    'sale_details.unit_price',
+                    'sale_details.subtotal',
+                    'sale_details.employee_id',
+                    'items.id as item_id',
+                    'items.name as item_name',
+                    'items.description as item_description'
+                )
+                ->get();
+
+            $responseData = [
+                'sale' => [
+                    'id' => $sale->sale_id,
+                    'reference_no' => $sale->reference_no,
+                    'order_date' => $sale->order_date,
+                    'order_status' => $sale->order_status,
+                    'total_payable' => $sale->total_payable,
+                    'total_paid' => $sale->total_paid,
+                    'total_due' => $sale->total_due,
+                    'created_at' => $sale->created_at,
+                    'currency' => $sale->currency
+                ],
+                'customer' => [
+                    'id' => $sale->customer_id,
+                    'name' => $sale->customer_name,
+                    'email' => $sale->customer_email,
+                    'phone' => $sale->customer_phone
+                ],
+                'branch' => [
+                    'id' => $sale->branch_id,
+                    'name' => $sale->branch_name,
+                    'address' => $sale->branch_address,
+                    'phone' => $sale->branch_phone
+                ],
+                'company' => [
+                    'name' => $sale->company_name
+                ],
+                'sale_details' => $saleDetails->map(function ($detail) {
+                    return [
+                        'sale_detail_id' => $detail->sale_detail_id,
+                        'employee_id' => $detail->employee_id,
+                        'item_id' => $detail->item_id,
+                        'item_name' => $detail->item_name,
+                        'item_description' => $detail->item_description,
+                        'quantity' => $detail->quantity,
+                        'unit_price' => $detail->unit_price,
+                        'subtotal' => $detail->subtotal
+                    ];
+                })
+            ];
+
+            return $this->successResponse($responseData, 'Sale details fetched successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to fetch sale details: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Submit service ratings from email
+     */
+    public function submitServiceRatings(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'ratings' => 'required|array|min:1',
+            'ratings.*.sale_detail_id' => 'required|exists:sale_details,id',
+            'ratings.*.item_id' => 'required|exists:items,id',
+            'ratings.*.rating' => 'required|numeric|min:1|max:5',
+            'ratings.*.employee_id' => 'nullable|exists:users,id',
+            'ratings.*.comment' => 'nullable|string|max:1000',
+            'sale_id' => 'required|exists:sales,id',
+            'customer_id' => 'required|exists:customers,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        $validatedData = $validator->validated();
+
+        DB::beginTransaction();
+        try {
+            $savedRatings = [];
+
+            foreach ($validatedData['ratings'] as $ratingData) {
+                // Check if rating already exists for this sale detail
+                $existingRating = Ratting::where('customer_id', $validatedData['customer_id'])
+                    ->when(!empty($ratingData['employee_id']), function ($query) use ($ratingData) {
+                        $query->where('employee_id', $ratingData['employee_id']);
+                    })
+                    ->where('item_id', $ratingData['item_id'])
+                    ->where('del_status', 'Live')
+                    ->first();
+
+                if ($existingRating) {
+                    // Update existing rating
+                    $existingRating->update([
+                        'rating' => $ratingData['rating'],
+                        'comment' => $ratingData['comment'] ?? null,
+                        'updated_at' => now(),
+                    ]);
+                    $savedRatings[] = $existingRating;
+                } else {
+                    // Create new rating
+                    $rating = Ratting::create([
+                        'customer_id' => $validatedData['customer_id'],
+                        'employee_id' => $ratingData['employee_id'],
+                        'item_id' => $ratingData['item_id'],
+                        'rating' => $ratingData['rating'],
+                        'comment' => $ratingData['comment'] ?? null,
+                        'company_id' => 1,
+                        'del_status' => 'Live',
+                    ]);
+                    $savedRatings[] = $rating;
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ratings submitted successfully',
+                'data' => $savedRatings
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to submit ratings: ' . $e->getMessage()
+            ], 500);
         }
     }
 

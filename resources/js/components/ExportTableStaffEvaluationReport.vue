@@ -52,11 +52,11 @@ const props = defineProps({
   },
   filename: {
     type: String,
-    default: 'staff-earning-report'
+    default: 'staff-evaluation-report'
   },
   title: {
     type: String,
-    default: 'Staff Earning Report'
+    default: 'Staff Evaluation Report'
   },
   summaryData: {
     type: Object,
@@ -74,18 +74,20 @@ const getNestedValue = (obj, path) => {
 // Helper function to format data for export
 const formatDataForExport = () => {
   const exportHeaders = props.headers
-    .filter(header => header.key !== 'actions')
+    .filter(header => header.key !== 'actions' && header.key !== 'rating')
     .map(header => header.title)
 
   const exportData = props.data.map(item => {
     const row = {}
     props.headers.forEach(header => {
-      if (header.key !== 'actions') {
+      if (header.key !== 'actions' && header.key !== 'rating') {
         let value = getNestedValue(item, header.key)
         
         // Handle special formatting
-        if (header.key.includes('employee') && typeof value === 'object' && value?.name) {
-          value = value.name
+        if (header.key === 'employee.name' && item.employee) {
+          value = item.employee.phone 
+            ? `${item.employee.name} (${item.employee.phone})` 
+            : item.employee.name
         } else if (value === null || value === undefined) {
           value = 'N/A'
         }
@@ -100,17 +102,13 @@ const formatDataForExport = () => {
   if (props.summaryData) {
     const summaryRow = {}
     props.headers.forEach(header => {
-      if (header.key != 'actions') {
-        if (header.key == 'employee.name') {
+      if (header.key !== 'actions' && header.key !== 'rating') {
+        if (header.key === 'employee.name') {
           summaryRow[header.title] = 'TOTAL SUMMARY'
-        } else if (header.key == 'subtotal') {
-          summaryRow[header.title] = props.summaryData?.totalSales || 0
-        } else if (header.key == 'quantity') {
-          summaryRow[header.title] = props.summaryData?.totalEmployees || 0
-        } else if (header.key == 'tips') {
-          summaryRow[header.title] = props.summaryData?.totalTips || 0
-        } else if (header.key == 'commission') {
-          summaryRow[header.title] = props.summaryData?.totalCommission || 0
+        } else if (header.key === 'total_ratings') {
+          summaryRow[header.title] = props.summaryData?.totalRatings || 0
+        } else if (header.key === 'avg_rating') {
+          summaryRow[header.title] = props.summaryData?.avgRating || 0
         } else {
           summaryRow[header.title] = ''
         }
