@@ -62,11 +62,10 @@ class VacationController extends Controller
         ];
 
         if ($request->auto_response === 'Yes') {
-            $validationRules['mail_subject'] = 'required|string|max:255';
+            $validationRules['message'] = 'required|string|max:255';
             $validationRules['mail_body'] = 'required|string';
         }else{
-            $validationRules['mail_subject'] = 'nullable|string|max:255';
-            $validationRules['mail_body'] = 'nullable|string';
+            $validationRules['message'] = 'nullable|string|max:255';
         }
 
         $validator = Validator::make($request->all(), $validationRules);
@@ -118,11 +117,9 @@ class VacationController extends Controller
         ];
 
         if ($request->auto_response === 'Yes') {
-            $validationRules['mail_subject'] = 'required|string|max:255';
-            $validationRules['mail_body'] = 'required|string';
+            $validationRules['message'] = 'required|string';
         }else{
-            $validationRules['mail_subject'] = 'nullable|string|max:255';
-            $validationRules['mail_body'] = 'nullable|string';
+            $validationRules['message'] = 'nullable|string|max:255';
         }
         $validator = Validator::make($request->all(), $validationRules);
         if ($validator->fails()) {
@@ -131,8 +128,7 @@ class VacationController extends Controller
         DB::beginTransaction();
         try {
             $validatedData = $validator->validated();
-            $validatedData['mail_subject'] = $request->mail_subject ?? '';
-            $validatedData['mail_body'] = $request->mail_body ?? '';
+            $validatedData['message'] = $request->message ?? '';
             $validatedData['user_id'] = Auth::id();
             $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['updated_at'] = now();

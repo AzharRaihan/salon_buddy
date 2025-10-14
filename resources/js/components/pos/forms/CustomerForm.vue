@@ -34,6 +34,17 @@
             />
         </div>
 
+        <!-- Address -->
+        <div class="form-group">
+            <AppTextarea
+                v-model="formData.address"
+                :label="t('Address')"
+                type="text"
+                :placeholder="t('Enter address')"
+                :error-messages="addressError"
+            />
+        </div>
+
         <!-- Same or Different State -->
         <div class="form-group" v-if="taxIsGst === 'Yes'">
             <AppAutocomplete
@@ -112,6 +123,10 @@ const phoneNumberError = computed(() => {
 
 const emailError = computed(() => {
     return props.errors.email || ''
+})
+
+const addressError = computed(() => {
+    return props.errors.address || ''
 })
 
 // Error for same_or_diff_state field

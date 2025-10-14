@@ -12,75 +12,78 @@ use Illuminate\Support\Facades\Validator;
 class HolidayController extends Controller
 {
     use ApiResponse;
+    
     /**
-     * Display a listing of the resource.
+     * Display the holiday settings for the company.
      */
     public function index(Request $request)
     {
-        $query = Holiday::query();
+        $holiday = Holiday::where('company_id', Auth::user()->company_id)
+            ->where('del_status', 'Live')
+            ->first();
 
-        // Filter by del_status
-        $query->where('del_status', 'Live');
-        $query->where('company_id', Auth::user()->company_id);
-
-        // Search functionality
-        if ($request->has('q') && !empty($request->q)) {
-            $query->where('day', 'like', '%' . $request->q . '%');
-        }
-
-        // Sorting
-        if ($request->has('sortBy') && !empty($request->sortBy)) {
-            $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
-            $query->orderBy($request->sortBy, $direction);
-        } else {
-            $query->orderBy('id', 'desc');
-        }
-
-        // Pagination
-        $perPage = $request->itemsPerPage ?? 10;
-        $holidays = $query->paginate($perPage);
-
-        return $this->successResponse([
-            'holidays' => $holidays->items(),
-            'total' => $holidays->total(),
-        ]);
+        return $this->successResponse($holiday);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store or update holiday settings.
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        // Base validation rules
         $validationRules = [
-            'day' => 'required|string|max:55',
-            'start_time' => 'required|string|max:25',
-            'end_time' => 'required|string|max:55',
-            'auto_response' => 'nullable|string|max:10',
+            'saturday_start' => 'nullable|string|max:25',
+            'saturday_end' => 'nullable|string|max:25',
+            'saturday_is_holiday' => 'nullable|string|in:Yes,No',
+            'sunday_start' => 'nullable|string|max:25',
+            'sunday_end' => 'nullable|string|max:25',
+            'sunday_is_holiday' => 'nullable|string|in:Yes,No',
+            'monday_start' => 'nullable|string|max:25',
+            'monday_end' => 'nullable|string|max:25',
+            'monday_is_holiday' => 'nullable|string|in:Yes,No',
+            'tuesday_start' => 'nullable|string|max:25',
+            'tuesday_end' => 'nullable|string|max:25',
+            'tuesday_is_holiday' => 'nullable|string|in:Yes,No',
+            'wednesday_start' => 'nullable|string|max:25',
+            'wednesday_end' => 'nullable|string|max:25',
+            'wednesday_is_holiday' => 'nullable|string|in:Yes,No',
+            'thursday_start' => 'nullable|string|max:25',
+            'thursday_end' => 'nullable|string|max:25',
+            'thursday_is_holiday' => 'nullable|string|in:Yes,No',
+            'friday_start' => 'nullable|string|max:25',
+            'friday_end' => 'nullable|string|max:25',
+            'friday_is_holiday' => 'nullable|string|in:Yes,No',
+            'holiday_message' => 'nullable|string',
         ];
-
-        if ($request->auto_response === 'Yes') {
-            $validationRules['mail_subject'] = 'required|string|max:255';
-            $validationRules['mail_body'] = 'required|string';
-        }else{
-            $validationRules['mail_subject'] = 'nullable|string|max:255';
-            $validationRules['mail_body'] = 'nullable|string';
-        }
 
         $validator = Validator::make($request->all(), $validationRules);
         if ($validator->fails()) {
             return $this->validationErrorResponse($validator->errors());
         }
+
         DB::beginTransaction();
         try {
             $validatedData = $validator->validated();
             $validatedData['user_id'] = Auth::id();
             $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['del_status'] = 'Live';
-            $holiday = Holiday::create($validatedData);
+
+            // Check if holiday settings already exist
+            $holiday = Holiday::where('company_id', Auth::user()->company_id)
+                ->where('del_status', 'Live')
+                ->first();
+
+            if ($holiday) {
+                // Update existing record
+                $holiday->update($validatedData);
+                $message = 'Holiday settings updated successfully';
+            } else {
+                // Create new record
+                $holiday = Holiday::create($validatedData);
+                $message = 'Holiday settings created successfully';
+            }
+
             DB::commit();
-            return $this->successResponse($holiday, 'Holiday created successfully');
+            return $this->successResponse($holiday, $message);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse($e->getMessage());
@@ -108,36 +111,45 @@ class HolidayController extends Controller
         if (!$holiday) {
             return $this->errorResponse('Holiday not found', 404);
         }
-        // Base validation rules
+
         $validationRules = [
-            'day' => 'required|string|max:55',
-            'start_time' => 'required|string|max:25',
-            'end_time' => 'required|string|max:55',
-            'auto_response' => 'nullable|string|max:10',
+            'saturday_start' => 'nullable|string|max:25',
+            'saturday_end' => 'nullable|string|max:25',
+            'saturday_is_holiday' => 'nullable|string|in:Yes,No',
+            'sunday_start' => 'nullable|string|max:25',
+            'sunday_end' => 'nullable|string|max:25',
+            'sunday_is_holiday' => 'nullable|string|in:Yes,No',
+            'monday_start' => 'nullable|string|max:25',
+            'monday_end' => 'nullable|string|max:25',
+            'monday_is_holiday' => 'nullable|string|in:Yes,No',
+            'tuesday_start' => 'nullable|string|max:25',
+            'tuesday_end' => 'nullable|string|max:25',
+            'tuesday_is_holiday' => 'nullable|string|in:Yes,No',
+            'wednesday_start' => 'nullable|string|max:25',
+            'wednesday_end' => 'nullable|string|max:25',
+            'wednesday_is_holiday' => 'nullable|string|in:Yes,No',
+            'thursday_start' => 'nullable|string|max:25',
+            'thursday_end' => 'nullable|string|max:25',
+            'thursday_is_holiday' => 'nullable|string|in:Yes,No',
+            'friday_start' => 'nullable|string|max:25',
+            'friday_end' => 'nullable|string|max:25',
+            'friday_is_holiday' => 'nullable|string|in:Yes,No',
+            'holiday_message' => 'nullable|string',
         ];
 
-        if ($request->auto_response === 'Yes') {
-            $validationRules['mail_subject'] = 'required|string|max:255';
-            $validationRules['mail_body'] = 'required|string';
-        }else{
-            $validationRules['mail_subject'] = 'nullable|string|max:255';
-            $validationRules['mail_body'] = 'nullable|string';
-        }
         $validator = Validator::make($request->all(), $validationRules);
         if ($validator->fails()) {
             return $this->validationErrorResponse($validator->errors());
         }
+
         DB::beginTransaction();
         try {
             $validatedData = $validator->validated();
-            $validatedData['mail_subject'] = $request->mail_subject ?? '';
-            $validatedData['mail_body'] = $request->mail_body ?? '';
             $validatedData['user_id'] = Auth::id();
-            $validatedData['company_id'] = Auth::user()->company_id;
             $validatedData['updated_at'] = now();
             $holiday->update($validatedData);
             DB::commit();
-            return $this->successResponse($holiday, 'Holiday updated successfully');
+            return $this->successResponse($holiday, 'Holiday settings updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->errorResponse($e->getMessage());

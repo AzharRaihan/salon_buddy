@@ -16,16 +16,14 @@ const form = ref({
     start_date: '',
     end_date: '',
     auto_response: 'No',
-    mail_subject: '',
-    mail_body: ''
+    message: '',
 })
 
 const titleError = ref('')
 const startDateError = ref('')
 const endDateError = ref('')
 const autoResponseError = ref('')
-const mailSubjectError = ref('')
-const mailBodyError = ref('')
+const messageError = ref('')
 
 const validateTitle = (title) => {
     if (!title) {
@@ -54,21 +52,12 @@ const validateEndDate  = (endDate) => {
     return true
 }
 
-const validateAutoResponse = (autoResponse) => {
-    if (form.value.auto_response == 'Yes' && !form.value.mail_subject) {
-        mailSubjectError.value = t('Mail subject is required');
+const validateMessage = (message) => {
+    if (form.value.auto_response == 'Yes' && !message) {
+        messageError.value = t('Message is required');
         return false;
     }
-    mailSubjectError.value = '';
-    return true;
-}
-
-const validateMailBody = (mailBody) => {
-    if (form.value.auto_response == 'Yes' && !editorContent.value) {
-        mailBodyError.value = t('Mail body is required');
-        return false;
-    }
-    mailBodyError.value = '';
+    messageError.value = '';
     return true;
 }
 
@@ -77,9 +66,9 @@ const validateForm = () => {
     const isStartDateValid = validateStartDate(form.value.start_date);
     const isEndDateValid = validateEndDate(form.value.end_date);
     const isAutoResponseValid = validateAutoResponse(form.value.auto_response);
-    const isMailBodyValid = validateMailBody(form.value.mail_body);
+    const isMessageValid = validateMessage(form.value.message);
 
-    return isTitleValid && isStartDateValid && isEndDateValid && isAutoResponseValid && isMailBodyValid;
+    return isTitleValid && isStartDateValid && isEndDateValid && isAutoResponseValid && isMessageValid;
 }
 
 const resetForm = () => {
@@ -88,25 +77,17 @@ const resetForm = () => {
         start_date: '',
         end_date: '',
         auto_response: 'No',
-        mail_subject: '',
-        mail_body: ''
+        message: '',
     }
     editorContent.value = ''
     titleError.value = ''
     startDateError.value = ''
     endDateError.value = ''
     autoResponseError.value = ''
-    mailSubjectError.value = ''
-    mailBodyError.value = ''
+    messageError.value = ''
 }
 
-const handleEditorInput = (content) => {
-    // Extract the actual HTML content if it's an event object
-    const htmlContent = content.target?.innerHTML || content
-    editorContent.value = htmlContent
-    form.value.mail_body = htmlContent
-    validateMailBody()
-}
+
 
 const createVacation = async () => {
     loadings.value = true
@@ -216,21 +197,10 @@ const createVacation = async () => {
                                 </VRadioGroup>
                             </VCol>
 
-                            <!-- Mail Subject -->
+                            <!-- Message -->
                             <VCol cols="12" v-if="form.auto_response == 'Yes'">
-                                <AppTextField v-model="form.mail_subject" :label="t('Mail Subject')" :required="true" type="text" :placeholder="t('Enter mail subject')"
+                                <AppTextarea v-model="form.mail_subject" :label="t('Message')" :required="true" type="text" :placeholder="t('Enter message')"
                                     :error-messages="mailSubjectError" @input="validateAutoResponse" />
-                            </VCol>
-
-                            <!-- Mail Body -->
-                            <VCol cols="12" v-if="form.auto_response == 'Yes'">
-                                <div
-                                    :title="t('Mail Body')"
-                                    :code="DemoEditorCustomEditor.basicEditor"
-                                >
-                                    <DemoEditorCustomEditor v-model="editorContent" @input="handleEditorInput" />
-                                </div>
-                                <div class="text-error" v-if="mailBodyError">{{ mailBodyError }}</div>
                             </VCol>
 
                             <!-- Form Actions -->

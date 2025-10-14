@@ -91,7 +91,7 @@ export const isNavLinkActive = (link, router) => {
     
     // Settings
     'vacation': ['vacation', 'vacation-edit'],
-    'holiday': ['holiday', 'holiday-edit'],
+    'holiday': ['holiday'],
     
     // Website Settings
     'website-banner-create': ['website-banner-create', 'website-banner-edit'],

@@ -422,6 +422,9 @@ Route::controller(FrontendController::class)->group(function () {
     // Date Check for Booking
     Route::post('check-date-availability', 'checkDateAvailability');
 
+    // Time Check for Booking (check if time is within business hours)
+    Route::post('check-time-availability', 'checkTimeAvailability');
+
     // Check application mode
     Route::get('check-application-mode', 'checkApplicationMode');
 

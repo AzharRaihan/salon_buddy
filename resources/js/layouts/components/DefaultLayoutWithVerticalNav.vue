@@ -3,6 +3,7 @@ import navItems from '@/navigation/vertical'
 import { themeConfig } from '@themeConfig'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify';
+import { useUserData } from '@/composables/useUserData';
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -14,21 +15,20 @@ import NavBarI18n from '@core/components/I18n.vue'
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
 
-const posAccess = ref(false)
-const userData = useCookie("userData").value;
+const { userData } = useUserData()
 const userAbilityRules = useCookie("userAbilityRules").value;
 const router = useRouter();
 
-
-if(userData.id === 1){
-  posAccess.value = true
-} else {
-  if (userAbilityRules.includes('pos')) {
-    posAccess.value = true
-  }else{
-    posAccess.value = false
+// Computed property for POS access
+const posAccess = computed(() => {
+  if (!userData.value) return false
+  
+  if (userData.value.id === 1) {
+    return true
+  } else {
+    return userAbilityRules && userAbilityRules.includes('pos')
   }
-}
+})
 
 
 

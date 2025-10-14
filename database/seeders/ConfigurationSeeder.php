@@ -25,6 +25,7 @@ class ConfigurationSeeder extends Seeder
             'phone' => '+880 18 123 91633',
             'date_format' => 'Y/m/d',       
             'timezone' => 'Asia/Dhaka',
+            'address' => 'House No: 5, Road No: 4, Nikunja 2, Khilkhet, Dhaka.',
             'currency' => '$',
             'currency_position' => 'Before Amount',
             'precision' => '2',

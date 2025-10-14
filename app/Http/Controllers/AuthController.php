@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -28,7 +29,7 @@ class AuthController extends Controller
         $user = new User([
             'name'     => $request->name,
             'email'    => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
         if ($user->save()) {
@@ -62,21 +63,21 @@ class AuthController extends Controller
         ]);
 
         $credentials = request(['email', 'password']);
+
         if (! Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'The provided credentials are incorrect.',
             ], 401);
         }
 
-        $user        = $request->user();
+        $user = $request->user();
+
         $tokenResult = $user->createToken('Personal Access Token');
         $token       = $tokenResult->plainTextToken;
 
-
         return response()->json([
-            'accessToken' => $token,
-            'token_type'  => 'Bearer',
-            'userData'    => $user,
+            'accessToken'      => $token,
+            'token_type'       => 'Bearer',
             'userData'         => $user->makeHidden('roles'),
             'userAbilityRules' => $user->getAllPermissions()->pluck('name'),
         ]);

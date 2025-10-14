@@ -114,3 +114,12 @@ ALTER TABLE `website_settings` ADD `privacy_policy` TEXT NULL DEFAULT NULL AFTER
 
 ALTER TABLE `sale_details` ADD `tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `promotion_id`;
 ALTER TABLE `sales` ADD `total_tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `grandtotal_with_tax_discount`;
+
+
+
+
+
+
+
+
+ALTER TABLE `vacations` CHANGE `mail_subject` `message` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;

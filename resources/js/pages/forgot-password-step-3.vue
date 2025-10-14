@@ -20,7 +20,7 @@ if (!forgotPasswordStore.hasEmail()) {
     toast('Please enter your email first', {
         type: 'error',
     })
-    router.push('/step-1')
+    router.push('/forgot-password-step-1')
 }
 
 definePage({

@@ -30,7 +30,7 @@ const validateForm = () => {
     if (!form.value.site_title) errors.value.site_title = t('Site title is required')
     if (!form.value.footer) errors.value.footer = t('Footer text is required')
     if (!form.value.company_name) errors.value.company_name = t('Company name is required')
-    if (!form.value.company_website) errors.value.company_website = t('Company website is required')
+    if (!form.value.company_website) errors.value.company_website = t('Site link is required')
 
     return Object.keys(errors.value).length == 0
 }
@@ -193,8 +193,38 @@ onMounted(() => {
 
                             <!-- Company Website -->
                             <VCol cols="12" md="6">
-                                <AppTextField v-model="form.company_website" :label="t('Company Website')" :required="true"
-                                    :error-messages="errors.company_website" :placeholder="t('Enter company website')" />
+                                <AppTextField v-model="form.company_website" :label="t('Site Link')" :required="true"
+                                    :error-messages="errors.company_website" :placeholder="t('Enter site link')" />
+                            </VCol>
+
+                            
+                            <!-- Logo -->
+                            <VCol cols="12" md="6">
+                                <!-- <DropZone v-model="form.logo" :image_url="form.logo_url" title="Drag and drop logo here"
+                                    :subtitle="t('or')" :buttonText="t('Browse Logo')" /> -->
+                                <VCardText class="d-flex">
+                                    <div class="company-logo">
+                                        <VAvatar rounded size="100" class="me-6" :image="previewLogo" />
+                                    </div>
+                                    <form class="d-flex flex-column justify-center gap-4">
+                                        <div class="d-flex flex-wrap gap-4">
+                                            <VBtn color="primary" size="small" @click="refInputElLogo?.click()">
+                                                <VIcon icon="tabler-cloud-upload" class="d-sm-none" />
+                                                <span class="d-none d-sm-block">{{ $t('Site Logo') }}</span>
+                                            </VBtn>
+
+                                            <input ref="refInputElLogo" type="file" name="photo" accept=".jpeg,.png,.jpg,GIF" hidden @input="changeImageLogo">
+
+                                            <VBtn type="reset" size="small" color="secondary" variant="tonal" @click="resetLogo">
+                                                <span class="d-none d-sm-block">{{ $t('Reset') }}</span>
+                                                <VIcon icon="tabler-refresh" class="d-sm-none" />
+                                            </VBtn>
+                                        </div>
+                                        <p class="text-body-1 mb-0">
+                                            {{ $t('Allowed JPG, GIF or PNG. Max size of 2 MB (Logo)') }}
+                                        </p>
+                                    </form>
+                                </VCardText>
                             </VCol>
 
                             <!-- Favicon -->
@@ -202,7 +232,9 @@ onMounted(() => {
                                 <!-- <DropZone v-model="form.favicon" :image_url="form.favicon_url"
                                     :title="t('Drag and drop favicon here')" :subtitle="t('or')" :buttonText="t('Browse Favicon')" /> -->
                                 <VCardText class="d-flex">
-                                    <VAvatar rounded size="100" class="me-6" :image="previewFav" />
+                                    <div class="default-img-upload">
+                                        <VAvatar rounded size="100" class="me-6" :image="previewFav" />
+                                    </div>
                                     <form class="d-flex flex-column justify-center gap-4">
                                         <div class="d-flex flex-wrap gap-4">
                                             <VBtn color="primary" size="small" @click="refInputElFav?.click()">
@@ -224,34 +256,6 @@ onMounted(() => {
                                 </VCardText>
                             </VCol>
 
-                            <!-- Logo -->
-                            <VCol cols="12" md="6">
-                                <!-- <DropZone v-model="form.logo" :image_url="form.logo_url" title="Drag and drop logo here"
-                                    :subtitle="t('or')" :buttonText="t('Browse Logo')" /> -->
-                                <VCardText class="d-flex">
-                                    <div class="company-logo">
-                                        <VAvatar rounded size="100" class="me-6" :image="previewLogo" />
-                                    </div>
-                                    <form class="d-flex flex-column justify-center gap-4">
-                                        <div class="d-flex flex-wrap gap-4">
-                                            <VBtn color="primary" size="small" @click="refInputElLogo?.click()">
-                                                <VIcon icon="tabler-cloud-upload" class="d-sm-none" />
-                                                <span class="d-none d-sm-block">{{ $t('Company logo') }}</span>
-                                            </VBtn>
-
-                                            <input ref="refInputElLogo" type="file" name="photo" accept=".jpeg,.png,.jpg,GIF" hidden @input="changeImageLogo">
-
-                                            <VBtn type="reset" size="small" color="secondary" variant="tonal" @click="resetLogo">
-                                                <span class="d-none d-sm-block">{{ $t('Reset') }}</span>
-                                                <VIcon icon="tabler-refresh" class="d-sm-none" />
-                                            </VBtn>
-                                        </div>
-                                        <p class="text-body-1 mb-0">
-                                            {{ $t('Allowed JPG, GIF or PNG. Max size of 2 MB (Logo)') }}
-                                        </p>
-                                    </form>
-                                </VCardText>
-                            </VCol>
 
                             <!-- Form Actions -->
                             <VCol cols="12" class="d-flex flex-wrap gap-4">

@@ -2158,18 +2158,25 @@ class FrontendController extends Controller
     public function checkDateAvailability(Request $request)
     {
         $date = $request->date;
-        $dayName = Carbon::parse($date)->format('l');
-
+        $dayName = strtolower(Carbon::parse($date)->format('l'));
         $date2 = Carbon::parse($date)->format('Y-m-d');
     
-        // Change the query to get the day name
-        $holiday = Holiday::where('day', $dayName)
-        ->where('company_id', 1)
-        ->where('del_status', 'Live')
-        ->first();
-        if($holiday){
-            return $this->successResponse(['availability' => false], "Selected date is a holiday.");
+        $columnName = "{$dayName}_is_holiday";
+        $holiday = Holiday::where('company_id', 1)
+            ->where('del_status', 'Live')
+            ->where($columnName, 'Yes')
+            ->first();
+
+        if ($holiday) {
+            if($holiday->holiday_message){
+                return $this->successResponse(['availability' => false], $holiday->holiday_message);
+            }else {
+                return $this->successResponse(['availability' => false], "Selected date is a holiday.");
+            }
+        }else {
+            return $this->successResponse(['availability' => true], "Selected date is available.");
         }
+
 
         $vacation = Vacation::where('start_date', '<=', $date2)
         ->where('end_date', '>=', $date2)
@@ -2177,15 +2184,102 @@ class FrontendController extends Controller
         ->where('del_status', 'Live')
         ->first();
         if($vacation){
-            return $this->successResponse(['availability' => false], "Selected date is a vacation.");
+            if($vacation->auto_response == 'Yes' && $vacation->message){
+                return $this->successResponse(['availability' => false], $vacation->message);
+            }else{
+                return $this->successResponse(['availability' => false], "Selected date is under vacation.");
+            }
+        }else {
+            return $this->successResponse(['availability' => true], "Selected date is available.");
         }
-        return $this->successResponse(['availability' => true], "Selected date is available.");
     }
 
     public function checkApplicationMode()
     {
         $applicationMode = demoCheck();
         return $this->successResponse(['mode' => $applicationMode], 'Application mode fetched successfully');
+    }
+
+    public function checkTimeAvailability(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'time' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        $date = $request->date;
+        $time = $request->time;
+        
+        // Get day name from date (e.g., 'monday', 'tuesday', etc.)
+        $dayName = strtolower(Carbon::parse($date)->format('l'));
+        
+        // Check if the day is a holiday first
+        $columnName = "{$dayName}_is_holiday";
+        $holiday = Holiday::where('company_id', 1)
+            ->where('del_status', 'Live')
+            ->where($columnName, 'Yes')
+            ->first();
+
+        if ($holiday) {
+            if($holiday->holiday_message){
+                return $this->successResponse(['availability' => false], $holiday->holiday_message);
+            } else {
+                return $this->successResponse(['availability' => false], "Selected date is a holiday.");
+            }
+        }
+
+        // Get the holiday record to check opening/closing times
+        $holidaySchedule = Holiday::where('company_id', 1)
+            ->where('del_status', 'Live')
+            ->first();
+
+        if (!$holidaySchedule) {
+            // No schedule found, allow by default
+            return $this->successResponse(['availability' => true], "Selected time is available.");
+        }
+
+        // Get start and end time columns for the day
+        $startTimeColumn = "{$dayName}_start";
+        $endTimeColumn = "{$dayName}_end";
+        
+        $startTime = $holidaySchedule->$startTimeColumn;
+        $endTime = $holidaySchedule->$endTimeColumn;
+
+        // If no start/end time set for this day, consider it unavailable
+        if (!$startTime || !$endTime) {
+            return $this->successResponse(['availability' => false], "No business hours set for this day.");
+        }
+
+        // Convert all times to 24-hour format for comparison
+        // Input time is in HH:mm format (e.g., "09:00", "14:30")
+        // Database times are in 12-hour format with AM/PM (e.g., "12:00 PM", "6:05 PM")
+        
+        try {
+            // Parse the selected time (HH:mm format to DateTime)
+            $selectedDateTime = Carbon::createFromFormat('H:i', $time);
+            
+            // Parse start and end times from database (12-hour format with AM/PM)
+            $startDateTime = Carbon::createFromFormat('g:i A', $startTime);
+            $endDateTime = Carbon::createFromFormat('g:i A', $endTime);
+            
+            // Compare times
+            if ($selectedDateTime->lt($startDateTime) || $selectedDateTime->gt($endDateTime)) {
+                return $this->successResponse(
+                    ['availability' => false], 
+                    "Selected time is outside of working hours. working hours for " . ucfirst($dayName) . " are " . $startTime . " to " . $endTime . "."
+                );
+            }
+            
+            return $this->successResponse(['availability' => true], "Selected time is available.");
+            
+        } catch (\Exception $e) {
+            \Log::error('Time availability check error: ' . $e->getMessage());
+            return $this->errorResponse('Failed to check time availability: ' . $e->getMessage());
+        }
     }
 
     /**

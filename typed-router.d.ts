@@ -74,8 +74,6 @@ declare module 'vue-router/auto-routes' {
     'forgot-password-step3': RouteRecordInfo<'forgot-password-step3', '/forgot-password-step-3', Record<never, never>, Record<never, never>>,
     'gallery': RouteRecordInfo<'gallery', '/gallery', Record<never, never>, Record<never, never>>,
     'holiday': RouteRecordInfo<'holiday', '/holiday', Record<never, never>, Record<never, never>>,
-    'holiday-create': RouteRecordInfo<'holiday-create', '/holiday/create', Record<never, never>, Record<never, never>>,
-    'holiday-edit': RouteRecordInfo<'holiday-edit', '/holiday/edit', Record<never, never>, Record<never, never>>,
     'home': RouteRecordInfo<'home', '/home', Record<never, never>, Record<never, never>>,
     'item': RouteRecordInfo<'item', '/item', Record<never, never>, Record<never, never>>,
     'item-create': RouteRecordInfo<'item-create', '/item/create', Record<never, never>, Record<never, never>>,

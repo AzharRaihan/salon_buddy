@@ -2,6 +2,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class UserSeeder extends Seeder
             'email'    => 'admin@doorsoft.co',
             'phone'    => '01111111111',
             'role'     => 1, // Admin role
-            'password' => bcrypt('123456'),
+            'password' => Hash::make('123456'),
             'status'   => 'Active',
             'language' => 'en',
         ]);
@@ -25,7 +26,7 @@ class UserSeeder extends Seeder
             'email'    => 'user@doorsoft.co',
             'phone'    => '01111111112',
             'role'     => 2, // User role
-            'password' => bcrypt('123456'),
+            'password' => Hash::make('123456'),
             'status'   => 'Active',
             'language' => 'en',
         ]);

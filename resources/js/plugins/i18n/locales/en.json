@@ -1314,7 +1314,7 @@
   "Usages Time": "Usages Time",
   "Usages Qty": "Usages Qty",
   "SMS": "SMS",
-  "Whatsapp Message": "Whatsapp Message",
+  "WhatsApp Message": "WhatsApp Message",
   "No more services available to add": "No more services available to add",
   "Add service usage": "Add service usage",
   "No more usages available to add": "No more usages available to add",
@@ -1398,7 +1398,7 @@
   "List Damage": "List Damage",
   "Email Settings": "Email Settings",
   "SMS Setting": "SMS Setting",
-  "Whatsapp Settings": "Whatsapp Settings",
+  "WhatsApp Settings": "WhatsApp Settings",
   "Social Auth Settings": "Social Auth Settings",
   "Current Month": "Current Month",
   "Profit": "Profit",
@@ -1416,8 +1416,15 @@
   "staff": "Staff",
   "price": "Price",
   "tips": "Tips",
-
-
+  "Enable Website": "Enable Website",
+  "Site Logo": "Site Logo",
+  "Site Link": "Site Link",
+  "Enter site link": "Enter site link",
+  "Site link is required": "Site link is required",
+  "Search Menu": "Search Menu",
+  "Weekly Holiday": "Weekly Holiday",
+  "Holiday Settings (Keep Selected Days as Holiday)": "Holiday Settings (Keep Selected Days as Holiday)",
+  "Auto Reply": "Auto Reply",
 
 
 

@@ -87,23 +87,12 @@ const setSecurityQuestion = async () => {
         type: 'success',
       });
       loadings.value = false
-      setTimeout(() => {  
-        router.push('/dashboard')
-      }, 2000);
     } else {
 
       toast(message, {
         type: 'success',
       });
       loadings.value = false
-
-      setTimeout(() => {
-        if (userAbilityRules.includes('dashboard')) {
-          router.push('/dashboard')
-        }else{
-          router.push('/home')
-        }
-      }, 2000);
     }
   }
   catch (err) {

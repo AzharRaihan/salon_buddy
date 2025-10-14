@@ -139,7 +139,7 @@ class CustomerController extends Controller
                 'phone' => 'required|string|max:25',
                 'email' => 'required|string|max:55|unique:customers,email,'.$id.',id',
                 'address' => 'nullable|string|max:255', 
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'photo' => 'nullable',
                 'date_of_birth' => 'nullable|string|max:25',
                 'date_of_anniversary' => 'nullable|string|max:25',
                 'same_or_diff_state' => 'required|string|max:10',
@@ -151,7 +151,7 @@ class CustomerController extends Controller
                 'phone' => 'required|string|max:25',
                 'email' => 'required|string|max:55|unique:customers,email,'.$id.',id',
                 'address' => 'nullable|string|max:255',     
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'photo' => 'nullable',
                 'date_of_birth' => 'nullable|string|max:25',
                 'date_of_anniversary' => 'nullable|string|max:25',
             ];

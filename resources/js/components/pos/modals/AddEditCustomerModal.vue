@@ -55,6 +55,7 @@ const formData = ref({
   name: '',
   phone: '',
   email: '',
+  address: '',
   same_or_diff_state: null,
   gst_number: '',
 })
@@ -67,7 +68,7 @@ watch(
       if (mode === 'edit' && customer) {
         formData.value = { ...customer }
       } else {
-        formData.value = { name: '', phone: '', email: '', same_or_diff_state: null, gst_number: '' }
+        formData.value = { name: '', phone: '', email: '', address: '', same_or_diff_state: null, gst_number: '' }
       }
       errors.value = {}
     }

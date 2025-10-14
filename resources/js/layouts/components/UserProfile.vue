@@ -1,13 +1,21 @@
 <script setup>
-import { nextTick } from 'vue';
+import { nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
 import { toast } from 'vue3-toastify';
+import { useUserData } from '@/composables/useUserData';
 
 const router = useRouter()
 const route = useRoute()
 
-const userData = useCookie('userData')
+const { userData } = useUserData()
+
+// Debug: Watch for changes
+watch(() => userData.value, (newVal, oldVal) => {
+  console.log('UserProfile - userData changed!')
+  console.log('Old photo_url:', oldVal?.photo_url)
+  console.log('New photo_url:', newVal?.photo_url)
+}, { deep: true })
 
 const logout = async () => {
   try {
@@ -60,7 +68,7 @@ const userProfileList = [
   <VBadge v-if="userData" dot bordered location="bottom right" offset-x="1" offset-y="2" color="success">
     <VAvatar size="38" class="cursor-pointer" :color="!userData.photo_url ? 'primary' : undefined"
       :variant="!userData.photo_url ? 'tonal' : undefined">
-      <VImg v-if="userData?.photo_url" :src="userData?.photo_url" />
+      <VImg v-if="userData?.photo_url" :key="userData?.photo_url" :src="userData?.photo_url" />
       <VIcon v-else icon="tabler-user" />
 
       <!-- SECTION Menu -->
@@ -72,7 +80,7 @@ const userProfileList = [
                 <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success" bordered>
                   <VAvatar :color="!userData.photo_url ? 'primary' : undefined"
                     :variant="!userData.photo_url ? 'tonal' : undefined">
-                    <VImg v-if="userData?.photo_url" :src="userData?.photo_url" />
+                    <VImg v-if="userData?.photo_url" :key="userData?.photo_url" :src="userData?.photo_url" />
                     <VIcon v-else icon="tabler-user" />
                   </VAvatar>
                 </VBadge>

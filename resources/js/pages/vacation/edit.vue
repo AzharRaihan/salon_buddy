@@ -17,16 +17,14 @@ const form = ref({
     start_date: '',
     end_date: '',
     auto_response: 'No',
-    mail_subject: '',
-    mail_body: ''
+    message: '',
 })
 
 const titleError = ref('')
 const startDateError = ref('')
 const endDateError = ref('')
 const autoResponseError = ref('')
-const mailSubjectError = ref('')
-const mailBodyError = ref('')
+const messageError = ref('')
 
 const validateTitle = (title) => {
     if (!title) {
@@ -57,19 +55,19 @@ const validateEndDate = (endDate) => {
 
 const validateAutoResponse = () => {
     if (form.value.auto_response == 'Yes' && !form.value.mail_subject) {
-        mailSubjectError.value = t('Mail subject is required');
+        messageError.value = t('Message is required');
         return false;
     }
-    mailSubjectError.value = '';
+    messageError.value = '';
     return true;
 }
 
-const validateMailBody = () => {
-    if (form.value.auto_response == 'Yes' && !editorContent.value) {
-        mailBodyError.value = t('Mail body is required');
+const validateMessage = (message) => {
+    if (form.value.auto_response == 'Yes' && !message) {
+        messageError.value = t('Message is required');
         return false;
     }
-    mailBodyError.value = '';
+    messageError.value = '';
     return true;
 }
 
@@ -78,20 +76,16 @@ const validateForm = () => {
     const isStartDateValid = validateStartDate(form.value.start_date);
     const isEndDateValid = validateEndDate(form.value.end_date);
     const isAutoResponseValid = validateAutoResponse();
-    const isMailBodyValid = validateMailBody();
+    const isMessageValid = validateMessage(form.value.message);
 
-    return isTitleValid && isStartDateValid && isEndDateValid && isAutoResponseValid && isMailBodyValid;
+    return isTitleValid && isStartDateValid && isEndDateValid && isAutoResponseValid && isMessageValid;
 }
 
 const resetForm = () => {
     router.push({ name: 'vacation' })
 }
 
-const handleEditorInput = (content) => {
-    const htmlContent = content.target?.innerHTML || content
-    editorContent.value = htmlContent
-    form.value.mail_body = htmlContent
-}
+
 
 const fetchVacation = async () => {
     try {
@@ -102,10 +96,8 @@ const fetchVacation = async () => {
             start_date: vacation.start_date,
             end_date: vacation.end_date,
             auto_response: vacation.auto_response,
-            mail_subject: vacation.mail_subject || '',
-            mail_body: vacation.mail_body || ''
+            message: vacation.message || '',
         }
-        editorContent.value = vacation.mail_body || ''
     } catch (err) {
         console.error('Error fetching vacation:', err)
         toast('Error loading vacation data', { type: 'error' })
@@ -170,8 +162,7 @@ const updateVacation = async () => {
 }
 watch(() => form.value.auto_response, (newVal) => {
   if (newVal === 'No') {
-    form.value.mail_body = ''
-    editorContent.value = ''
+    form.value.message = ''
   }
 })
 onMounted(() => {
@@ -234,36 +225,25 @@ onMounted(() => {
 
                             <!-- Auto Response -->
                             <VCol cols="12" md="6">
-                                <VLabel>{{ t('Auto Response') }}</VLabel>
+                                <VLabel>{{ t('Auto Reply') }}</VLabel>
                                 <VRadioGroup v-model="form.auto_response" inline>
                                     <VRadio :label="t('Yes')" value="Yes" />
                                     <VRadio :label="t('No')" value="No" />
                                 </VRadioGroup>
                             </VCol>
 
-                            <!-- Mail Subject -->
+                            <!-- Message -->
                             <VCol cols="12" v-if="form.auto_response == 'Yes'">
-                                <AppTextField 
-                                    v-model="form.mail_subject" 
-                                    :label="t('Mail Subject')" :required="true"
+                                <AppTextarea 
+                                    v-model="form.message" 
+                                    :label="t('Message')" :required="true"
                                     type="text" 
-                                    :placeholder="t('Enter mail subject')"
-                                    :error-messages="mailSubjectError" 
-                                    @input="validateAutoResponse" 
+                                    :placeholder="t('Enter message')"
+                                    :error-messages="messageError" 
+                                    @input="validateMessage" 
                                 />
                             </VCol>
 
-                            <!-- Mail Body -->
-                            <VCol cols="12" v-if="form.auto_response == 'Yes'">
-                                <div :title="t('Mail Body')">
-                                    <DemoEditorCustomEditor
-                                        :content="editorContent"
-                                        v-model="editorContent"
-                                        @input="handleEditorInput" 
-                                    />
-                                </div>
-                                <div class="text-error" v-if="mailBodyError">{{ mailBodyError }}</div>
-                            </VCol>
 
                             <!-- Form Actions -->
                             <VCol cols="12" class="d-flex flex-wrap gap-4">

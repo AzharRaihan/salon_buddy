@@ -463,6 +463,8 @@
     "useStaffEarningReport": true,
     "useStaffPayoutReport": true,
     "useStaffEvaluationReport": true,
-    "useStaffEvaluationDetailsReport": true
+    "useStaffEvaluationDetailsReport": true,
+    "useUser": true,
+    "useUserData": true
   }
 }

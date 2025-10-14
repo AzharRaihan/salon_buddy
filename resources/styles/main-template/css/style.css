@@ -150,3 +150,7 @@
 .company-logo .v-img__img--cover{
   object-fit: contain !important;
 }
+
+.default-img-upload .v-img__img--cover {
+  object-fit: contain !important;
+}

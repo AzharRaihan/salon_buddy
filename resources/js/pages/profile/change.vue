@@ -2,15 +2,17 @@
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import { useI18n } from 'vue-i18n';
+import { useUserData } from '@/composables/useUserData';
 
 const { t } = useI18n()
-const userData = useCookie("userData").value;
+const { userData: userDataRef, updateUserData } = useUserData()
+const userData = userDataRef.value || {}
 
 const form = ref({
-  name: userData.name,
-  email: userData.email,
-  phone: userData.phone,
-  photo: userData.photo_url
+  name: userData?.name || '',
+  email: userData?.email || '',
+  phone: userData?.phone || '',
+  photo: userData?.photo_url || ''
 })
 const router = useRouter()
 const refInputEl = ref()
@@ -30,7 +32,7 @@ const changeAvatar = file => {
 
 // reset avatar image
 const resetAvatar = () => {
-  form.value.photo = userData.photo_url
+  form.value.photo = userData?.photo_url || ''
 }
 
 const nameError = ref('')
@@ -71,9 +73,9 @@ const validatePhone = (phone) => {
 
 const resetForm = () => {
   form.value = {
-    name: userData.name,
-    email: userData.email,
-    phone: userData.phone
+    name: userData?.name || '',
+    email: userData?.email || '',
+    phone: userData?.phone || ''
   }
 }
 
@@ -88,7 +90,7 @@ const updateProfile = async () => {
 
   try {
     const formData = new FormData()
-    formData.append('user_id', userData.id)
+    formData.append('user_id', userData?.id || '')
     formData.append('name', form.value.name)
     formData.append('email', form.value.email)
     formData.append('phone', form.value.phone)
@@ -121,7 +123,11 @@ const updateProfile = async () => {
       loadings.value = false
       return
     }
-    useCookie('userData').value = user
+    
+    console.log('Profile updated successfully. New user data:', user)
+    updateUserData(user)
+    console.log('updateUserData called')
+    
     toast(message, {
       type: 'success',
     });

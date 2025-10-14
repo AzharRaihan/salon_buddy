@@ -81,6 +81,7 @@ const validationErrors = ref({})
 const serviceId = ref(null)
 const successBookingId = ref(null)
 const isAddingToCart = ref(false)
+const isCheckingTimeAvailability = ref(false)
 
 // Template refs for animation
 const addToCartButtonRef = ref(null)
@@ -218,8 +219,49 @@ const handleDateSelection = async (day) => {
     toast(result.message, { type: 'error' })
   } else {
     console.log('Date selected successfully')
+    // Clear selected time when date changes to force revalidation
+    if (selectedTime.value) {
+      selectedTime.value = null
+    }
     // Optional: Show success message
     // toast('Date selected successfully', { type: 'success' })
+  }
+}
+
+// Check time availability against opening/closing hours
+const checkTimeAvailability = async () => {
+  if (!selectedDate.value || !selectedTime.value) {
+    return
+  }
+  
+  isCheckingTimeAvailability.value = true
+  
+  try {
+    const response = await $api('/check-time-availability', {
+      method: 'POST',
+      body: {
+        date: selectedDate.value,
+        time: selectedTime.value
+      }
+    })
+    
+    if (!response.success || !response.data.availability) {
+      // Time is not available
+      toast(response.message || 'Selected time is outside business hours', {
+        type: 'error'
+      })
+      // Clear the selected time
+      selectedTime.value = null
+    }
+  } catch (error) {
+    console.error('Error checking time availability:', error)
+    toast('Failed to check time availability', {
+      type: 'error'
+    })
+    // Clear the selected time on error
+    selectedTime.value = null
+  } finally {
+    isCheckingTimeAvailability.value = false
   }
 }
 
@@ -453,6 +495,14 @@ watch(isCustomerAuthenticated, (newValue) => {
     initializeUserData()
   }
 })
+
+// Watch for time selection to check availability
+watch(selectedTime, async (newTime) => {
+  if (newTime && selectedDate.value) {
+    await checkTimeAvailability()
+  }
+})
+
 watch(
   () => route.query.service_id,
   (newVal) => {
@@ -630,7 +680,7 @@ definePage({
                     v-model="selectedTime" 
                     class="form-control"
                     :class="{ 'is-invalid': validationErrors.time }"
-                    :disabled="isTimeLocked"
+                    :disabled="isTimeLocked || !selectedDate || isCheckingTimeAvailability"
                   >
                     <option value="">{{ t('Select a time') }}</option>
                     <option value="09:00">9:00 AM</option>
@@ -652,6 +702,34 @@ definePage({
                     <option value="17:00">5:00 PM</option>
                     <option value="17:30">5:30 PM</option>
                     <option value="18:00">6:00 PM</option>
+                    <option value="19:00">7:00 PM</option>
+                    <option value="19:30">7:30 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                    <option value="20:30">8:30 PM</option>
+                    <option value="21:00">9:00 PM</option>
+                    <option value="21:30">9:30 PM</option>
+                    <option value="22:00">10:00 PM</option>
+                    <option value="22:30">10:30 PM</option>
+                    <option value="23:00">11:00 PM</option>
+                    <option value="23:30">11:30 PM</option>
+                    <option value="24:00">12:00 AM</option>
+                    <option value="24:30">12:30 AM</option>
+                    <option value="25:00">1:00 AM</option>
+                    <option value="25:30">1:30 AM</option>
+                    <option value="26:00">2:00 AM</option>
+                    <option value="26:30">2:30 AM</option>
+                    <option value="27:00">3:00 AM</option>
+                    <option value="27:30">3:30 AM</option>
+                    <option value="28:00">4:00 AM</option>
+                    <option value="28:30">4:30 AM</option>
+                    <option value="29:00">5:00 AM</option>
+                    <option value="29:30">5:30 AM</option>
+                    <option value="30:00">6:00 AM</option>
+                    <option value="30:30">6:30 AM</option>
+                    <option value="31:00">7:00 AM</option>
+                    <option value="31:30">7:30 AM</option>
+                    <option value="32:00">8:00 AM</option>
+                    <option value="32:30">8:30 AM</option>
                   </select>
                   <div v-if="validationErrors.time" class="invalid-feedback d-block">
                     {{ validationErrors.time }}

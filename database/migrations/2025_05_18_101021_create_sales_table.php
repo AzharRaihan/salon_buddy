@@ -33,7 +33,6 @@ return new class extends Migration
             $table->decimal('loyalty_points_earned', 10, 3)->default(0)->nullable();
             $table->decimal('loyalty_points_redeemed', 10, 3)->default(0)->nullable();
             $table->decimal('loyalty_points_value', 10, 3)->default(0)->nullable();
-            $table->decimal('total_tips', 10, 3)->default(0)->nullable();
             $table->unsignedInteger('customer_id')->nullable();
             $table->unsignedInteger('payment_method_id')->nullable();
             $table->string('transaction_id')->nullable();

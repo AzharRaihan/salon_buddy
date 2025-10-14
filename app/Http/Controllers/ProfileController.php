@@ -2,8 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Traits\FileUploadTrait;
 use Illuminate\Http\Request;
+use App\Traits\FileUploadTrait;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -48,22 +49,15 @@ class ProfileController extends Controller
     {
         $user = User::find($request->user_id);
 
-        if (! password_verify($request->old_password, $user->password)) {
+        if (!Hash::check($request->old_password, $user->password)) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Old password is incorrect',
             ], 400);
         }
 
-        // check if new password is same as old password
-        if ($request->password == $request->old_password) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'New password cannot be same as old password',
-            ], 400);
-        }
+        $user->password = Hash::make($request->new_password);
 
-        $user->password = bcrypt($request->password);
         $user->save();
         return response()->json([
             'status'  => 'success',

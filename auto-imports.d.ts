@@ -425,6 +425,7 @@ declare global {
   const useTransition: typeof import('@vueuse/core')['useTransition']
   const useTrunc: typeof import('@vueuse/math')['useTrunc']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
+  const useUser: typeof import('./resources/js/composables/useUser.js')['useUser']
   const useUserData: typeof import('./resources/js/composables/useUserData.js')['useUserData']
   const useUserForm: typeof import('./resources/js/composables/useUserForm.js')['useUserForm']
   const useUserImageUpload: typeof import('./resources/js/composables/useUserImageUpload.js')['useUserImageUpload']
@@ -879,6 +880,7 @@ declare module 'vue' {
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
     readonly useTrunc: UnwrapRef<typeof import('@vueuse/math')['useTrunc']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
+    readonly useUserData: UnwrapRef<typeof import('./resources/js/composables/useUserData.js')['useUserData']>
     readonly useUserForm: UnwrapRef<typeof import('./resources/js/composables/useUserForm.js')['useUserForm']>
     readonly useUserImageUpload: UnwrapRef<typeof import('./resources/js/composables/useUserImageUpload.js')['useUserImageUpload']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>

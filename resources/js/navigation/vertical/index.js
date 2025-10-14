@@ -182,11 +182,11 @@ export default [
       { title: "White Label", to: { name: "settings-white-label" }, permission: ["settings-white_label"] },
       { title: "Email Settings", to: { name: "settings-email" }, permission: ["settings-email"] },
       { title: "SMS Settings", to: { name: "settings-sms" }, permission: ["settings-sms"] },
-      { title: "Whatsapp Settings", to: { name: "settings-whatsapp" }, permission: ["settings-whatsapp"] },
+      { title: "WhatsApp Settings", to: { name: "settings-whatsapp" }, permission: ["settings-whatsapp"] },
       { title: "Payment Settings", to: { name: "settings-payment" }, permission: ["settings-payment"] },
       { title: "Social Auth Settings", to: { name: "settings-social-auth" }, permission: ["settings-social_auth"] },
       { title: "Vacation", to: { name: "vacation" }, permission: ["settings-vacation"] },
-      { title: "Holiday", to: { name: "holiday" }, permission: ["settings-holiday"] },
+      { title: "Weekly Holiday", to: { name: "holiday" }, permission: ["settings-holiday"] },
     ],
   },
   {

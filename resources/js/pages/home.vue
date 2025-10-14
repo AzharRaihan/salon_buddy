@@ -60,13 +60,7 @@ const headers = [
       title: TotalPayable,
       key: 'total_payable',
       sortable: true,
-    },
-    {
-      title: Action,
-      key: 'action',
-      sortable: false,
-      align: 'center',
-    },
+    }
 ]
 
 const updateOptions = options => {
@@ -194,14 +188,6 @@ onMounted(async () => {
               <div class="d-flex align-center justify-center pa-4">
                 <VIcon icon="tabler-alert-circle" class="me-2" />
                 {{ t('No sales found') }}   
-              </div>
-            </template>
-
-            <template #item.action="{ item }">
-              <div class="d-flex justify-center gap-1">
-                <VBtn icon variant="text" color="error" size="small" @click="openConfirmDialog(item.id)">
-                  <VIcon size="22" icon="tabler-trash" />
-                </VBtn>
               </div>
             </template>
           </VDataTableServer>

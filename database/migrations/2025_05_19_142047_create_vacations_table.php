@@ -17,9 +17,7 @@ return new class extends Migration
             $table->string('start_date', 25)->nullable();
             $table->string('end_date', 25)->nullable();
             $table->enum('auto_response', ['Yes', 'No'])->nullable();
-            $table->enum('is_free', ['Yes', 'No'])->nullable();
-            $table->string('mail_subject', 55)->nullable();
-            $table->longText('mail_body')->nullable();
+            $table->string('message', 255)->nullable();
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('company_id')->nullable();
             $table->enum('del_status', ['Live', 'Deleted'])->default('Live');

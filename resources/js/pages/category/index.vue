@@ -206,16 +206,6 @@ onMounted(async () => {
                     <VImg :src="item.photo_url" width="50" height="50" cover class="rounded" />
                 </template>
 
-                <!-- Use In Website column -->
-                <template #item.use_in_website="{ item }">
-                    <VChip
-                        :color="item.use_in_website == 'Yes' ? 'success' : 'error'"
-                        size="small"
-                    >
-                        {{ item.use_in_website }}
-                    </VChip>
-                </template>
-
                 <!-- Status column -->
                 <template #item.status="{ item }">
                     <VChip
