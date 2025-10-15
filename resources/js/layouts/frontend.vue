@@ -1,7 +1,11 @@
 <script setup>
 import AppHeader from '@/components/frontend/AppHeader.vue'
 import AppFooter from '@/components/frontend/AppFooter.vue'
+import { useWebsiteSettings } from '@/composables/useWebsiteSettings.js'
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
+// Initialize website settings for title and favicon
+useWebsiteSettings()
 </script>
 <template>
   <div class="frontend-layout">

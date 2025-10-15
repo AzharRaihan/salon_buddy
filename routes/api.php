@@ -190,7 +190,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Product usage routes
     Route::controller(ProductUsagesController::class)->group(function () {
-        Route::get('product-usages/products', 'getProducts');
+        Route::get('generate-product-usage-reference-no', 'generateReferenceNo');
     });
 
     // Report routes

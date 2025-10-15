@@ -4,6 +4,7 @@ import { registerPlugins } from "@core/utils/plugins";
 import Vue3Toastify from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import { useWebsiteSettingsStore } from "@/stores/websiteSetting.js";
+import { useSiteSettingsStore } from "@/stores/siteSettings.js";
 import { useWebsiteSettings } from "@/composables/useWebsiteSettings.js";
 const app = createApp(App);
 
@@ -38,12 +39,15 @@ const initializeApp = async () => {
   // Mount vue app
   app.mount("#app");
   
-  // Initialize website settings after app is mounted
+  // Initialize both stores after app is mounted
   const websiteStore = useWebsiteSettingsStore();
-  await websiteStore.initializeSettings();
+  const siteSettingsStore = useSiteSettingsStore();
   
-  // Initialize website settings composable for title and favicon
-  useWebsiteSettings();
+  await Promise.all([
+    websiteStore.initializeSettings(),
+    siteSettingsStore.initializeSettings()
+  ]);
+  
    // Initialize AOS after DOM updates are complete
    await nextTick();
    AOS.init({

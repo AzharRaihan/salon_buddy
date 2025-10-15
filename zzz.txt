@@ -123,3 +123,22 @@ ALTER TABLE `sales` ADD `total_tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `gran
 
 
 ALTER TABLE `vacations` CHANGE `mail_subject` `message` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+
+ALTER TABLE `website_settings` ADD `website_title` VARCHAR(255) NULL DEFAULT NULL AFTER `footer_logo`, ADD `favicon` VARCHAR(100) NULL DEFAULT NULL AFTER `website_title`;
+
+
+
+ALTER TABLE `product_usages` ADD `reference_no` VARCHAR(55) NULL DEFAULT NULL AFTER `id`;
+
+ALTER TABLE `product_usages`
+  DROP `item_id`,
+  DROP `quantity`;
+
+ALTER TABLE `product_usages` CHANGE `usage_date` `date` VARCHAR(55) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `product_usages` ADD `grand_total` DECIMAL(10,3) NULL DEFAULT NULL AFTER `notes`;
+
+ALTER TABLE `product_usages` CHANGE `notes` `note` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+
+ALTER TABLE `product_usages` ADD `branch_id` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `grand_total`;

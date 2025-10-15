@@ -34,5 +34,18 @@ export const useSiteSettingsStore = defineStore("siteSettings", {
     setSettings(settings) {
       this.settings = settings;
     },
+
+    // Reset settings by forcing a fresh fetch
+    async resetSettings() {
+      this.settings = null;
+      await this.fetchSettings();
+    },
+
+    // Initialize settings on app start
+    async initializeSettings() {
+      if (!this.settings) {
+        await this.fetchSettings();
+      }
+    },
   },
 });

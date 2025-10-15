@@ -1,8 +1,13 @@
 <script setup>
+import { useWebsiteSettings } from '@/composables/useWebsiteSettings.js'
+
 const { injectSkinClasses } = useSkins()
 
 // ℹ️ This will inject classes in body tag for accurate styling
 injectSkinClasses()
+
+// Initialize website settings for title and favicon
+useWebsiteSettings()
 
 // SECTION: Loading Indicator
 const isFallbackStateActive = ref(false)

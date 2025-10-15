@@ -228,7 +228,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // URL Protection if Branch is not set at cookie (Admin/Staff only)
-  const branchPaths = ["/purchase/create", "/purchase", "/stock/stock", "/stock/alert-stock", "/sale", "/customer-receive/create", "/customer-receive", "/supplier-payment/create", "/supplier-payment", "/expense/create", "/expense", "/salary/create", "/salary", "/booking/calendar", "/booking/create", "/booking", "/promotion/create", "/promotion", "/dashboard", "/pos", "/staff-payment/create", "/staff-payment", "/admin-dashboard"];
+  const branchPaths = ["/product-usages/create", "/product-usages", "/purchase/create", "/purchase", "/stock/stock", "/stock/alert-stock", "/sale", "/customer-receive/create", "/customer-receive", "/supplier-payment/create", "/supplier-payment", "/expense/create", "/expense", "/salary/create", "/salary", "/booking/calendar", "/booking/create", "/booking", "/promotion/create", "/promotion", "/dashboard", "/pos", "/staff-payment/create", "/staff-payment", "/admin-dashboard"];
   
   if (branch_info == 0 && branchPaths.includes(to.path)) {
     toast("Please select your branch first", {

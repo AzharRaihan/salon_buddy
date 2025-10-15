@@ -4,10 +4,12 @@ import { toast } from 'vue3-toastify';
 import { ref, onMounted } from 'vue';
 import defaultBanner from '@images/system-config/default-picture.png';
 import { useI18n } from 'vue-i18n'
+import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 
 const { t } = useI18n()
 
 const router = useRouter()
+const websiteSettingsStore = useWebsiteSettingsStore()
 const loadings = ref(false)
 const refInputEl = ref()
 const headerLogoPreviewImage = ref(defaultBanner)
@@ -56,12 +58,12 @@ const form = ref({
     open_day_end: '',
     open_day_start_time: '',
     open_day_end_time: '',
-    site_title: '',
     footer_copyright: '',
     footer_mini_description: '',
     header_logo: defaultBanner,
     footer_logo: defaultBanner,
-    fav_icon: defaultBanner,
+    website_title: '',
+    favicon: defaultBanner,
 })
 
 const errors = ref({
@@ -79,12 +81,12 @@ const errors = ref({
     open_day_end: '',
     open_day_start_time: '',
     open_day_end_time: '',
-    site_title: '',
     footer_copyright: '',
     footer_mini_description: '',
     header_logo: '',
     footer_logo: '',
-    fav_icon: '',
+    website_title: '',
+    favicon: '',
 })
 
 // Fetch website settings
@@ -129,19 +131,19 @@ const fetchSettings = async () => {
                 open_day_end: data.open_day_end || '',
                 open_day_start_time: data.open_day_start_time || '',
                 open_day_end_time: data.open_day_end_time || '',
-                site_title: data.site_title || '',
                 footer_copyright: data.footer_copyright || '',
                 footer_mini_description: data.footer_mini_description || '',
                 header_logo: data.header_logo_url || defaultBanner,
                 footer_logo: data.footer_logo_url || defaultBanner,
-                fav_icon: data.fav_icon_url || defaultBanner,
+                website_title: data.website_title || '',
+                favicon: data.favicon_url || defaultBanner,
             }
 
             commonBannerPreviewImage.value = data.common_banner_image_url || defaultBanner  
             loginPreviewImage.value = data.login_image_url || defaultBanner
             headerLogoPreviewImage.value = data.header_logo_url || defaultBanner
             footerLogoPreviewImage.value = data.footer_logo_url || defaultBanner
-            favIconPreviewImage.value = data.fav_icon_url || defaultBanner
+            favIconPreviewImage.value = data.favicon_url || defaultBanner
         }
     } catch (err) {
         console.error('Error fetching settings:', err)
@@ -240,14 +242,14 @@ const changeFavIconImage = (event) => {
         const reader = new FileReader()
         reader.onload = e => {
             favIconPreviewImage.value = e.target.result
-            form.value.fav_icon = file
+            form.value.favicon = file
         }
         reader.readAsDataURL(file)
     }
 }
 
 const resetFavIconImage = () => {
-    form.value.fav_icon = defaultBanner
+    form.value.favicon = defaultBanner
     favIconPreviewImage.value = defaultBanner
     if (refInputEl.value) {
         refInputEl.value.value = ''
@@ -339,7 +341,7 @@ const saveSettings = async () => {
         
         // Append form fields
         Object.keys(form.value).forEach(key => {
-            if (['common_banner_image', 'login_image', 'header_logo', 'footer_logo', 'fav_icon'].includes(key)) {
+            if (['common_banner_image', 'login_image', 'header_logo', 'footer_logo', 'favicon'].includes(key)) {
                 if (form.value[key] instanceof File) {
                     formData.append(key, form.value[key])
                 }
@@ -365,6 +367,8 @@ const saveSettings = async () => {
                 type: 'success'
             })
             await fetchSettings() // Refresh data after update
+            // Refresh website settings store to update title and favicon
+            await websiteSettingsStore.resetSettings()
         } else {
             throw new Error(response.message || 'Failed to update settings')
         }
@@ -397,12 +401,12 @@ const resetForm = () => {
         open_day_end: '',
         open_day_start_time: '',
         open_day_end_time: '',
-        site_title: '',
         footer_copyright: '',
         footer_mini_description: '',
         header_logo: '',
         footer_logo: '',
-        fav_icon: '',
+        website_title: '',
+        favicon: '',
     }
 }
 
@@ -557,6 +561,41 @@ const resetForm = () => {
                                     :placeholder="t('Select closing time')"
                                     :error-messages="errors.open_day_end_time"
                                 />
+                            </VCol>
+
+                            <!-- Website Title and Favicon -->
+                            <VCol cols="12">   
+                                <h5 class="text-h5 mb-4 devider-title">{{ t('Website Title and Favicon') }}</h5>
+                            </VCol>
+                            <!-- Footer -->
+                            <VCol cols="12" md="6" lg="4">
+                                <AppTextField v-model="form.website_title" :label="t('Website Title')" :error-messages="errors.website_title"
+                                    :placeholder="t('Enter website title')" />
+                            </VCol>
+                            <VCol cols="12" md="6" lg="4" class="mb-4">
+                                <VCardText class="d-flex">
+                                    <div class="company-logo">
+                                        <VAvatar rounded size="100" class="me-6" :image="favIconPreviewImage" />
+                                    </div>
+                                    <form class="d-flex flex-column justify-center gap-4">
+                                        <div class="d-flex flex-wrap gap-4">
+                                            <VBtn color="primary" size="small" @click="$refs.faviconInput?.click()">
+                                                <VIcon icon="tabler-cloud-upload" class="d-sm-none" />
+                                                <span class="d-none d-sm-block">{{ t('Favicon') }}</span>
+                                            </VBtn>
+
+                                            <input ref="faviconInput" type="file" accept=".jpeg,.png,.jpg,GIF" hidden @input="changeFavIconImage">
+
+                                            <VBtn type="reset" size="small" color="secondary" variant="tonal" @click="resetFavIconImage">
+                                                <span class="d-none d-sm-block">{{ t('Reset') }}</span>
+                                                <VIcon icon="tabler-refresh" class="d-sm-none" />
+                                            </VBtn>
+                                        </div>
+                                        <p class="text-body-1 mb-0">
+                                            {{ t('Allowed JPG, GIF or PNG. Max size of 2 MB') }}
+                                        </p>
+                                    </form>
+                                </VCardText>
                             </VCol>
 
                             <!-- Website Basic Settings -->

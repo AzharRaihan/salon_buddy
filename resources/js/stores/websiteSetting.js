@@ -8,7 +8,8 @@ export const useWebsiteSettingsStore = defineStore("websiteSettings", {
   }),
 
   getters: {
-    // getSiteTitle: (state) => state.settings?.site_title || "Salon Buddy",
+    getWebsiteTitle: (state) => state.settings?.website_title || "Salon Buddy",
+    getFavicon: (state) => state.settings?.favicon_url || '',
     getEmail: (state) => state.settings?.email || "info@salonbuddy.com",
     getPhone: (state) => state.settings?.phone || "+1 (555) 123-4567",
     getAddress: (state) => state.settings?.address || "123 Beauty Street, Style City, SC 12345",
@@ -16,7 +17,6 @@ export const useWebsiteSettingsStore = defineStore("websiteSettings", {
     getCommonBannerImage: (state) => state.settings?.common_banner_image_url ? `${state.settings.common_banner_image_url}` : '',
     getLoginImage: (state) => state.settings?.login_image_url ? `${state.settings.login_image_url}` : '',
     getFooterLogo: (state) => state.settings?.footer_logo_url ? `${state.settings.footer_logo_url}` : '',
-    // getFavicon: (state) => state.settings?.fav_icon_url ? `${state.settings.fav_icon_url}` : '',
     getFooterCopyright: (state) => state.settings?.footer_copyright || `© ${new Date().getFullYear()} Salon Buddy. All rights reserved.`,
     getFooterDescription: (state) => state.settings?.footer_mini_description || "Your trusted partner for professional hair care services.",
     getGoogleMapUrl: (state) => state.settings?.google_map_url || "",

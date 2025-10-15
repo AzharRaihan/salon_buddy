@@ -1,5 +1,4 @@
 <script setup>
-import { useSiteSettingsStore } from "@/stores/siteSettings"
 import ScrollToTop from '@core/components/ScrollToTop.vue'
 import initCore from '@core/initCore'
 import {
@@ -7,15 +6,9 @@ import {
   useConfigStore,
 } from '@core/stores/config'
 import { hexToRgb } from '@core/utils/colorConverter'
-import { onMounted } from "vue"
 import { useTheme } from 'vuetify'
 
 const { global } = useTheme()
-const siteSettingsStore = useSiteSettingsStore();
-
-onMounted(() => {
-  siteSettingsStore.fetchSettings();
-});
 
 // ℹ️ Sync current theme with initial loader theme
 initCore()

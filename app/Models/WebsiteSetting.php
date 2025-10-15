@@ -29,6 +29,8 @@ class WebsiteSetting extends Model
         'footer_logo',
         'privacy_policy',
         'terms_and_conditions',
+        'website_title',
+        'favicon',
         'company_id',
         'user_id',
         'del_status'
@@ -51,7 +53,7 @@ class WebsiteSetting extends Model
         'testimonial_image_url',
         'common_banner_image_url',
         'login_image_url',
-        'fav_icon_url',
+        'favicon_url',
     ];
 
     public function getHeaderLogoUrlAttribute(): string
@@ -72,10 +74,10 @@ class WebsiteSetting extends Model
         return asset('assets/images/default-images/footer_logo.png');
     } 
 
-    public function getFavIconUrlAttribute(): string
+    public function getFaviconUrlAttribute(): string
     {
-        if ($this->fav_icon && file_exists(public_path('assets/images/' . $this->fav_icon))) {
-            return asset('assets/images/' . $this->fav_icon);
+        if ($this->favicon && file_exists(public_path('assets/images/' . $this->favicon))) {
+            return asset('assets/images/' . $this->favicon);
         }
         return asset('assets/images/default-images/favicon.ico');
     }

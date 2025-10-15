@@ -1,11 +1,16 @@
 <script setup>
 import { useConfigStore } from '@core/stores/config'
 import { switchToVerticalNavOnLtOverlayNavBreakpoint } from '@layouts/utils'
+import { useWebsiteSettings } from '@/composables/useWebsiteSettings.js'
+
 const DefaultLayoutWithVerticalNav = defineAsyncComponent(() => import('./components/DefaultLayoutWithVerticalNav.vue'))
 const configStore = useConfigStore()
 switchToVerticalNavOnLtOverlayNavBreakpoint()
 const { layoutAttrs, injectSkinClasses } = useSkins()
 injectSkinClasses()
+
+// Initialize website settings for title and favicon
+useWebsiteSettings()
 
 // SECTION: Loading Indicator
 const isFallbackStateActive = ref(false)

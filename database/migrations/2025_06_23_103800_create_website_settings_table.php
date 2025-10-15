@@ -47,6 +47,10 @@ return new class extends Migration
             $table->string('header_logo', 100)->nullable();
             $table->string('footer_logo', 100)->nullable();
 
+            // Website Title and Favicon
+            $table->string('website_title', 255)->nullable();
+            $table->string('favicon', 100)->nullable();
+
             // Privacy Policy and Terms & Conditions
             $table->text('privacy_policy')->nullable();
             $table->text('terms_and_conditions')->nullable();

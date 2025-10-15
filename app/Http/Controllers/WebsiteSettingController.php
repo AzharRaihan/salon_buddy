@@ -43,6 +43,8 @@ class WebsiteSettingController extends Controller
             'login_image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
             'header_logo' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
             'footer_logo' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'website_title' => 'required|string|max:255',
+            'favicon' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
 
         $validator = Validator::make($request->all(), $validationRules);
@@ -72,11 +74,12 @@ class WebsiteSettingController extends Controller
                 'open_day_end_time' => $request->open_day_end_time,
                 'footer_copyright' => $request->footer_copyright,
                 'footer_mini_description' => $request->footer_mini_description,
+                'website_title' => $request->website_title,
                 'user_id' => Auth::id()
             ];
 
             // Handle file uploads
-            $imageFields = ['testimonial_image', 'common_banner_image', 'login_image', 'header_logo', 'footer_logo', 'fav_icon'];
+            $imageFields = ['testimonial_image', 'common_banner_image', 'login_image', 'header_logo', 'footer_logo', 'favicon'];
             
             foreach ($imageFields as $field) {
                 if ($request->hasFile($field)) {

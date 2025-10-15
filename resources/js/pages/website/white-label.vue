@@ -3,12 +3,10 @@ import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import { useI18n } from 'vue-i18n'
 import defaultAvater from '@images/system-config/default-picture.png';
-import { useSiteSettingsStore } from '@/stores/siteSettings.js'
 
 const baseUrl = import.meta.env.VITE_APP_URL
 
 const { t } = useI18n()
-const siteSettingsStore = useSiteSettingsStore()
 
 const form = ref({
     site_title: '',
@@ -115,9 +113,7 @@ const updateWhiteLabelSettings = async () => {
                 type: 'success'
             })
             loadings.value = false
-            await getWhiteLabelSettings()
-            // Refresh site settings store to update title and favicon
-            await siteSettingsStore.resetSettings()
+            getWhiteLabelSettings()
         }
     } catch (err) {
         console.error(err)

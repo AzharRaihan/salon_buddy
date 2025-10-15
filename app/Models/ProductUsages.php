@@ -2,36 +2,33 @@
 
 namespace App\Models;
 
-use App\Models\Item;
 use App\Models\User;
+use App\Models\Branch;
 use App\Models\Company;
+use App\Models\ProductUsageDetail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductUsages extends Model
 {
     protected $guarded = ['id'];
-    
-    protected $fillable = [
-        'item_id',
-        'quantity',
-        'usage_date',
-        'notes',
-        'user_id',
-        'company_id',
-        'del_status'
-    ];
 
-    protected $casts = [
-        'usage_date' => 'date',
-    ];
 
     /**
-     * Get the item that owns the usage
+     * Get the usage details for the product usage
      */
-    public function item(): BelongsTo
+    public function productUsageDetails(): HasMany
     {
-        return $this->belongsTo(Item::class);
+        return $this->hasMany(ProductUsageDetail::class, 'product_usage_id');
+    }
+
+    /**
+     * Get the branch that owns the usage
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     /**
