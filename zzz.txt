@@ -142,3 +142,6 @@ ALTER TABLE `product_usages` CHANGE `notes` `note` TEXT CHARACTER SET utf8mb4 CO
 
 
 ALTER TABLE `product_usages` ADD `branch_id` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `grand_total`;
+
+
+ALTER TABLE `product_usage_details` ADD `note` VARCHAR(255) NULL DEFAULT NULL AFTER `unit_price`;

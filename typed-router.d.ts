@@ -82,6 +82,7 @@ declare module 'vue-router/auto-routes' {
     'not-found': RouteRecordInfo<'not-found', '/not-found', Record<never, never>, Record<never, never>>,
     'notifications': RouteRecordInfo<'notifications', '/Notifications', Record<never, never>, Record<never, never>>,
     'notifications-notifications-list': RouteRecordInfo<'notifications-notifications-list', '/Notifications/NotificationsList', Record<never, never>, Record<never, never>>,
+    'online-invoice': RouteRecordInfo<'online-invoice', '/online-invoice', Record<never, never>, Record<never, never>>,
     'package': RouteRecordInfo<'package', '/package', Record<never, never>, Record<never, never>>,
     'package-details': RouteRecordInfo<'package-details', '/package-details', Record<never, never>, Record<never, never>>,
     'package-order': RouteRecordInfo<'package-order', '/package-order', Record<never, never>, Record<never, never>>,

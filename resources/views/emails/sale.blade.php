@@ -94,38 +94,39 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🛍️ {{ $companyName }} Sale Confirmation 🛍️</h1>
+            <h1>Invoice</h1>
         </div>
 
         <div class="content">
             <h2>Dear {{ $customerName }},</h2>
 
-            <p>Thank you for shopping with <strong>{{ $companyName }}</strong>! We’re thrilled to confirm your recent purchase.</p>
+            <p>Thank you for taking service from <strong>{{ $companyName }}</strong>! here is your online invoice.</p>
 
             <div class="sale-details">
-                <h3>Your Order Details:</h3>
+                <h3>Invoice Details:</h3>
                 <p>🏠 <strong>Branch:</strong> <span class="highlight">{{ $branchName }}</span></p>
-                <p>📅 <strong>Sale Date:</strong> <span class="highlight">{{ $date }}</span></p>
-                <p>🔖 <strong>Sale Reference:</strong> <span class="highlight">{{ $referenceNo }}</span></p>
-                <p>💳 <strong>Payment Status:</strong> <span class="highlight">{{ $status }}</span></p>
+                <p>📅 <strong>Service/Sale Date:</strong> <span class="highlight">{{ $date }}</span></p>
+                <p>🔖 <strong>Invoice No:</strong> <span class="highlight">{{ $referenceNo }}</span></p>
+                <p>💳 <strong>Payment Status:</strong> <span class="highlight">{{ $status == 'Completed' ? 'Paid' : $status }}</span></p>
                 <p>💰 <strong>Total Amount:</strong> <span class="highlight">{{ $totalPayable }}</span></p>
-                <p>💰 <strong>Total Paid:</strong> <span class="highlight">{{ $totalPaid }}</span></p>
-                <p>💰 <strong>Total Due:</strong> <span class="highlight">{{ $totalDue }}</span></p>
+                <p>💰 <strong>Paid:</strong> <span class="highlight">{{ $totalPaid }}</span></p>
+                <p>💰 <strong>Due:</strong> <span class="highlight">{{ $totalDue }}</span></p>
             </div>
 
             <!-- Rating Section -->
             <div class="rating-section" style="text-align: center; margin: 30px 0;">
-                <h3 style="color: #333; margin-bottom: 20px;">Rate Your Services</h3>
-                <p style="color: #666; margin-bottom: 25px;">We value your feedback! Please take a moment to rate the services you received.</p>
-                <!-- send customer id  with encrypted -->
                 <a href="{{ url('/ratting') . '?reference=' . urlencode(Crypt::encrypt($referenceNo)) . '&customerId=' . urlencode(Crypt::encrypt($customerId)) }}"
+                style="background-color: #7367f0; color: white; padding: 15px 35px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 500; display: inline-block; transition: background-color 0.3s; margin-right: 10px;">
+                    Rate Us
+                </a>
+                <a href="{{ url('/online-invoice') . '?reference=' . urlencode(Crypt::encrypt($referenceNo)) . '&customerId=' . urlencode(Crypt::encrypt($customerId)) }}"
                 style="background-color: #7367f0; color: white; padding: 15px 35px; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 500; display: inline-block; transition: background-color 0.3s;">
-                    Give Rating
+                    Invoice Link
                 </a>
             </div>
 
             <div class="footer">
-                <p>🎉 Thank you for your purchase! 🎉</p>
+                <p>Thank you!</p>
             </div>
         </div>
     </div>

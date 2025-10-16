@@ -19,7 +19,6 @@ const branch_info = useCookie("branch_info").value || 0;
 const form = ref({
     reference_no: '',
     date: '',
-    grand_total: 0,
     note: '',
     items: [],
     branch_id: branch_info.id
@@ -30,7 +29,7 @@ const dateError = ref('')
 const itemErrors = ref({
     item_id: '',
     quantity: '',
-    unit_price: '',
+    note: '',
     employee_id: ''
 })
 
@@ -64,9 +63,10 @@ const validateItem = (item) => {
         itemErrors.value.quantity = t('Valid quantity is required')
         isValid = false
     }
-    
-    if (!item.unit_price || item.unit_price < 0) {
-        itemErrors.value.unit_price = t('Valid unit price is required')
+
+    // validation should be 255 characters
+    if (item.note.length > 255) {
+        itemErrors.value.note = t('Note must be less than 255 characters')
         isValid = false
     }
 
@@ -101,15 +101,13 @@ onMounted(async () => {
         form.value = {
             reference_no: usage.reference_no,
             date: usage.date,
-            grand_total: parseFloat(usage.grand_total),
             note: usage.note || '',
             branch_id: branch_info.id,
             items: usage.product_usage_details?.map(item => ({
                 item_id: item.item?.id,
                 quantity: Number(item.quantity),
-                unit_price: parseFloat(item.unit_price),
                 employee_id: item.employee?.id,
-                total: parseFloat(item.total_price)
+                note: item.note || '',
             })) || []
         }
 
@@ -129,9 +127,8 @@ const addItem = () => {
     const newItem = {
         item_id: null,
         quantity: 1,
-        unit_price: 0,
+        note: '',
         employee_id: null,
-        total: 0
     }
     
     form.value.items = [...form.value.items, newItem]
@@ -139,23 +136,10 @@ const addItem = () => {
 
 const removeItem = (index) => {
     form.value.items.splice(index, 1)
-    calculateGrandTotal()
 }
 
-const calculateItemTotal = (index) => {
-    const item = form.value.items[index]
-    const qty = Number(item.quantity) || 0
-    const price = Number(item.unit_price) || 0
-    form.value.items[index] = {
-        ...item,
-        total: qty * price,
-    }
-    calculateGrandTotal()
-}
 
-const calculateGrandTotal = () => {
-    form.value.grand_total = form.value.items.reduce((sum, item) => sum + parseFloat(item.total), 0)
-}
+
 
 const handleItemSelect = (index, itemId) => {
     const existingIndex = form.value.items.findIndex((item, i) => 
@@ -167,12 +151,6 @@ const handleItemSelect = (index, itemId) => {
         })
         form.value.items[index].item_id = ''
         return
-    }
-    const selectedItem = items.value.find(i => i.id == itemId)
-    if (selectedItem) {
-        form.value.items[index].unit_price = Number(selectedItem.sale_price) || 0
-        calculateItemTotal(index)
-        calculateGrandTotal()
     }
 }
 
@@ -210,7 +188,6 @@ const updateUsage = async () => {
         const payload = {
             reference_no: form.value.reference_no,
             date: form.value.date,
-            grand_total: form.value.grand_total,
             note: form.value.note,
             branch_id: form.value.branch_id,
             items: JSON.stringify(form.value.items),
@@ -306,11 +283,10 @@ const updateUsage = async () => {
                                     <thead>
                                         <tr>
                                             <th class="w-5">{{ $t('SN') }}</th>
-                                            <th class="w-25">{{ $t('Item') }} <span class="text-error">*</span></th>
+                                            <th class="w-20">{{ $t('Item') }} <span class="text-error">*</span></th>
                                             <th class="w-15">{{ $t('Quantity') }} <span class="text-error">*</span></th>
-                                            <th class="w-15">{{ $t('Unit Price') }} <span class="text-error">*</span></th>
                                             <th class="w-20">{{ $t('Employee') }} <span class="text-error">*</span></th>
-                                            <th class="w-15">{{ $t('Total') }}</th>
+                                            <th class="w-20">{{ $t('Note') }}</th>
                                             <th class="w-5">{{ $t('Action') }}</th>
                                         </tr>
                                     </thead>
@@ -338,17 +314,6 @@ const updateUsage = async () => {
                                                     density="compact"
                                                     hide-details
                                                     :error-messages="itemErrors.quantity"
-                                                    @input="calculateItemTotal(index)"
-                                                />
-                                            </td>
-                                            <td>
-                                                <AppTextField
-                                                    v-model="item.unit_price"
-                                                    type="number"
-                                                    density="compact"
-                                                    hide-details
-                                                    :error-messages="itemErrors.unit_price"
-                                                    @input="calculateItemTotal(index)"
                                                 />
                                             </td>
                                             <td>
@@ -364,7 +329,15 @@ const updateUsage = async () => {
                                                     clearable
                                                 />
                                             </td>
-                                            <td>{{ formatNumberPrecision(item.total) }}</td>
+                                            <td>
+                                                <AppTextarea
+                                                    v-model="item.note"
+                                                    type="text"
+                                                    density="compact"
+                                                    hide-details
+                                                    :error-messages="itemErrors.note"
+                                                />
+                                            </td>
                                             <td>
                                                 <VBtn
                                                     color="error"
@@ -385,12 +358,6 @@ const updateUsage = async () => {
                                         {{ $t('Add Item') }}
                                     </VBtn>
                                 </div>
-                            </VCol>
-
-                            <!-- Grand Total -->
-                            <VCol cols="12" md="6" lg="4" class="ms-auto">
-                                <AppTextField :model-value="formatNumberPrecision(form.grand_total)" :label="$t('Grand Total')" type="number"
-                                    :placeholder="$t('Grand total')" readonly />
                             </VCol>
          
                             <!-- Form Actions -->

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\Company;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use App\Traits\FileUploadTrait;
@@ -20,7 +21,6 @@ class BranchController extends Controller
     public function index(Request $request)
     {
         $query = Branch::query();
-
         // Filter by del_status
         $query->where('active_status', 'Active');
         $query->where('company_id', Auth::user()->company_id);

@@ -143,7 +143,7 @@ class EmailService
                     'customerName' => $config['result']->customer->name ?? '',
                     'customerId' => $config['result']->customer->id ?? '',
                     'branchName' => $config['result']->branch->branch_name ?? '',
-                    'date' => isset($config['result']->order_date) ? \Carbon\Carbon::parse($config['result']->order_date)->format($config['result']->company->date_format) : '',
+                    'date' => isset($config['result']->created_at) ? \Carbon\Carbon::parse($config['result']->created_at)->format($config['result']->company->date_format) : '',
                     'status' => $config['result']->order_status ?? '',
                     'totalPayable' => $config['result']->company->currency . ' ' . $config['result']->total_payable ?? '',
                     'totalPaid' => $config['result']->company->currency . ' ' . $config['result']->total_paid ?? '',

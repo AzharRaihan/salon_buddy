@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Models\Sale;
-use App\Models\Booking;
-use App\Models\PackageUsagesSummary;
-use App\Models\Customer;
 use App\Models\Branch;
+use App\Models\Booking;
 use App\Models\Company;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Log;
+use App\Models\PackageUsagesSummary;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationService
 {
@@ -62,7 +63,7 @@ class NotificationService
 
             // Send Email
             if ($notificationData['send_email'] && $customer->email) {
-                $emailSubject = $this->buildEmailSubject($entity, $entityType);
+                $emailSubject = $this->buildEmailSubject($entity, $entityType, $branch);
                 $responses['email'] = $this->emailService->sendEmail(
                     $customer->email,
                     $emailSubject,
@@ -242,15 +243,21 @@ class NotificationService
      * @param string $entityType
      * @return string
      */
-    private function buildEmailSubject($entity, $entityType)
+    private function buildEmailSubject($entity, $entityType, $branch)
     {
+        // get company name
+        $company = Company::where('id', Auth::user()->company_id)->first();
+
         switch ($entityType) {
             case 'Booking':
-                return "Booking {$entity->status} - {$entity->reference_no}";
+                return "Your Booking has been {$entity->status} - {$company->name}, {$branch->branch_name}";
+        
             case 'Sale':
-                return "Your Order ({$entity->reference_no}) - {$entity->order_status}";
+                return "Your Invoice from {$company->name} - {$branch->branch_name} Branch";
+        
             case 'Package Usage':
-                return "Package Usage {$entity->usages_qty} - {$entity->id}";
+                return "Package Usage Update – {$entity->usages_qty} service(s) recorded at {$company->name}, {$branch->branch_name}";
+        
             default:
                 return "Notification from Salon Buddy";
         }

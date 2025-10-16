@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('product_usages', function (Blueprint $table) {
             $table->id();
             $table->string('reference_no', 55)->nullable();
-            $table->string('date', 25)->nullable(); 
-            $table->decimal('grand_total', 10, 3)->nullable();
+            $table->string('date', 25)->nullable();
             $table->string('note', 255)->nullable();
             $table->unsignedInteger('branch_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();

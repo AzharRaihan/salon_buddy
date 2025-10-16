@@ -173,64 +173,28 @@ const getStarRating = (saleDetailId) => {
         <!-- Rating Form -->
         <div v-else-if="saleData" class="row justify-content-center">
           <div class="col-lg-10">
-
-
-            <!-- Customer & Branch Information -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <div class="card h-100">
-                  <div class="card-header text-white">
-                    <h5 class="mb-0 d-flex align-items-center">
-                      <VIcon icon="tabler-user" class="me-2" />
-                      Customer Information
-                    </h5>
-                  </div>
-                  <div class="card-body">
-                    <p><strong>Name:</strong> {{ saleData.customer.name }}</p>
-                    <p><strong>Email:</strong> {{ saleData.customer.email }}</p>
-                    <p v-if="saleData.customer.phone"><strong>Phone:</strong> {{ saleData.customer.phone }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="card h-100">
-                  <div class="card-header text-white">
-                    <h5 class="mb-0 d-flex align-items-center">
-                      <VIcon icon="tabler-building-store" class="me-2" />
-                      Branch Information
-                    </h5>
-                  </div>
-                  <div class="card-body">
-                    <p><strong>Branch:</strong> {{ saleData.branch.name }}</p>
-                    <p v-if="saleData.branch.address"><strong>Address:</strong> {{ saleData.branch.address }}</p>
-                    <p v-if="saleData.branch.phone"><strong>Phone:</strong> {{ saleData.branch.phone }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Sale Information -->
+            <!-- Invoice Information -->
             <div class="sale-info-card mb-4">
               <div class="card">
                 <div class="card-header text-white">
                   <h5 class="mb-0 d-flex align-items-center">
                     <VIcon icon="tabler-receipt" class="me-2" />
-                    Sale Information
+                    Invoice Information
                   </h5>
                 </div>
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-md-6">
-                      <p><strong>Reference:</strong> {{ saleData.sale.reference_no }}</p>
-                      <p><strong>Date:</strong> {{ formatDate(saleData.sale.order_date) }}</p>
-                      <p><strong>Status:</strong> 
-                        <span class="ms-2 badge bg-success">{{ saleData.sale.order_status }}</span>
-                      </p>
+                    <div class="col-3">
+                      <p><strong>Invoice No:</strong> {{ saleData.sale.reference_no }}</p>
                     </div>
-                    <div class="col-md-6">
-                      <p><strong>Total Amount:</strong>  {{ formatAmount(saleData.sale.total_payable) }}</p>
-                      <p><strong>Total Paid:</strong>  {{ formatAmount(saleData.sale.total_paid) }}</p>
-                      <p v-if="saleData.sale.total_due > 0"><strong>Total Due:</strong> {{ formatAmount(saleData.sale.total_due) }}</p>
+                    <div class="col-3">
+                      <p><strong>Date:</strong> {{ formatDate(saleData.sale.order_date) }}</p>
+                    </div>
+                    <div class="col-3">
+                      <p><strong>Customer:</strong>  {{ saleData.customer.name }}</p>
+                    </div>
+                    <div class="col-3">
+                      <p><strong>Branch:</strong>  {{ saleData.branch.name }}</p>
                     </div>
                   </div>
                 </div>
@@ -267,7 +231,7 @@ const getStarRating = (saleDetailId) => {
                             <strong>{{ detail.item_name }}</strong>
                             <p v-if="detail.item_description" class="text-muted small mb-0">{{ detail.item_description }}</p>
                           </td>
-                          <td>{{ detail.quantity }}</td>
+                          <td>{{ Number(detail.quantity) }}</td>
                           <td>{{ formatAmount(detail.unit_price) }}</td>
                           <td>
                             <!-- Star Rating -->

@@ -2630,7 +2630,8 @@ class FrontendController extends Controller
                     'branches.address as branch_address',
                     'branches.phone as branch_phone',
                     'companies.name as company_name',
-                    'companies.currency'
+                    'companies.currency',
+                    'companies.logo'
                 )
                 ->first();
 
@@ -2682,7 +2683,8 @@ class FrontendController extends Controller
                     'phone' => $sale->branch_phone
                 ],
                 'company' => [
-                    'name' => $sale->company_name
+                    'name' => $sale->company_name,
+                    'logo' => $sale->logo
                 ],
                 'sale_details' => $saleDetails->map(function ($detail) {
                     return [

@@ -16,8 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('product_usage_id')->nullable();
             $table->unsignedInteger('item_id')->nullable();
             $table->decimal('quantity', 10, 3)->nullable();
-            $table->decimal('unit_price', 10, 3)->nullable();
-            $table->decimal('total_price', 10, 3)->nullable();
+            $table->string('note', 255)->nullable();
             $table->unsignedInteger('employee_id')->nullable();
             $table->unsignedInteger('branch_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();

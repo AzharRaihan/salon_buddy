@@ -65,60 +65,56 @@ const userProfileList = [
 </script>
 
 <template>
-  <VBadge v-if="userData" dot bordered location="bottom right" offset-x="1" offset-y="2" color="success">
-    <VAvatar size="38" class="cursor-pointer" :color="!userData.photo_url ? 'primary' : undefined"
-      :variant="!userData.photo_url ? 'tonal' : undefined">
-      <VImg v-if="userData?.photo_url" :key="userData?.photo_url" :src="userData?.photo_url" />
-      <VIcon v-else icon="tabler-user" />
+  <VAvatar v-if="userData" size="38" class="cursor-pointer" :color="!userData.photo_url ? 'primary' : undefined"
+    :variant="!userData.photo_url ? 'tonal' : undefined">
+    <VImg v-if="userData?.photo_url" :key="userData?.photo_url" :src="userData?.photo_url" />
+    <VIcon v-else icon="tabler-user" />
 
-      <!-- SECTION Menu -->
-      <VMenu activator="parent" width="240" location="bottom end" offset="12px">
-        <VList>
-          <VListItem>
-            <div class="d-flex gap-2 align-center">
-              <VListItemAction>
-                <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success" bordered>
-                  <VAvatar :color="!userData.photo_url ? 'primary' : undefined"
-                    :variant="!userData.photo_url ? 'tonal' : undefined">
-                    <VImg v-if="userData?.photo_url" :key="userData?.photo_url" :src="userData?.photo_url" />
-                    <VIcon v-else icon="tabler-user" />
-                  </VAvatar>
-                </VBadge>
-              </VListItemAction>
+    <!-- SECTION Menu -->
+    <VMenu activator="parent" width="240" location="bottom end" offset="12px">
+      <VList>
+        <VListItem>
+          <div class="d-flex gap-2 align-center">
+            <VListItemAction>
+              <VAvatar :color="!userData.photo_url ? 'primary' : undefined"
+                :variant="!userData.photo_url ? 'tonal' : undefined">
+                <VImg v-if="userData?.photo_url" :key="userData?.photo_url" :src="userData?.photo_url" />
+                <VIcon v-else icon="tabler-user" />
+              </VAvatar>
+            </VListItemAction>
 
-              <div>
-                <h6 class="text-h6 font-weight-medium">
-                  {{ userData?.name }}
-                </h6>
-                <VListItemSubtitle class="text-capitalize text-disabled">
-                  {{ userData?.role_name }}
-                </VListItemSubtitle>
-              </div>
+            <div>
+              <h6 class="text-h6 font-weight-medium">
+                {{ userData?.name }}
+              </h6>
+              <VListItemSubtitle class="text-capitalize text-disabled">
+                {{ userData?.role_name }}
+              </VListItemSubtitle>
             </div>
-          </VListItem>
+          </div>
+        </VListItem>
 
-          <PerfectScrollbar :options="{ wheelPropagation: false }">
-            <template v-for="item in userProfileList" :key="item.title">
-              <VListItem v-if="item.type === 'navItem'" :to="item.to">
-                <template #prepend>
-                  <VIcon :icon="item.icon" size="22" />
-                </template>
+        <PerfectScrollbar :options="{ wheelPropagation: false }">
+          <template v-for="item in userProfileList" :key="item.title">
+            <VListItem v-if="item.type === 'navItem'" :to="item.to">
+              <template #prepend>
+                <VIcon :icon="item.icon" size="22" />
+              </template>
 
-                <VListItemTitle>{{ item.title }}</VListItemTitle>
-              </VListItem>
+              <VListItemTitle>{{ item.title }}</VListItemTitle>
+            </VListItem>
 
-              <VDivider v-else class="my-2" />
-            </template>
+            <VDivider v-else class="my-2" />
+          </template>
 
-            <div class="px-4 py-2">
-              <VBtn block size="small" color="error" append-icon="tabler-logout" @click="logout">
-                Logout
-              </VBtn>
-            </div>
-          </PerfectScrollbar>
-        </VList>
-      </VMenu>
-      <!-- !SECTION -->
-    </VAvatar>
-  </VBadge>
+          <div class="px-4 py-2">
+            <VBtn block size="small" color="error" append-icon="tabler-logout" @click="logout">
+              Logout
+            </VBtn>
+          </div>
+        </PerfectScrollbar>
+      </VList>
+    </VMenu>
+    <!-- !SECTION -->
+  </VAvatar>
 </template>

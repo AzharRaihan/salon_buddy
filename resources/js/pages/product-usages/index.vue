@@ -37,7 +37,6 @@ const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber } = useC
 const SN = computed(() => t('SN'))
 const ReferenceNo = computed(() => t('Reference No'))
 const Date = computed(() => t('Date'))
-const GrandTotal = computed(() => t('Grand Total'))
 const Action = computed(() => t('Action'))
 
 // Data table Headers
@@ -55,11 +54,6 @@ const headers = [
     {
         title: Date,
         key: 'date',
-        sortable: true,
-    },
-    {
-        title: GrandTotal,
-        key: 'grand_total',
         sortable: true,
     },
     {
@@ -188,11 +182,6 @@ onMounted(async () => {
                 <!-- Formatted Date -->
                 <template #[`item.date`]="{ item }">
                     {{ formatDate(item.date) }}
-                </template>
-
-                <!-- Amount -->
-                <template #[`item.grand_total`]="{ item }">
-                    {{ formatAmount(item.grand_total) }}
                 </template>
 
                 <!-- No data state -->

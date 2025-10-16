@@ -67,7 +67,6 @@ class ProductUsagesController extends Controller
             'reference_no' => 'required|string|unique:product_usages',
             'date' => 'required|date',
             'items' => 'required|json',
-            'grand_total' => 'required|numeric|min:0',
             'branch_id' => 'required|integer|exists:branches,id',
             'note' => 'nullable|string|max:255',
         ]);
@@ -86,7 +85,7 @@ class ProductUsagesController extends Controller
             $itemValidator = Validator::make($item, [
                 'item_id' => 'required|exists:items,id',
                 'quantity' => 'required|numeric|min:1',
-                'unit_price' => 'required|numeric|min:0',
+                'note' => 'nullable|string|max:255',
                 'employee_id' => 'required|integer|exists:users,id',
             ]);
 
@@ -102,7 +101,6 @@ class ProductUsagesController extends Controller
             $usage = ProductUsages::create([
                 'reference_no' => $request->reference_no,
                 'date' => $request->date,
-                'grand_total' => $request->grand_total,
                 'note' => $request->note,
                 'branch_id' => $request->branch_id,
                 'user_id' => Auth::id(),
@@ -115,8 +113,7 @@ class ProductUsagesController extends Controller
                     'product_usage_id' => $usage->id,
                     'item_id' => $item['item_id'],
                     'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'] ?? 0,
-                    'total_price' => $item['total'] ?? 0,
+                    'note' => $item['note'],
                     'employee_id' => $item['employee_id'],
                     'branch_id' => $request->branch_id,
                     'user_id' => Auth::id(),
@@ -169,7 +166,6 @@ class ProductUsagesController extends Controller
         $validationRules = [
             'reference_no' => 'required|string|max:55|unique:product_usages,reference_no,' . $id,
             'date' => 'required|date',
-            'grand_total' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:255',
             'branch_id' => 'required|integer|exists:branches,id',
             'items' => 'required|json',
@@ -195,14 +191,6 @@ class ProductUsagesController extends Controller
 
         DB::beginTransaction();
         try {
-            // Restore previous stock quantities
-            $oldDetails = ProductUsageDetail::where('product_usage_id', $usage->id)->get();
-            foreach ($oldDetails as $detail) {
-                $itemRecord = Item::find($detail->item_id);
-                if ($itemRecord && $itemRecord->type == 'Product') {
-                    $itemRecord->increment('quantity', $detail->quantity);
-                }
-            }
 
             // Delete old details
             ProductUsageDetail::where('product_usage_id', $usage->id)->delete();
@@ -211,7 +199,6 @@ class ProductUsagesController extends Controller
             $usage->update([
                 'reference_no' => $request->reference_no,
                 'date' => $request->date,
-                'grand_total' => $request->grand_total,
                 'note' => $request->note,
                 'branch_id' => $request->branch_id,
                 'updated_at' => now(),
@@ -223,19 +210,12 @@ class ProductUsagesController extends Controller
                     'product_usage_id' => $usage->id,
                     'item_id' => $item['item_id'],
                     'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'] ?? 0,
-                    'total_price' => $item['total'] ?? 0,
+                    'note' => $item['note'],
                     'employee_id' => $item['employee_id'],
                     'branch_id' => $request->branch_id,
                     'user_id' => Auth::id(),
                     'company_id' => Auth::user()->company_id,
                 ]);
-
-                // Update stock - deduct quantity
-                $itemRecord = Item::find($item['item_id']);
-                if ($itemRecord && $itemRecord->type == 'Product') {
-                    $itemRecord->decrement('quantity', $item['quantity']);
-                }
             }
             
             DB::commit();
