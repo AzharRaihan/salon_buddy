@@ -151,3 +151,6 @@ ALTER TABLE `payment_methods` ADD `bank_name` VARCHAR(100) NULL DEFAULT NULL AFT
 
 
 ALTER TABLE `salary_details` ADD `tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `absent_day_amount`;
+
+
+ALTER TABLE `companies` ADD `default_email_select` ENUM('Yes','No') NULL DEFAULT 'No' AFTER `logo`, ADD `default_sms_select` ENUM('Yes','No') NULL DEFAULT 'No' AFTER `default_email_select`, ADD `default_whatsapp_select` ENUM('Yes','No') NULL DEFAULT 'No' AFTER `default_sms_select`;

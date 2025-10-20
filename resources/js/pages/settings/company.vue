@@ -130,6 +130,9 @@ const form = ref({
     print_formate: null,
     over_sale: null,
     use_website: null,
+    default_email_select: null,
+    default_sms_select: null,
+    default_whatsapp_select: null,
 })
 const loadings = ref(false)
 const errors = ref({})
@@ -152,6 +155,9 @@ const validateForm = () => {
     if (!form.value.over_sale) errors.value.over_sale = t('Over sale is required')
     if (!form.value.use_website) errors.value.use_website = t('Use website is required')
     if (!form.value.address) errors.value.address = t('Address is required')
+    if (!form.value.default_email_select) errors.value.default_email_select = t('Default email select is required')
+    if (!form.value.default_sms_select) errors.value.default_sms_select = t('Default SMS select is required')
+    if (!form.value.default_whatsapp_select) errors.value.default_whatsapp_select = t('Default WhatsApp select is required')
 
     return Object.keys(errors.value).length == 0
 }
@@ -175,6 +181,9 @@ const resetForm = () => {
         print_formate: null,
         over_sale: null,
         use_website: null,
+        default_email_select: null,
+        default_sms_select: null,
+        default_whatsapp_select: null,
     }
 }
 
@@ -234,6 +243,9 @@ const getCompanySettings = async () => {
                 over_sale: res.data.over_sale || null,
                 // trim space
                 use_website: res.data.use_website ? res.data.use_website.trim() : null,
+                default_email_select: res.data.default_email_select ? res.data.default_email_select.trim() : null,
+                default_sms_select: res.data.default_sms_select ? res.data.default_sms_select.trim() : null,
+                default_whatsapp_select: res.data.default_whatsapp_select ? res.data.default_whatsapp_select.trim() : null,
             }
 
             // Set preview image
@@ -464,6 +476,60 @@ onMounted(() => {
                                     item-title="title"
                                     item-value="value"
                                     :error-messages="errors.use_website" :placeholder="t('Select use website')"
+                                    clearable
+                                />
+                            </VCol>
+
+                            <VCol cols="12" md="4">
+                                <AppAutocomplete 
+                                    v-model="form.default_email_select"
+                                    :tooltipShow="true"
+                                    :tooltipTitle="$t('If Yes, email checkbox will be selected by default in bookings and POS')"
+                                    :label="t('Default Email Select')" 
+                                    :required="true"
+                                    :items="[
+                                        { title: 'Yes', value: 'Yes' },
+                                        { title: 'No', value: 'No' },
+                                    ]"
+                                    item-title="title"
+                                    item-value="value"
+                                    :error-messages="errors.default_email_select" :placeholder="t('Select default email')"
+                                    clearable
+                                />
+                            </VCol>
+
+                            <VCol cols="12" md="4">
+                                <AppAutocomplete 
+                                    v-model="form.default_sms_select"
+                                    :tooltipShow="true"
+                                    :tooltipTitle="$t('If Yes, SMS checkbox will be selected by default in bookings and POS')"
+                                    :label="t('Default SMS Select')" 
+                                    :required="true"
+                                    :items="[
+                                        { title: 'Yes', value: 'Yes' },
+                                        { title: 'No', value: 'No' },
+                                    ]"
+                                    item-title="title"
+                                    item-value="value"
+                                    :error-messages="errors.default_sms_select" :placeholder="t('Select default SMS')"
+                                    clearable
+                                />
+                            </VCol>
+
+                            <VCol cols="12" md="4">
+                                <AppAutocomplete 
+                                    v-model="form.default_whatsapp_select"
+                                    :tooltipShow="true"
+                                    :tooltipTitle="$t('If Yes, WhatsApp checkbox will be selected by default in bookings and POS')"
+                                    :label="t('Default WhatsApp Select')" 
+                                    :required="true"
+                                    :items="[
+                                        { title: 'Yes', value: 'Yes' },
+                                        { title: 'No', value: 'No' },
+                                    ]"
+                                    item-title="title"
+                                    item-value="value"
+                                    :error-messages="errors.default_whatsapp_select" :placeholder="t('Select default WhatsApp')"
                                     clearable
                                 />
                             </VCol>

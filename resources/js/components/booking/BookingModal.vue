@@ -1,9 +1,15 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import { watch } from 'vue'
+import { useCompanySettings } from '@/composables/useCompanySettings'
 import BookingForm from './BookingForm.vue'
-const sendSMS = ref(false)
-const sendEmail = ref(false)
-const sendWhatsapp = ref(false)
+
+// Company Settings for default checkbox values
+const { defaultEmailSelect, defaultSmsSelect, defaultWhatsappSelect } = useCompanySettings()
+
+const sendSMS = ref(defaultSmsSelect.value)
+const sendEmail = ref(defaultEmailSelect.value)
+const sendWhatsapp = ref(defaultWhatsappSelect.value)
 
 const { t } = useI18n()
 
@@ -61,6 +67,10 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'submit', 'add-detail', 'remove-detail'])
 
 const closeModal = () => {
+    // Reset checkboxes to default values
+    sendSMS.value = defaultSmsSelect.value
+    sendEmail.value = defaultEmailSelect.value
+    sendWhatsapp.value = defaultWhatsappSelect.value
     emit('update:modelValue', false)
 }
 
@@ -79,6 +89,15 @@ const handleAddDetail = () => {
 const handleRemoveDetail = (index) => {
     emit('remove-detail', index)
 }
+
+// Watch for modal opening and reset checkboxes to defaults
+watch(() => props.modelValue, (newValue) => {
+    if (newValue) {
+        sendSMS.value = defaultSmsSelect.value
+        sendEmail.value = defaultEmailSelect.value
+        sendWhatsapp.value = defaultWhatsappSelect.value
+    }
+})
 </script>
 
 <template>

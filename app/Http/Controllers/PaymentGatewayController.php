@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Razorpay\Api\Api;
 use App\Models\Setting;
+use App\Models\PaymentMethod;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,41 +22,45 @@ class PaymentGatewayController extends Controller
 {
     use ApiResponse;
 
-    public $companyPaymentConfig;
-
-    public function __construct()
+    /**
+     * Get payment method configuration by payment_method_id
+     */
+    public function getPaymentMethodConfig($paymentMethodId)
     {
-        $this->companyPaymentConfig = $this->getCompanyPaymentConfig();
-    }
+        $paymentMethod = PaymentMethod::where('id', $paymentMethodId)
+            ->where('status', 'Enable')
+            ->where('del_status', 'Live')
+            ->first();
 
+        if (!$paymentMethod) {
+            return null;
+        }
 
-    public function getCompanyPaymentConfig()
-    {
-        $settings = [
-            'paypal_enabled'       => Setting::getSetting('paypal_enabled', false),
-            'paypal_mode'          => Setting::getSetting('paypal_mode', 'sandbox'),
-            'paypal_client_id'     => Setting::getSetting('paypal_client_id'),
-            'paypal_client_secret' => Setting::getSetting('paypal_client_secret'),
-            'stripe_enabled'       => Setting::getSetting('stripe_enabled', false),
-            'stripe_mode'          => Setting::getSetting('stripe_mode', 'sandbox'),
-            'stripe_key'           => Setting::getSetting('stripe_key'),
-            'stripe_secret'        => Setting::getSetting('stripe_secret'),
-            'razorpay_enabled'     => Setting::getSetting('razorpay_enabled', false),
-            'razorpay_key'         => Setting::getSetting('razorpay_key'),
-            'razorpay_secret'      => Setting::getSetting('razorpay_secret'),
-            'paytm_enabled'        => Setting::getSetting('paytm_enabled', false),
-            'paytm_key'            => Setting::getSetting('paytm_key'),
-            'paytm_secret'         => Setting::getSetting('paytm_secret'),
-            'paystack_enabled'     => Setting::getSetting('paystack_enabled', false),
-            'paystack_key'         => Setting::getSetting('paystack_key'),
+        return [
+            'account_type' => strtolower($paymentMethod->account_type),
+            'client_id' => $paymentMethod->client_id,
+            'secret_key' => $paymentMethod->secret_key,
+            'api_key' => $paymentMethod->api_key,
+            'merchant_id' => $paymentMethod->merchant_id,
+            'merchant_key' => $paymentMethod->merchant_key,
+            'mode' => strtolower($paymentMethod->mode ?? 'sandbox'),
         ];
-        return $settings;
     }
 
 
     public function createRazorpayOrder(Request $request)
     {
-        $api = new Api($this->companyPaymentConfig['razorpay_key'], $this->companyPaymentConfig['razorpay_secret']);
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
+        $api = new Api($config['api_key'], $config['secret_key']);
         $orderData = [
             'receipt'         => 'order_rcptid_' . uniqid(),
             'amount'          => (int)$request->amount, // amount in paise (e.g., 100 INR = 10000)
@@ -67,7 +72,7 @@ class PaymentGatewayController extends Controller
             'order_id' => $razorpayOrder['id'],
             'amount'   => $razorpayOrder['amount'],
             'currency' => $razorpayOrder['currency'],
-            'rk' => $this->companyPaymentConfig['razorpay_key'],
+            'rk' => $config['api_key'],
             
         ], 'Razorpay order created');
     }
@@ -77,8 +82,18 @@ class PaymentGatewayController extends Controller
         $signature = $request->razorpay_signature;
         $orderId   = $request->razorpay_order_id;
         $paymentId = $request->razorpay_payment_id;
+        $paymentMethodId = $request->payment_method_id;
 
-        $api = new Api($this->companyPaymentConfig['razorpay_key'], $this->companyPaymentConfig['razorpay_secret']);
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
+        $api = new Api($config['api_key'], $config['secret_key']);
 
         try {
             $attributes = [
@@ -99,7 +114,17 @@ class PaymentGatewayController extends Controller
     // Stripe - Create Payment Intent (for embedded form)
     public function createStripePaymentIntent(Request $request)
     {
-        \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
+        \Stripe\Stripe::setApiKey($config['secret_key']);
 
         try {
             $paymentIntent = \Stripe\PaymentIntent::create([
@@ -113,7 +138,7 @@ class PaymentGatewayController extends Controller
             return $this->successResponse([
                 'client_secret' => $paymentIntent->client_secret,
                 'payment_intent_id' => $paymentIntent->id,
-                'window_open_id' => $this->companyPaymentConfig['stripe_key']
+                'window_open_id' => $config['api_key']
             ], 'Stripe payment intent created');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to create payment intent: ' . $e->getMessage());
@@ -123,7 +148,17 @@ class PaymentGatewayController extends Controller
     // Stripe - Create Session (for redirect - keeping for compatibility)
     public function createStripeSession(Request $request)
     {
-        \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
+        \Stripe\Stripe::setApiKey($config['secret_key']);
 
         $session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
@@ -147,7 +182,17 @@ class PaymentGatewayController extends Controller
 
     public function verifyStripePayment(Request $request)
     {
-        \Stripe\Stripe::setApiKey($this->companyPaymentConfig['stripe_secret']);
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
+        \Stripe\Stripe::setApiKey($config['secret_key']);
         
         try {
             if ($request->payment_intent_id) {
@@ -177,17 +222,26 @@ class PaymentGatewayController extends Controller
     // PayPal - Using paypal-server-sdk
     public function createPaypalOrder(Request $request)
     {
-        // dd($this->companyPaymentConfig['paypal_client_id']);
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
         try {
             // Initialize PayPal client using the new SDK
             $client = PaypalServerSdkClientBuilder::init()
                 ->clientCredentialsAuthCredentials(
                     ClientCredentialsAuthCredentialsBuilder::init(
-                        $this->companyPaymentConfig['paypal_client_id'],
-                        $this->companyPaymentConfig['paypal_client_secret']
+                        $config['client_id'],
+                        $config['secret_key']
                     )
                 )
-                ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
+                ->environment($config['mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
                 ->build();
 
             // Get orders controller from the client
@@ -241,16 +295,26 @@ class PaymentGatewayController extends Controller
     // Verify  Paypal
     public function verifyPaypalPayment(Request $request)
     {
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
         try {
             // Initialize PayPal client using the new SDK
             $client = PaypalServerSdkClientBuilder::init()
                 ->clientCredentialsAuthCredentials(
                     ClientCredentialsAuthCredentialsBuilder::init(
-                        $this->companyPaymentConfig['paypal_client_id'],
-                        $this->companyPaymentConfig['paypal_client_secret']
+                        $config['client_id'],
+                        $config['secret_key']
                     )
                 )
-                ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
+                ->environment($config['mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
                 ->build();
 
             // Get orders controller from the client
@@ -280,16 +344,26 @@ class PaymentGatewayController extends Controller
     // Check PayPal payment status
     public function checkPaypalPaymentStatus(Request $request)
     {
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
         try {
             // Initialize PayPal client using the new SDK
             $client = PaypalServerSdkClientBuilder::init()
                 ->clientCredentialsAuthCredentials(
                     ClientCredentialsAuthCredentialsBuilder::init(
-                        $this->companyPaymentConfig['paypal_client_id'],
-                        $this->companyPaymentConfig['paypal_client_secret']
+                        $config['client_id'],
+                        $config['secret_key']
                     )
                 )
-                ->environment($this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
+                ->environment($config['mode'] === 'sandbox' ? Environment::SANDBOX : Environment::PRODUCTION)
                 ->build();
 
             // Get orders controller from the client
@@ -324,41 +398,32 @@ class PaymentGatewayController extends Controller
         return $this->successResponse(['success' => true], 'Payment successful');
     }
 
-    // Debug method to check PayPal configuration
-    public function debugPaypalConfig()
-    {
-        try {
-            $config = [
-                'client_id' => $this->companyPaymentConfig['paypal_client_id'],
-                'secret' => $this->companyPaymentConfig['paypal_client_secret'] ? 'SET' : 'NOT SET',
-                'mode' => $this->companyPaymentConfig['paypal_mode'],
-                'environment' => $this->companyPaymentConfig['paypal_mode'] === 'sandbox' ? 'SANDBOX' : 'PRODUCTION',
-                'sdk_version' => 'PayPal Server SDK v1.1',
-                'package' => 'paypal/paypal-server-sdk'
-            ];
-
-            return $this->successResponse($config, 'PayPal configuration debug info');
-        } catch (\Exception $e) {
-            return $this->errorResponse('Debug error: ' . $e->getMessage());
-        }
-    }
-
     // Paytm
     public function createPaytmOrder(Request $request)
     {
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
         try {
             $order_id = 'ORD_' . time();
             $amount = $request->amount;
 
             $data = [
-                'MID' => config('services.paytm.mid'),
+                'MID' => $config['merchant_id'],
                 'ORDER_ID' => $order_id,
                 'CUST_ID' => 'CUST_' . time(),
-                'INDUSTRY_TYPE_ID' => config('services.paytm.industry_type'),
-                'CHANNEL_ID' => config('services.paytm.channel'),
+                'INDUSTRY_TYPE_ID' => config('services.paytm.industry_type', 'Retail'),
+                'CHANNEL_ID' => config('services.paytm.channel', 'WEB'),
                 'TXN_AMOUNT' => $amount,
-                'WEBSITE' => config('services.paytm.website'),
-                'CALLBACK_URL' => url(config('services.paytm.callback_url')),
+                'WEBSITE' => config('services.paytm.website', 'WEBSTAGING'),
+                'CALLBACK_URL' => url(config('services.paytm.callback_url', '/payment-callback')),
             ];
 
             // Check if Paytm SDK is available
@@ -366,7 +431,7 @@ class PaymentGatewayController extends Controller
                 return $this->errorResponse('Paytm SDK not installed. Please install: composer require paytm/paytmchecksum');
             }
 
-            $checksum = \Paytm\Checksum\Checksum::generateSignature($data, config('services.paytm.key'));
+            $checksum = \Paytm\Checksum\Checksum::generateSignature($data, $config['merchant_key']);
             $data['CHECKSUMHASH'] = $checksum;
 
             // Return JSON response instead of view
@@ -382,6 +447,16 @@ class PaymentGatewayController extends Controller
 
     public function verifyPaytmPayment(Request $request)
     {
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
         try {
             $data = $request->all();
 
@@ -392,7 +467,7 @@ class PaymentGatewayController extends Controller
 
             $isValidChecksum = \Paytm\Checksum\Checksum::verifySignature(
                 $data,
-                config('services.paytm.key'),
+                $config['merchant_key'],
                 $data['CHECKSUMHASH'] ?? ''
             );
 
@@ -428,14 +503,18 @@ class PaymentGatewayController extends Controller
     // Paystack Integration
     public function createPaystackOrder(Request $request)
     {
-        try {
-            // Check if Paystack is enabled and configured
-            if (!$this->companyPaymentConfig['paystack_enabled']) {
-                return $this->errorResponse('Paystack payment is not enabled');
-            }
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
 
-            // $paystackSecret = $this->companyPaymentConfig['paystack_key'];
-            $paystackSecret = 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b';
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
+        try {
+            $paystackSecret = $config['secret_key'];
             if (empty($paystackSecret)) {
                 return $this->errorResponse('Paystack secret key is not configured');
             }
@@ -507,15 +586,18 @@ class PaymentGatewayController extends Controller
 
     public function verifyPaystackPayment(Request $request)
     {
+        $paymentMethodId = $request->payment_method_id;
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method ID is required');
+        }
+
+        $config = $this->getPaymentMethodConfig($paymentMethodId);
+        if (!$config) {
+            return $this->errorResponse('Invalid payment method');
+        }
+
         try {
-
-            // Check if Paystack is enabled and configured
-            if (!$this->companyPaymentConfig['paystack_enabled']) {
-                return $this->errorResponse('Paystack payment is not enabled');
-            }
-
-            // $paystackSecret = $this->companyPaymentConfig['paystack_key'];
-            $paystackSecret = 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b';
+            $paystackSecret = $config['secret_key'];
             if (empty($paystackSecret)) {
                 return $this->errorResponse('Paystack secret key is not configured');
             }

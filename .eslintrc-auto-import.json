@@ -466,6 +466,7 @@
     "useStaffEvaluationDetailsReport": true,
     "useUser": true,
     "useUserData": true,
-    "useBranchInfo": true
+    "useBranchInfo": true,
+    "useCompanySettings": true
   }
 }

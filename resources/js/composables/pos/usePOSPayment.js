@@ -94,6 +94,7 @@ export const usePOSPayment = () => {
                 body: {
                     amount: amount * 100,
                     currency: 'INR',
+                    payment_method_id: paymentMethodId,
                     ...orderData
                 }
             })
@@ -115,7 +116,8 @@ export const usePOSPayment = () => {
                         const verifiedResult = await verifyPayment('razorpay', {
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_order_id: response.razorpay_order_id,
-                            razorpay_signature: response.razorpay_signature
+                            razorpay_signature: response.razorpay_signature,
+                            payment_method_id: paymentMethodId
                         })
                         if (verifiedResult.success) {
                             resolve({ success: true, message: 'Razorpay payment successful', data: verifiedResult.data, transaction_id: response.razorpay_payment_id });
@@ -166,6 +168,7 @@ export const usePOSPayment = () => {
                 body: {
                     amount: amount * 100, // Convert to cents
                     currency: 'usd',
+                    payment_method_id: paymentMethodId,
                     ...orderData
                 }
             })
@@ -288,7 +291,8 @@ export const usePOSPayment = () => {
                     } else if (paymentIntent.status === 'succeeded') {
                         const verifiedResult = await verifyPayment('stripe', {
                             payment_intent_id: paymentIntent.id,
-                            session_id: intentResponse.data?.session_id
+                            session_id: intentResponse.data?.session_id,
+                            payment_method_id: paymentMethodId
                         });
                         
                         if (verifiedResult.success) {
@@ -330,6 +334,7 @@ export const usePOSPayment = () => {
                 body: {
                     amount: amount,
                     currency: 'USD',
+                    payment_method_id: paymentMethodId,
                     ...orderData
                 }
             })
@@ -350,7 +355,7 @@ export const usePOSPayment = () => {
                     if (popup.closed) {
                         clearInterval(checkClosed);
                         // Check payment status
-                        checkPayPalPaymentStatus(orderData.order_id || 'temp_order_id')
+                        checkPayPalPaymentStatus(orderData.order_id || 'temp_order_id', paymentMethodId)
                             .then(result => {
                                 if (result.success) {
                                     resolve({ success: true, message: 'PayPal payment successful', data: result.data, transaction_id: orderData.order_id });
@@ -377,11 +382,14 @@ export const usePOSPayment = () => {
     }
 
     // Check PayPal payment status
-    const checkPayPalPaymentStatus = async (orderId) => {
+    const checkPayPalPaymentStatus = async (orderId, paymentMethodId) => {
         try {
             const response = await $api('/check-paypal-payment-status', {
                 method: 'POST',
-                body: { order_id: orderId }
+                body: { 
+                    order_id: orderId,
+                    payment_method_id: paymentMethodId
+                }
             });
             return response;
         } catch (error) {
@@ -397,6 +405,7 @@ export const usePOSPayment = () => {
                 method: 'POST',
                 body: {
                     amount: amount,
+                    payment_method_id: paymentMethodId,
                     ...orderData
                 }
             })
@@ -490,7 +499,7 @@ export const usePOSPayment = () => {
                     try {
                         // Check payment status after a delay
                         setTimeout(async () => {
-                            const statusResult = await checkPaytmPaymentStatus(orderResponse.data?.order_id);
+                            const statusResult = await checkPaytmPaymentStatus(orderResponse.data?.order_id, paymentMethodId);
                             if (statusResult.success) {
                                 document.body.removeChild(overlay);
                                 document.body.removeChild(formContainer);
@@ -521,11 +530,14 @@ export const usePOSPayment = () => {
     }
 
     // Check Paytm payment status
-    const checkPaytmPaymentStatus = async (orderId) => {
+    const checkPaytmPaymentStatus = async (orderId, paymentMethodId) => {
         try {
             const response = await $api('/check-paytm-payment-status', {
                 method: 'POST',
-                body: { order_id: orderId }
+                body: { 
+                    order_id: orderId,
+                    payment_method_id: paymentMethodId
+                }
             });
             return response;
         } catch (error) {
@@ -610,7 +622,10 @@ export const usePOSPayment = () => {
                                 // Try to verify payment using the stored reference
                                 const storedReference = localStorage.getItem('paystack_order_reference')
                                 if (storedReference) {
-                                    const result = await verifyPayment('paystack', { reference: storedReference })
+                                    const result = await verifyPayment('paystack', { 
+                                        reference: storedReference,
+                                        payment_method_id: paymentMethodId
+                                    })
                                     
                                     if (result.success) {
                                         resolve({ 
@@ -640,7 +655,10 @@ export const usePOSPayment = () => {
                         clearInterval(checkClosed);
                         window.removeEventListener('message', messageHandler);
                         
-                        verifyPayment('paystack', { reference: event.data.reference })
+                        verifyPayment('paystack', { 
+                            reference: event.data.reference,
+                            payment_method_id: paymentMethodId
+                        })
                             .then(result => {
                                 if (result.success) {
                                     resolve({ 

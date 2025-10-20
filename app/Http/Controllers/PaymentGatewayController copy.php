@@ -434,7 +434,8 @@ class PaymentGatewayController extends Controller
                 return $this->errorResponse('Paystack payment is not enabled');
             }
 
-            $paystackSecret = $this->companyPaymentConfig['paystack_key'];
+            // $paystackSecret = $this->companyPaymentConfig['paystack_key'];
+            $paystackSecret = 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b';
             if (empty($paystackSecret)) {
                 return $this->errorResponse('Paystack secret key is not configured');
             }
@@ -446,6 +447,10 @@ class PaymentGatewayController extends Controller
             $email = $request->email ?? 'customer@example.com';
 
             $reference = 'PAYSTACK_' . uniqid();
+
+            // Determine callback URL based on context
+            $callbackUrl = $request->callback_url ?? url('/payment-success');
+            $redirectUrl = $request->redirect_url ?? url('/pos');
 
             $url = 'https://api.paystack.co/transaction/initialize';
 
@@ -459,9 +464,14 @@ class PaymentGatewayController extends Controller
                 'email' => $email,
                 'amount' => $amount,
                 'reference' => $reference,
-                'callback_url' => url('/pos'),
+                'callback_url' => $callbackUrl,
+                'metadata' => [
+                    'order_id' => $request->order_id ?? 'pos_order_' . uniqid(),
+                    'customer_name' => $request->customer_name ?? 'POS Customer',
+                    'redirect_url' => $redirectUrl,
+                    'payment_method_id' => $request->payment_method_id ?? null,
+                ]
             ];
-            
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, true);
@@ -469,6 +479,8 @@ class PaymentGatewayController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             $response = curl_exec($ch);
+
+
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
@@ -482,6 +494,7 @@ class PaymentGatewayController extends Controller
                 return $this->successResponse([
                     'authorization_url' => $result['data']['authorization_url'],
                     'reference' => $reference,
+                    'access_code' => $result['data']['access_code'],
                 ], 'Paystack order created');
             } else {
                 $errorMessage = $result['message'] ?? 'Failed to create Paystack order';
@@ -495,12 +508,14 @@ class PaymentGatewayController extends Controller
     public function verifyPaystackPayment(Request $request)
     {
         try {
+
             // Check if Paystack is enabled and configured
             if (!$this->companyPaymentConfig['paystack_enabled']) {
                 return $this->errorResponse('Paystack payment is not enabled');
             }
 
-            $paystackSecret = $this->companyPaymentConfig['paystack_key'];
+            // $paystackSecret = $this->companyPaymentConfig['paystack_key'];
+            $paystackSecret = 'sk_test_7838ac74d6d10dc3b19667ded3627615f0b4ec9b';
             if (empty($paystackSecret)) {
                 return $this->errorResponse('Paystack secret key is not configured');
             }
@@ -532,14 +547,84 @@ class PaymentGatewayController extends Controller
 
             $result = json_decode($response, true);
 
-            if ($result && $result['status'] && isset($result['data']['status']) && $result['data']['status'] === 'success') {
-                return $this->successResponse(['success' => true], 'Payment verified successfully');
+            if ($result && $result['status'] && isset($result['data']['status']) && $result['data']['status'] == 'success') {
+                return $this->successResponse([
+                    'success' => true,
+                    'transaction_id' => $result['data']['reference'],
+                    'amount' => $result['data']['amount'] / 100, // Convert from kobo
+                    'currency' => $result['data']['currency'],
+                    'customer_email' => $result['data']['customer']['email'] ?? null,
+                    'metadata' => $result['data']['metadata'] ?? []
+                ], 'Payment verified successfully');
             } else {
                 $errorMessage = $result['message'] ?? 'Payment verification failed';
                 return $this->errorResponse($errorMessage);
             }
         } catch (\Exception $e) {
             return $this->errorResponse('Paystack verification failed: ' . $e->getMessage());
+        }
+    }
+
+    // Paystack callback handler
+    public function paystackCallback(Request $request)
+    {
+        try {
+            // Log the callback for debugging
+            \Log::info('Paystack callback received', [
+                'all_params' => $request->all(),
+                'reference' => $request->reference,
+                'trxref' => $request->trxref,
+                'status' => $request->status
+            ]);
+            
+            // Get reference from either 'reference' or 'trxref' parameter
+            $reference = $request->reference ?? $request->trxref;
+            $status = $request->status;
+            
+            // If no status is provided, we need to verify the payment
+            if (!$status && $reference) {
+                // Verify the payment to get the status
+                $verificationRequest = new Request(['reference' => $reference]);
+                $verificationResult = $this->verifyPaystackPayment($verificationRequest);
+                
+                if ($verificationResult->getData()->success) {
+                    $status = 'success';
+                } else {
+                    $status = 'failed';
+                }
+            }
+            
+            // Get redirect URL from metadata if available
+            $redirectUrl = $request->redirect_url;
+            if (!$redirectUrl && $reference) {
+                // Try to get redirect URL from stored metadata
+                // For now, we'll use default URLs based on context
+                $redirectUrl = url('/payment-success');
+            }
+            
+            \Log::info('Paystack callback redirect', [
+                'reference' => $reference,
+                'status' => $status,
+                'redirect_url' => $redirectUrl
+            ]);
+            
+            if ($status === 'success' && $reference) {
+                // Payment successful - redirect to success page
+                return redirect($redirectUrl . '?reference=' . $reference . '&status=success');
+            } else {
+                // Payment failed or cancelled
+                $cancelUrl = url('/payment-cancel');
+                return redirect($cancelUrl . '?reference=' . $reference . '&status=' . ($status ?: 'cancelled'));
+            }
+        } catch (\Exception $e) {
+            // Error occurred
+            \Log::error('Paystack callback error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            $redirectUrl = $request->redirect_url ?? url('/payment-cancel');
+            return redirect($redirectUrl . '?error=' . urlencode($e->getMessage()));
         }
     }
 }

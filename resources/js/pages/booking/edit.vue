@@ -3,18 +3,22 @@ import { useRoute, useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useCompanySettings } from '@/composables/useCompanySettings';
 
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting'
 const websiteSettingsStore = useWebsiteSettingsStore()
 const taxIsGst = computed(() => websiteSettingsStore.getTaxIsGst)
 
+// Company Settings for default checkbox values
+const { defaultEmailSelect, defaultSmsSelect, defaultWhatsappSelect } = useCompanySettings()
+
 const { t } = useI18n()
 const route = useRoute();
 const router = useRouter();
 const loadings = ref(false)
-const sendSMS = ref(false)
-const sendEmail = ref(false)
-const sendWhatsapp = ref(false)
+const sendSMS = ref(defaultSmsSelect.value)
+const sendEmail = ref(defaultEmailSelect.value)
+const sendWhatsapp = ref(defaultWhatsappSelect.value)
 
 const form = ref({
     reference_no: '',

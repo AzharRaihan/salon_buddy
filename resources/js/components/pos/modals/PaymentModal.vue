@@ -173,6 +173,7 @@ import { useErrorHandler } from '@/composables/useErrorHandler'
 import { usePOSPayment } from '@/composables/pos/usePOSPayment'
 import { useTaxCalculation } from '@/composables/useTaxCalculation'
 import { useLoyaltyPoints } from '@/composables/pos/useLoyaltyPoints'
+import { useCompanySettings } from '@/composables/useCompanySettings'
 import { $api } from '@/utils/api'
 import { useRouter } from 'vue-router';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
@@ -184,7 +185,8 @@ const { t } = useI18n();
 const router = useRouter();
 const { formatAmount, formatNumber,  formatNumberInvoice} = useCompanyFormatters()
 
-
+// Company Settings for default checkbox values
+const { defaultEmailSelect, defaultSmsSelect, defaultWhatsappSelect } = useCompanySettings()
 
 // Props
 const props = defineProps({
@@ -256,9 +258,9 @@ const selectedTip = ref(0)
 const customTipAmount = ref('')
 const availablePaymentMethods = ref([])
 const isLoadingPaymentMethods = ref(false)
-const sendSMS = ref(false)
-const sendEmail = ref(false)
-const sendWhatsapp = ref(false)
+const sendSMS = ref(defaultSmsSelect.value)
+const sendEmail = ref(defaultEmailSelect.value)
+const sendWhatsapp = ref(defaultWhatsappSelect.value)
 const paidAmount = ref(0)
 
 // Card details for card payments
@@ -352,6 +354,12 @@ watch(() => props.show, async (newValue) => {
     // When modal opens, set Paid = Total, Due = 0
     props.formData.amount = totalWithTip.value.toFixed(2)
     paidAmount.value = totalWithTip.value.toFixed(2)
+    
+    // Reset checkboxes to default values from company settings
+    sendSMS.value = defaultSmsSelect.value
+    sendEmail.value = defaultEmailSelect.value
+    sendWhatsapp.value = defaultWhatsappSelect.value
+    
     fetchPaymentMethods()
     
     // Fetch customer information if customer is selected
@@ -539,9 +547,9 @@ const handleConfirm = async () => {
             if (response.success) {
                 emit('confirm', response.data)
                 selectedMethodId.value = null;
-                sendSMS.value = false
-                sendEmail.value = false
-                sendWhatsapp.value = false
+                sendSMS.value = defaultSmsSelect.value
+                sendEmail.value = defaultEmailSelect.value
+                sendWhatsapp.value = defaultWhatsappSelect.value
             } else {
                 throw new Error(response.message || 'Failed to update sale')
             }
@@ -590,9 +598,9 @@ const handleConfirm = async () => {
                         path: '/pos'
                     });
                     selectedMethodId.value = null;
-                    sendSMS.value = false
-                    sendEmail.value = false
-                    sendWhatsapp.value = false
+                    sendSMS.value = defaultSmsSelect.value
+                    sendEmail.value = defaultEmailSelect.value
+                    sendWhatsapp.value = defaultWhatsappSelect.value
                 } else {
                     throw new Error(response.message || 'Failed to save order')
                 }

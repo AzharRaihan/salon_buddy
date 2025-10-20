@@ -237,6 +237,7 @@ declare global {
   const useCloned: typeof import('@vueuse/core')['useCloned']
   const useColorMode: typeof import('@vueuse/core')['useColorMode']
   const useCompanyFormatters: typeof import('./resources/js/composables/useCompanyFormatters.js')['useCompanyFormatters']
+  const useCompanySettings: typeof import('./resources/js/composables/useCompanySettings.js')['useCompanySettings']
   const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
   const useCookie: typeof import('./resources/js/@core/composable/useCookie.js')['useCookie']
   const useCountdown: typeof import('@vueuse/core')['useCountdown']
@@ -703,6 +704,7 @@ declare module 'vue' {
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
     readonly useCompanyFormatters: UnwrapRef<typeof import('./resources/js/composables/useCompanyFormatters.js')['useCompanyFormatters']>
+    readonly useCompanySettings: UnwrapRef<typeof import('./resources/js/composables/useCompanySettings.js')['useCompanySettings']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
     readonly useCookie: UnwrapRef<typeof import('./resources/js/@core/composable/useCookie.js')['useCookie']>
     readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>

@@ -43,6 +43,11 @@ return new class extends Migration
             $table->enum('use_website', ['Yes', 'No'])->default('Yes');
             $table->string('timezone', 55)->nullable();
             $table->string('logo')->nullable();
+
+            $table->enum('default_email_select', ['Yes', 'No'])->default('No');
+            $table->enum('default_sms_select', ['Yes', 'No'])->default('No');
+            $table->enum('default_whatsapp_select', ['Yes', 'No'])->default('No');
+
             $table->enum('del_status', ['Live', 'Deleted'])->default('Live');
             $table->timestamps();
         });
