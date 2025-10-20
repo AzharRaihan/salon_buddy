@@ -141,7 +141,8 @@
                     @save-draft="handleSaveOrder" 
                     @show-discount-modal="modals.toggleDiscountModal"
                     @show-charge-modal="handleChargeModal"
-                    @show-date-modal="handleDateClick" 
+                    @show-date-modal="handleDateClick"
+                    @show-tips-distribution-modal="handleTipsDistributionModal"
                     @clear-discount="handleClearDiscount"
                 />
             </div>
@@ -217,6 +218,14 @@
             @close="handleTipsClose" 
         />
 
+        <TipsDistributionModal
+            :show="modals.isModalOpen('tips-distribution')"
+            :items="orderItems"
+            :current-tips="orderStore.totalTips"
+            @confirm="handleTipsDistributionConfirm"
+            @close="handleTipsDistributionClose"
+        />
+
         <!-- Loading Overlay -->
         <LoadingSpinner v-if="globalLoading || isLoadingSaleData" :size="'large'" :message="loadingMessage" overlay />
 
@@ -273,6 +282,7 @@ import PaymentModal from '@/components/pos/modals/PaymentModal.vue'
 import EmployeeSelectionModal from '@/components/pos/modals/EmployeeSelectionModal.vue'
 import EmployeeAssignmentModal from '@/components/pos/modals/EmployeeAssignmentModal.vue'
 import TipsModal from '@/components/pos/modals/TipsModal.vue'
+import TipsDistributionModal from '@/components/pos/modals/TipsDistributionModal.vue'
 import AddEditCustomerModal from '@/components/pos/modals/AddEditCustomerModal.vue'
 import BillModal from '@/components/pos/modals/BillModal.vue'
 import { toast } from 'vue3-toastify';
@@ -801,15 +811,15 @@ const handleClearDiscount = () => {
 
 const handleEmployeeAssignmentConfirm = (assignmentData) => {
     try {
-        // Defensive: ensure itemId and employee are valid
-        if (assignmentData) {
-            orderStore.assignEmployeeToService(assignmentData.itemId, assignmentData.employee, assignmentData.price)
+        // Only update price, no employee assignment
+        if (assignmentData && assignmentData.price) {
+            orderStore.assignEmployeeToService(assignmentData.itemId, assignmentData.price)
         } else {
             console.warn('Invalid assignmentData:', assignmentData)
         }
         modals.handleEmployeeAssignmentClose()
     } catch (error) {
-        handleError('employee-assignment', error)
+        handleError('price-update', error)
     }
 }
 
@@ -819,7 +829,7 @@ const handleEmployeeAssignmentClose = () => {
 
 const handleTipsConfirm = (tipsData) => {
     try {
-        // Defensive: ensure itemId and tipsData are valid
+        // Assign employee and tips to service
         if (tipsData) {
             orderStore.assignTipsToService(tipsData.itemId, tipsData.employeeId, tipsData.employee, tipsData.tipsAmount)
         } else {
@@ -833,6 +843,45 @@ const handleTipsConfirm = (tipsData) => {
 
 const handleTipsClose = () => {
     modals.handleTipsClose()
+}
+
+const handleTipsDistributionModal = () => {
+    try {
+        modals.toggleTipsDistributionModal()
+    } catch (error) {
+        handleError('tips-distribution-modal', error)
+    }
+}
+
+const handleTipsDistributionConfirm = (distributionData) => {
+    try {
+        if (distributionData && distributionData.distribution) {
+            // Check if distribution is valid
+            const totalDistributed = distributionData.distribution.reduce((sum, dist) => sum + parseFloat(dist.tipsAmount || 0), 0)
+            const targetAmount = parseFloat(distributionData.totalTips)
+            
+            if (Math.abs(totalDistributed - targetAmount) > 0.01) {
+                toast.error(t('Tips distribution amount mismatch. Please adjust the amount.'), {
+                    position: 'top-right',
+                    autoClose: 3000
+                })
+                return
+            }
+            
+            orderStore.distributeTips(distributionData.totalTips, distributionData.distribution)
+            toast.success(t('Tips distributed successfully'), {
+                position: 'top-right',
+                autoClose: 2000
+            })
+        }
+        modals.handleTipsDistributionClose()
+    } catch (error) {
+        handleError('tips-distribution', error)
+    }
+}
+
+const handleTipsDistributionClose = () => {
+    modals.handleTipsDistributionClose()
 }
 
 // Handle cancel edit

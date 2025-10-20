@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('deduction_amount', 10, 3);
             $table->decimal('absent_day', 10, 3);
             $table->decimal('absent_day_amount', 10, 3);
+            $table->decimal('tips', 10, 3);
             $table->decimal('advance_taken', 10, 3);
             $table->decimal('net_salary', 10, 3);
             $table->string('note', 255)->nullable();

@@ -21,6 +21,24 @@ return new class extends Migration
             $table->enum('status', ['Enable', 'Disable'])->default('Enable');
             $table->enum('use_in_website', ['Yes', 'No'])->default('No');
             $table->enum('is_deletable', ['Yes', 'No'])->default('Yes');
+
+            // Bank specific fields
+            $table->string('bank_name', 100)->nullable();
+            $table->string('account_number', 100)->nullable();
+            $table->string('branch', 100)->nullable();
+            
+            // Payment gateway fields
+            $table->string('client_id', 255)->nullable();
+            $table->string('api_key', 255)->nullable();
+            $table->string('secret_key', 255)->nullable();
+            $table->enum('mode', ['Sandbox', 'Live'])->nullable();
+            
+            // Paytm specific fields
+            $table->string('merchant_id', 255)->nullable();
+            $table->string('merchant_key', 255)->nullable();
+
+
+
             $table->integer('sort_id')->default(0);
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('company_id')->nullable();

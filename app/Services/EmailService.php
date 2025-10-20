@@ -1,20 +1,18 @@
 <?php
-
 namespace App\Services;
-
 use App\Models\Sale;
 use App\Models\Booking;
 use App\Models\Company;
 use App\Models\Setting;
 use App\Models\Customer;
+use App\Services\Demo;
+use App\Models\PackageUsagesSummary;
+use App\Http\Controllers\PackageController;
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\Log;
-use App\Models\PackageUsagesSummary;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
-use App\Http\Controllers\PackageController;
-use App\Services\Demo;
 class EmailService
 {
     /**
@@ -30,19 +28,35 @@ class EmailService
     {
         try {
             // Get entity details for email template
+            $company_id = 1;
             if ($type == 'Booking') {   
                 $result = Booking::with(['customer', 'branch'])->find($details_id);
+                $company_id = $result->company_id;
             } else if ($type == 'Sale') {
                 $result = Sale::with(['customer', 'branch'])->find($details_id);
+                $company_id = $result->company_id;
             } else if ($type == 'Package Usage') {
                 $package = new PackageController();
                 $result = PackageUsagesSummary::with(['customer', 'branch'])->find($details_id);
                 $package_summary = $package->show($result->sale_id);
                 $result->package_info = $package_summary->getData(true);
+                $company_id = $result->company_id;
             } else if ($type == 'Forgot Password') {
                 $result = Customer::find($details_id);
+                $company_id = $result->company_id;
+            } else if ($type == 'Test Email') {
+                $result = (object)[
+                    'company_id' => 1,
+                    'message' => $details_id,
+                ];
+            } else if ($type == 'Marketing Email') {
+                $result = Customer::find($other_arr['customer_id']);
+                $company_id = $result->company_id;
+                $result->campaign_type = $other_arr['campaign_type'] ?? '';
+                $result->message_marketing = $details_id ?? '';
             }
-            $result->company = Company::find($result->company_id);
+            $result->company = Company::find($company_id);
+
             if (!$result) {
                 return [
                     'status' => 'Error',
@@ -177,7 +191,23 @@ class EmailService
                     'customerName' => $config['result']->name ?? '',
                     'tempPassword' => $config['other_arr']['tempPassword'] ?? '',
                 ];
+            } else if($config['type'] === 'Test Email') {
+                $data = [
+                    'subject' => $config['subject'],
+                    'companyName' => $config['result']->company->name ?? '',
+                    'message_test' => $config['result']->message ?? '',
+                ];
+            } else if($config['type'] === 'Marketing Email') {
+                $data = [
+                    'subject' => $config['subject'],
+                    'companyName' => $config['result']->company->name ?? '',
+                    'customerName' => $config['result']->name ?? '',
+                    'message_marketing' => $config['result']->message_marketing ?? '',
+                    'campaign_type' => $config['result']->campaign_type ?? '',
+                ];
+
             }
+
             Mail::send($template, $data, function (Message $message) use ($config) {
                 $message->to($config['to'])
                     ->subject($config['subject'])
@@ -263,6 +293,20 @@ class EmailService
                     'customerName' => $config['result']->name ?? '',
                     'tempPassword' => $config['other_arr']['tempPassword'] ?? '',
                 ];
+            } else if($config['type'] === 'Test Email') {
+                $data = [
+                    'subject' => $config['subject'],
+                    'companyName' => $config['result']->company->name ?? '',
+                    'message_test' => $config['result']->message ?? '',
+                ];
+            } else if($config['type'] === 'Marketing Email') {
+                $data = [
+                    'subject' => $config['subject'],
+                    'companyName' => $config['result']->company->name ?? '',
+                    'customerName' => $config['result']->name ?? '',
+                    'message_marketing' => $config['result']->message_marketing ?? '',
+                    'campaign_type' => $config['result']->campaign_type ?? '',
+                ];
             }
 
             // Send email using template
@@ -336,6 +380,20 @@ class EmailService
                     'customerName' => $config['result']->name ?? '',
                     'tempPassword' => $config['other_arr']['tempPassword'] ?? '',
                 ];
+            } else if($config['type'] === 'Test Email') {
+                $data = [
+                    'subject' => $config['subject'],
+                    'companyName' => $config['result']->company->name ?? '',
+                    'message_test' => $config['result']->message ?? '',
+                ];
+            } else if($config['type'] === 'Marketing Email') {
+                $data = [
+                    'subject' => $config['subject'],
+                    'companyName' => $config['result']->company->name ?? '',
+                    'customerName' => $config['result']->name ?? '',
+                    'message_marketing' => $config['result']->message_marketing ?? '',
+                    'campaign_type' => $config['result']->campaign_type ?? '',
+                ];
             }
             
             $response = Http::withHeaders([
@@ -398,6 +456,10 @@ class EmailService
                 return 'emails.package-usage';
             case 'Forgot Password':
                 return 'emails.forgot-password';
+            case 'Test Email':
+                return 'emails.test-email';
+            case 'Marketing Email':
+                return 'emails.marketing-email';
             default:
                 return 'emails.booking';
         }
@@ -459,7 +521,6 @@ class EmailService
             default:
                 $errors[] = 'Invalid email provider';
         }
-
         return $errors;
     }
 } 

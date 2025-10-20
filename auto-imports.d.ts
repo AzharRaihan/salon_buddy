@@ -222,6 +222,7 @@ declare global {
   const useBookingFlow: typeof import('./resources/js/composables/useBookingFlow.js')['useBookingFlow']
   const useBookingList: typeof import('./resources/js/composables/useBookingList.js')['useBookingList']
   const useBookingPersistence: typeof import('./resources/js/composables/useBookingPersistence.js')['useBookingPersistence']
+  const useBranchInfo: typeof import('./resources/js/composables/useBranchInfo.js')['useBranchInfo']
   const useBreakpoints: typeof import('@vueuse/core')['useBreakpoints']
   const useBroadcastChannel: typeof import('@vueuse/core')['useBroadcastChannel']
   const useBrowserLocation: typeof import('@vueuse/core')['useBrowserLocation']
@@ -687,6 +688,7 @@ declare module 'vue' {
     readonly useBookingFlow: UnwrapRef<typeof import('./resources/js/composables/useBookingFlow.js')['useBookingFlow']>
     readonly useBookingList: UnwrapRef<typeof import('./resources/js/composables/useBookingList.js')['useBookingList']>
     readonly useBookingPersistence: UnwrapRef<typeof import('./resources/js/composables/useBookingPersistence.js')['useBookingPersistence']>
+    readonly useBranchInfo: UnwrapRef<typeof import('./resources/js/composables/useBranchInfo.js')['useBranchInfo']>
     readonly useBreakpoints: UnwrapRef<typeof import('@vueuse/core')['useBreakpoints']>
     readonly useBroadcastChannel: UnwrapRef<typeof import('@vueuse/core')['useBroadcastChannel']>
     readonly useBrowserLocation: UnwrapRef<typeof import('@vueuse/core')['useBrowserLocation']>

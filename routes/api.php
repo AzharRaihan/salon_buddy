@@ -306,11 +306,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('customer-loyalty-points/{customerId}', 'getCustomerLoyaltyPoints');
         Route::get('company-loyalty-settings', 'getCompanyLoyaltySettings');
         Route::post('calculate-loyalty-points-needed', 'calculateLoyaltyPointsNeeded');
+        Route::get('employee-tips-by-month', 'getEmployeeTipsByMonth');
+        Route::get('employee-staff-payments-by-month', 'getEmployeeStaffPaymentsByMonth');
     });
 
 
     // Settings routes
     Route::controller(SettingController::class)->group(function () {
+        Route::get('get-all-employees-for-generate-salary', 'getAllEmployeesForGenerateSalary');
         Route::get('company-info', 'companyInfo');
         Route::post('company-info', 'companyInfoPost');
         Route::get('white-label', 'whiteLabel');
@@ -326,9 +329,20 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('social-auth-settings', 'socialAuthSettings');
         Route::post('social-auth-settings', 'socialAuthSettingsPost');
         
+        Route::get('whatsapp-settings', 'whatsappSettings');
+        Route::post('whatsapp-settings', 'whatsappSettingsPost');
+
+        
         // Test routes for email and SMS
         Route::post('test-email', 'testEmail');
         Route::post('test-sms', 'testSms');
+        Route::post('test-whatsapp', 'testWhatsapp');
+        
+        // Marketing routes
+        Route::get('marketing-stats', 'marketingStats');
+        Route::post('send-marketing-email', 'sendMarketingEmail');
+        Route::post('send-marketing-sms', 'sendMarketingSms');
+        Route::post('send-marketing-whatsapp', 'sendMarketingWhatsapp');
     });
 
     // Website settings routes

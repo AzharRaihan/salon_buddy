@@ -145,3 +145,9 @@ ALTER TABLE `product_usages` ADD `branch_id` INT(10) UNSIGNED NULL DEFAULT NULL 
 
 
 ALTER TABLE `product_usage_details` ADD `note` VARCHAR(255) NULL DEFAULT NULL AFTER `unit_price`;
+
+
+ALTER TABLE `payment_methods` ADD `bank_name` VARCHAR(100) NULL DEFAULT NULL AFTER `is_deletable`, ADD `account_number` VARCHAR(100) NULL DEFAULT NULL AFTER `bank_name`, ADD `branch` VARCHAR(100) NULL DEFAULT NULL AFTER `account_number`, ADD `client_id` VARCHAR(255) NULL DEFAULT NULL AFTER `branch`, ADD `api_key` VARCHAR(255) NULL DEFAULT NULL AFTER `client_id`, ADD `secret_key` VARCHAR(255) NULL DEFAULT NULL AFTER `api_key`, ADD `mode` ENUM('Sandbox','Live') NOT NULL DEFAULT 'Sandbox' AFTER `secret_key`, ADD `merchant_id` VARCHAR(255) NULL DEFAULT NULL AFTER `mode`, ADD `merchant_key` VARCHAR(255) NULL DEFAULT NULL AFTER `merchant_id`;
+
+
+ALTER TABLE `salary_details` ADD `tips` DECIMAL(10,3) NULL DEFAULT NULL AFTER `absent_day_amount`;

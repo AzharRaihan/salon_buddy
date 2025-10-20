@@ -113,13 +113,36 @@ class PaymentMethodController extends Controller
         // Base validation rules
         $validationRules = [
             'name' => 'required|string|max:55',
-            'account_type' => 'required|string|max:55',
+            'account_type' => 'required|string|in:Cash,Bank,Paypal,Stripe,Razorpay,PayStack,Paytm',
             'description' => 'nullable|string|max:255',
             'current_balance' => 'required|numeric|min:0',
-            'status' => 'required|string|max:55',
-            'use_in_website' => 'required|string|max:55',
+            'status' => 'required|string|in:Enable,Disable',
+            'use_in_website' => 'required|string|in:Yes,No',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg',
         ];
+
+        // Add conditional validation based on account type
+        if ($request->account_type === 'Bank') {
+            $validationRules['bank_name'] = 'required|string|max:100';
+            $validationRules['account_number'] = 'required|string|max:100';
+            $validationRules['branch'] = 'required|string|max:100';
+        } elseif ($request->account_type === 'Paypal') {
+            $validationRules['client_id'] = 'required|string|max:255';
+            $validationRules['secret_key'] = 'required|string|max:255';
+            $validationRules['mode'] = 'required|string|in:Sandbox,Live';
+        } elseif ($request->account_type === 'Stripe') {
+            $validationRules['api_key'] = 'required|string|max:255';
+            $validationRules['secret_key'] = 'required|string|max:255';
+            $validationRules['mode'] = 'required|string|in:Sandbox,Live';
+        } elseif ($request->account_type === 'Razorpay') {
+            $validationRules['api_key'] = 'required|string|max:255';
+            $validationRules['secret_key'] = 'required|string|max:255';
+        } elseif ($request->account_type === 'PayStack') {
+            $validationRules['api_key'] = 'required|string|max:255';
+        } elseif ($request->account_type === 'Paytm') {
+            $validationRules['merchant_id'] = 'required|string|max:255';
+            $validationRules['merchant_key'] = 'required|string|max:255';
+        }
 
         $validator = Validator::make($request->all(), $validationRules);
         if ($validator->fails()) {
@@ -163,13 +186,37 @@ class PaymentMethodController extends Controller
         // Base validation rules
         $validationRules = [
             'name' => 'required|string|max:55',
-            'account_type' => 'required|string|max:55',
+            'account_type' => 'required|string|in:Cash,Bank,Paypal,Stripe,Razorpay,PayStack,Paytm',
             'description' => 'nullable|string|max:255',
             'current_balance' => 'required|numeric|min:0',
-            'status' => 'required|string|max:55',
-            'use_in_website' => 'required|string|max:55',
+            'status' => 'required|string|in:Enable,Disable',
+            'use_in_website' => 'required|string|in:Yes,No',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg',
         ];
+
+        // Add conditional validation based on account type
+        if ($request->account_type === 'Bank') {
+            $validationRules['bank_name'] = 'required|string|max:100';
+            $validationRules['account_number'] = 'required|string|max:100';
+            $validationRules['branch'] = 'required|string|max:100';
+        } elseif ($request->account_type === 'Paypal') {
+            $validationRules['client_id'] = 'required|string|max:255';
+            $validationRules['secret_key'] = 'required|string|max:255';
+            $validationRules['mode'] = 'required|string|in:Sandbox,Live';
+        } elseif ($request->account_type === 'Stripe') {
+            $validationRules['api_key'] = 'required|string|max:255';
+            $validationRules['secret_key'] = 'required|string|max:255';
+            $validationRules['mode'] = 'required|string|in:Sandbox,Live';
+        } elseif ($request->account_type === 'Razorpay') {
+            $validationRules['api_key'] = 'required|string|max:255';
+            $validationRules['secret_key'] = 'required|string|max:255';
+        } elseif ($request->account_type === 'PayStack') {
+            $validationRules['api_key'] = 'required|string|max:255';
+        } elseif ($request->account_type === 'Paytm') {
+            $validationRules['merchant_id'] = 'required|string|max:255';
+            $validationRules['merchant_key'] = 'required|string|max:255';
+        }
+
         $validator = Validator::make($request->all(), $validationRules);
         if ($validator->fails()) {
             return $this->validationErrorResponse($validator->errors());

@@ -1,10 +1,9 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import defaultAvater from '@images/system-config/default-picture.png';
 import { useI18n } from 'vue-i18n';
-
 
 // Image Cropper
 import { Cropper } from 'vue-advanced-cropper'
@@ -117,7 +116,19 @@ const form = ref({
     status: null,
     use_in_website: null,
     photo: defaultAvater,
-    photo_url: defaultAvater
+    photo_url: defaultAvater,
+    // Bank fields
+    bank_name: '',
+    account_number: '',
+    branch: '',
+    // Payment gateway fields
+    client_id: '',
+    api_key: '',
+    secret_key: '',
+    mode: null,
+    // Paytm fields
+    merchant_id: '',
+    merchant_key: ''
 })
 
 const nameError = ref('')
@@ -143,10 +154,6 @@ const validateName = (name) => {
 const validateAccountType = (accountType) => {
     if (!accountType) {
         accountTypeError.value = t('Account type is required')
-        return false
-    }
-    if (accountType.length > 25) {
-        accountTypeError.value = t('Account type cannot exceed 25 characters')
         return false
     }
     accountTypeError.value = ''
@@ -242,7 +249,7 @@ const updatePaymentMethod = async () => {
                 }
             } else if (key !== 'photo_url') {
                 // Only append if value is not null
-                if (form.value[key] !== null) {
+                if (form.value[key] !== null && form.value[key] !== '') {
                     formData.append(key, form.value[key])
                 }
             }
@@ -311,39 +318,184 @@ onMounted(() => {
                 <VCardText>
                     <VForm class="mt-3" @submit.prevent="updatePaymentMethod">
                         <VRow>
-                            <!-- Name -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextField v-model="form.name" 
-                                    :label="$t('Name')" :required="true"
-                                    type="text"
-                                    :placeholder="$t('Enter payment method name')"
-                                    :error-messages="nameError"
-                                    @input="validateName($event.target.value)"
-                                />
-                            </VCol>
-
                             <!-- Account Type -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.account_type"
-                                    :label="$t('Account Type')" :required="true"
+                                    :label="$t('Type')" :required="true"
                                     :items="[
                                         'Cash',
-                                        'Bank Account',
+                                        'Bank',
                                         'Paypal',
                                         'Stripe',
-                                        'Loyalty Point',
                                         'Razorpay',
-                                        'Paystack',
-                                        'Paytm',
-                                        'Mobile Banking',
-                                        'Cash On Delivery',
+                                        'PayStack',
+                                        'Paytm'
                                     ]"
-                                    :placeholder="$t('Select account type')"
+                                    :placeholder="$t('Select type')"
                                     :error-messages="accountTypeError"
                                     @input="validateAccountType($event)"
                                     clearable
                                 />
                             </VCol>
+                        </VRow>
+                        <VRow>
+                            <!-- Title/Name -->
+                            <VCol cols="12" md="6" lg="4">
+                                <AppTextField v-model="form.name" 
+                                    :label="$t('Title')" :required="true"
+                                    type="text"
+                                    :placeholder="$t('Enter title')"
+                                    :error-messages="nameError"
+                                    @input="validateName($event.target.value)"
+                                    @focus="$event.target.select()"
+
+                                />
+                            </VCol>
+
+                            <!-- Bank Specific Fields -->
+                            <template v-if="form.account_type === 'Bank'">
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.bank_name"
+                                        :label="$t('Bank Name')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter bank name')"
+                                        @focus="$event.target.select()"
+
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.account_number"
+                                        :label="$t('Account Number')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter account number')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.branch"
+                                        :label="$t('Branch')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter branch')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+                            </template>
+
+                            <!-- Paypal Specific Fields -->
+                            <template v-if="form.account_type === 'Paypal'">
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.client_id"
+                                        :label="$t('Client ID')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter client ID')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.secret_key"
+                                        :label="$t('Secret Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter secret key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppAutocomplete v-model="form.mode"
+                                        :label="$t('Mode')" :required="true"
+                                        :items="['Sandbox', 'Live']"
+                                        :placeholder="$t('Select mode')"
+                                        clearable
+                                    />
+                                </VCol>
+                            </template>
+
+                            <!-- Stripe Specific Fields -->
+                            <template v-if="form.account_type === 'Stripe'">
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.api_key"
+                                        :label="$t('API Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter API key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.secret_key"
+                                        :label="$t('Secret Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter secret key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppAutocomplete v-model="form.mode"
+                                        :label="$t('Mode')" :required="true"
+                                        :items="['Sandbox', 'Live']"
+                                        :placeholder="$t('Select mode')"
+                                        clearable
+                                    />
+                                </VCol>
+                            </template>
+
+                            <!-- Razorpay Specific Fields -->
+                            <template v-if="form.account_type === 'Razorpay'">
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.api_key"
+                                        :label="$t('API Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter API key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.secret_key"
+                                        :label="$t('Secret Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter secret key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+                            </template>
+
+                            <!-- PayStack Specific Fields -->
+                            <template v-if="form.account_type === 'PayStack'">
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.api_key"
+                                        :label="$t('API Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter API key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+                            </template>
+
+                            <!-- Paytm Specific Fields -->
+                            <template v-if="form.account_type === 'Paytm'">
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.merchant_id"
+                                        :label="$t('Merchant ID')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter merchant ID')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppTextField v-model="form.merchant_key"
+                                        :label="$t('Merchant Key')" :required="true"
+                                        type="text"
+                                        :placeholder="$t('Enter merchant key')"
+                                        @focus="$event.target.select()"
+                                    />
+                                </VCol>
+                            </template>
 
                             <!-- Opening Balance -->
                             <VCol cols="12" md="6" lg="4">
@@ -354,6 +506,7 @@ onMounted(() => {
                                     :placeholder="$t('Enter opening balance')"
                                     :error-messages="currentBalanceError"
                                     @input="validateCurrentBalance($event.target.value)"
+                                    @focus="$event.target.select()"
                                 />
                             </VCol>
 
@@ -364,6 +517,7 @@ onMounted(() => {
                                     :placeholder="$t('Enter Description')"
                                     :error-messages="descriptionError"
                                     @input="validateDescription($event.target.value)"
+                                    @focus="$event.target.select()"
                                 />
                             </VCol>
 
@@ -385,12 +539,12 @@ onMounted(() => {
                             <!-- User in website -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.use_in_website"
-                                    :label="$t('Use in website')" :required="true"
+                                    :label="$t('Enable Website')" :required="true"
                                     :items="[
                                         'Yes',
                                         'No'
                                     ]"
-                                    :placeholder="$t('Select use in website')"
+                                    :placeholder="$t('Select Enable Website')"
                                     :error-messages="useInWebsiteError"
                                     @input="validateUseInWebsite($event)"
                                     clearable
@@ -465,11 +619,6 @@ onMounted(() => {
                         :max-size="250"
                         @change="onCrop"
                     />
-                    <!-- Preview section -->
-                    <!-- <div v-if="cropPreview" class="mt-4 cropper-preview">
-                        <h4>{{ $t('Preview') }}</h4>
-                        <img :src="cropPreview" alt="Preview" />
-                    </div> -->
                 </VCardText>
                 <VCardActions>
                     <VSpacer />
@@ -493,10 +642,4 @@ onMounted(() => {
   height: 260px;
   background: #DDD;
 }
-/* .v-card-title {
-  padding: 25px 25px 0px 25px !important;
-}
-.v-card-actions {
-  padding: 0px 25px 25px 25px !important;
-} */
 </style>

@@ -45,6 +45,13 @@ function handlePosClick() {
   }
 }
 
+// const branch_info = computed(() => {
+//   return useCookie("branch_info").value || 0;
+// });
+import { useBranchInfo } from '@/composables/useBranchInfo'
+const { branchInfo } = useBranchInfo()
+
+
 </script>
 
 <style scoped>
@@ -52,6 +59,18 @@ function handlePosClick() {
   margin-right: 10px;
 }
 .pos-icon i {
+  margin-right: 5px;
+}
+.outlet-name {
+  display: flex;
+  align-items: center;
+  margin-right: 50px;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  padding: 0px 14px;
+  cursor: default;
+}
+.outlet-name i {
   margin-right: 5px;
 }
 </style>
@@ -68,6 +87,11 @@ function handlePosClick() {
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
 
+        <div class="outlet-name" v-if="branchInfo != 0">
+          <VIcon icon="tabler-building" />
+          {{ branchInfo.branch_name }}
+        </div>
+
         <button class="pos-icon" v-if="posAccess" @click="handlePosClick">
           <VChip label color="primary"
             class="text-capitalize">
@@ -75,7 +99,6 @@ function handlePosClick() {
             POS
           </VChip>
         </button>
-
 
         <NavBarI18n v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig" />

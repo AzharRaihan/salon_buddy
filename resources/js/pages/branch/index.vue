@@ -14,7 +14,8 @@ const router = useRouter()
 const searchQuery = ref('')
 const userData = useCookie("userData").value;
 const userAbilityRules = useCookie("userAbilityRules").value;
-
+import { useBranchInfo } from '@/composables/useBranchInfo'
+const { branchInfo } = useBranchInfo()
 
 watch(searchQuery, async (newValue) => {
   if (newValue) {
@@ -23,7 +24,9 @@ watch(searchQuery, async (newValue) => {
             method: 'GET'
         })
         if (response.data) {
-            useCookie('branch_info').value = response.data
+            // useCookie('branch_info').value = response.data
+
+            branchInfo.value = response.data
         
             if(userData.id == 1){
                 router.push('/dashboard')

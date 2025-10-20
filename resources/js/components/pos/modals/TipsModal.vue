@@ -2,7 +2,7 @@
     <div v-if="show" class="common-modal select-modal show">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{{ t('Tips') }}</h4>
+                <h4>{{ t('Assign Employee & Tips') }}</h4>
                 <button class="close-modal" @click="handleClose">
                     <VIcon icon="tabler-x" />
                 </button>
@@ -17,39 +17,22 @@
                 <div class="tips-section" v-if="getItemType(props.item) == 'Service'">
                     <!-- Employee Selection -->
                     <div class="employee-selection mb-3" v-if="props.employees && props.employees.length > 0">
-
-                        <!-- I've getting  in option object object now fix the error -->
                         <label class="form-label">{{ t('Select Employee') }} <span class="required-star-2">*</span></label>
                         <AppAutocomplete
                             :model-value="selectedEmployeeId"
-                            @update:model-value="(value) => selectedEmployeeId = value"
+                            @update:model-value="(value) => { selectedEmployeeId = value; onEmployeeChange(); }"
                             :items="props.employees"
-                            :item-title="item => `${item.name}  ${ item.phone ? `(${item.phone})` : ''}`"
+                            :item-title="item => `${item.name}${ item.phone ? ` (${item.phone})` : ''}`"
                             item-value="id"
                             :placeholder="t('Select Employee')"
-                            :error-messages="employeeIdError"
-                            @change="onEmployeeChange"
+                            :error-messages="employeeError"
                         />
-                        <!-- <label class="form-label">{{ t('Select Employee') }}</label>
-                        <select 
-                            class="form-control" 
-                            v-model="selectedEmployeeId"
-                            @change="onEmployeeChange"
-                        >
-                            <option value="">{{ t('Choose an employee...') }}</option>
-                            <option 
-                                v-for="employee in props.employees" 
-                                :key="employee.id"
-                                :value="employee.id"
-                            >
-                                {{ employee.name }}
-                            </option>
-                        </select> -->
+                        <small v-if="employeeError" class="text-danger">{{ employeeError }}</small>
                     </div>
 
                     <!-- Tips Amount Input -->
                     <div class="tips-amount mb-3">
-                        <label class="form-label">{{ t('Tips Amount') }} <span class="required-star-2">*</span></label>
+                        <label class="form-label">{{ t('Tips Amount') }}</label>
                         <div class="input-group">
                             <span class="input-group-text">{{ currencySymbol }}</span>
                             <input
@@ -58,11 +41,12 @@
                                 v-model.number="tipsAmount"
                                 min="0"
                                 step="0.01"
-                                :placeholder="t('Enter tips amount')"
+                                :placeholder="t('Enter tips amount (optional)')"
+                                @focus="$event.target.select()"
                             />
                         </div>
                         <small class="form-text text-muted">
-                            {{ t('This tip will be added to the selected employee') }}
+                            {{ t('Leave blank or enter 0 for no tips') }}
                         </small>
                     </div>
 
@@ -71,12 +55,12 @@
                         <label class="form-label">{{ t('Quick Tips') }}</label>
                         <div class="quick-tips-buttons">
                             <button 
-                                v-for="percentage in quickTipsPercentages" 
-                                :key="percentage"
+                                v-for="amount in quickTipsAmounts" 
+                                :key="amount"
                                 class="btn btn-outline-primary btn-sm me-2 mb-2"
-                                @click="setQuickTip(percentage)"
+                                @click="setQuickTip(amount)"
                             >
-                                {{ percentage }}
+                                {{ currencySymbol }}{{ amount }}
                             </button>
                         </div>
                     </div>
@@ -85,7 +69,7 @@
                 <!-- Non-Service Item Message -->
                 <div v-else class="alert alert-warning">
                     <VIcon icon="tabler-info-circle" class="me-2" />
-                    {{ t('Tips can only be added to service type items') }}
+                    {{ t('Employee can only be assigned to service type items') }}
                 </div>
             </div>
             <div class="modal-footer">
@@ -98,8 +82,8 @@
                     @click="handleConfirm"
                     :disabled="!canConfirm"
                 >
-                    <VIcon icon="tabler-coin" />
-                    {{ t('Add Tips') }}
+                    <VIcon icon="tabler-check" />
+                    {{ t('Add') }}
                 </button>
             </div>
         </div>
@@ -165,14 +149,15 @@ const loading = ref(false)
 const selectedEmployeeId = ref(null)
 const selectedEmployee = ref(null)
 const tipsAmount = ref(0)
+const employeeError = ref('')
 const currencySymbol = ref('$') // You can make this dynamic based on company settings
 
-// Quick tips percentages
-const quickTipsPercentages = [5, 10, 20, 30, 50, 100]
+// Quick tips amounts
+const quickTipsAmounts = [5, 10, 20, 30, 50, 100]
 
 // Computed properties
 const canConfirm = computed(() => {
-    return selectedEmployeeId.value && tipsAmount.value > 0 && getItemType(props.item) === 'Service'
+    return selectedEmployeeId.value && getItemType(props.item) === 'Service'
 })
 
 // Methods
@@ -183,14 +168,25 @@ const formatPrice = (price) => {
 const onEmployeeChange = () => {
     const employee = props.employees.find(emp => emp.id == selectedEmployeeId.value)
     selectedEmployee.value = employee || null
+    if (selectedEmployeeId.value) {
+        employeeError.value = ''
+    }
 }
 
-const setQuickTip = (percentage) => {
-    tipsAmount.value = (percentage).toFixed(2)
+const setQuickTip = (amount) => {
+    tipsAmount.value = parseFloat(amount)
 }
 
 const handleConfirm = async () => {
-    if (!canConfirm.value) return
+    // Validate employee selection
+    if (!selectedEmployeeId.value) {
+        employeeError.value = t('Employee selection is required')
+        return
+    }
+
+    if (getItemType(props.item) !== 'Service') {
+        return
+    }
     
     try {
         loading.value = true
@@ -199,10 +195,11 @@ const handleConfirm = async () => {
             itemId: itemValue?.id,
             employeeId: selectedEmployeeId.value,
             employee: selectedEmployee.value,
-            tipsAmount: tipsAmount.value
+            tipsAmount: tipsAmount.value || 0
         })
+        employeeError.value = ''
     } catch (error) {
-        handleError('tips-assignment', error)
+        handleError('employee-tips-assignment', error)
     } finally {
         loading.value = false
     }
@@ -213,40 +210,68 @@ const handleClose = () => {
     selectedEmployeeId.value = null
     selectedEmployee.value = null
     tipsAmount.value = 0
+    employeeError.value = ''
     emit('close')
 }
 
 // Watch for modal visibility
 watch(() => props.show, (newValue) => {
     if (newValue) {
-        // Check if item already has tips assigned
         const itemValue = unref(props.item)
-        if (itemValue && itemValue.tips) {
-            // Pre-populate with existing tip data
-            selectedEmployeeId.value = itemValue.tips.employeeId
-            selectedEmployee.value = itemValue.tips.employee
-            tipsAmount.value = parseFloat(itemValue.tips.amount) || 0
-        } else {
-            // Reset form when modal opens for new tips
-            selectedEmployeeId.value = null
-            selectedEmployee.value = null
-            tipsAmount.value = 0
+        
+        // Pre-populate employee from item's employee_id or tips.employeeId
+        if (itemValue) {
+            // Check if item has tips with employee info
+            if (itemValue.tips && itemValue.tips.employeeId) {
+                selectedEmployeeId.value = itemValue.tips.employeeId
+                tipsAmount.value = parseFloat(itemValue.tips.amount) || 0
+                onEmployeeChange()
+            } 
+            // Check if item has assigned employee (employee_id)
+            else if (itemValue.employee_id) {
+                selectedEmployeeId.value = itemValue.employee_id
+                tipsAmount.value = parseFloat(itemValue.tips) || 0
+                onEmployeeChange()
+            }
+            // Check for assignedEmployee object
+            else if (itemValue.assignedEmployee && itemValue.assignedEmployee.id) {
+                selectedEmployeeId.value = itemValue.assignedEmployee.id
+                tipsAmount.value = parseFloat(itemValue.tips) || 0
+                onEmployeeChange()
+            }
+            else {
+                // Reset form when modal opens for new assignment
+                selectedEmployeeId.value = null
+                selectedEmployee.value = null
+                tipsAmount.value = 0
+            }
         }
+        employeeError.value = ''
     }
 })
 
 // Watch for item changes
 watch(() => props.item, (newItem) => {
-    if (newItem) {
-        // Check if new item already has tips assigned
+    if (newItem && props.show) {
         const itemValue = unref(newItem)
-        if (itemValue && itemValue.tips) {
-            // Pre-populate with existing tip data
+        
+        // Pre-populate employee from item's employee_id or tips.employeeId
+        if (itemValue.tips && itemValue.tips.employeeId) {
             selectedEmployeeId.value = itemValue.tips.employeeId
-            selectedEmployee.value = itemValue.tips.employee
             tipsAmount.value = parseFloat(itemValue.tips.amount) || 0
-        } else {
-            // Reset form when item changes
+            onEmployeeChange()
+        } 
+        else if (itemValue.employee_id) {
+            selectedEmployeeId.value = itemValue.employee_id
+            tipsAmount.value = parseFloat(itemValue.tips) || 0
+            onEmployeeChange()
+        }
+        else if (itemValue.assignedEmployee && itemValue.assignedEmployee.id) {
+            selectedEmployeeId.value = itemValue.assignedEmployee.id
+            tipsAmount.value = parseFloat(itemValue.tips) || 0
+            onEmployeeChange()
+        }
+        else {
             selectedEmployeeId.value = null
             selectedEmployee.value = null
             tipsAmount.value = 0

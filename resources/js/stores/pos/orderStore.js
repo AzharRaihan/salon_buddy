@@ -400,13 +400,11 @@ export const useOrderStore = defineStore("pos-order", () => {
     }
   };
 
-  const assignEmployeeToService = (itemId, employee, price) => {
+  const assignEmployeeToService = (itemId, price) => {
     const itemIndex = orderItems.value.findIndex(item => item.id === itemId);
     if (itemIndex >= 0) {
       saveToHistory();
-      // Always assign as an object with at least an id property
-      orderItems.value[itemIndex].assignedEmployee = employee && employee.id ? { id: employee.id, name: employee.name } : null;
-      // If price is provided, update the price
+      // Only update the price, no employee assignment
       if (typeof price === 'number' && !isNaN(price) && price >= 0) {
         orderItems.value[itemIndex].price = price;
         orderItems.value[itemIndex].sale_price = price;
@@ -418,13 +416,46 @@ export const useOrderStore = defineStore("pos-order", () => {
     const itemIndex = orderItems.value.findIndex(item => item.id === itemId);
     if (itemIndex >= 0) {
       saveToHistory();
+      // Assign employee to the service
+      orderItems.value[itemIndex].employee_id = employeeId;
+      orderItems.value[itemIndex].assignedEmployee = employee && employee.id ? { id: employee.id, name: employee.name, phone: employee.phone } : null;
+      
       // Add tips information to the item
       orderItems.value[itemIndex].tips = {
         employeeId: employeeId,
-        employee: employee ? { id: employee.id, name: employee.name } : null,
+        employee: employee ? { id: employee.id, name: employee.name, phone: employee.phone } : null,
         amount: parseFloat(tipsAmount) || 0
       };
     }
+  };
+
+  // Distribute order-level tips among assigned employees
+  const distributeTips = (totalTips, distribution) => {
+    saveToHistory();
+    
+    // Clear existing tips from all items first
+    orderItems.value.forEach(item => {
+      if (item.tips) {
+        item.tips.amount = 0;
+      }
+    });
+    
+    // Distribute tips to assigned employees
+    distribution.forEach(dist => {
+      orderItems.value.forEach(item => {
+        if (item.type === 'Service' && item.employee_id === dist.employeeId) {
+          if (!item.tips) {
+            item.tips = {
+              employeeId: dist.employeeId,
+              employee: { id: dist.employeeId, name: dist.employeeName },
+              amount: 0
+            };
+          }
+          // Add the distributed tips amount to this employee's services
+          item.tips.amount = parseFloat(item.tips.amount || 0) + parseFloat(dist.tipsAmount || 0);
+        }
+      });
+    });
   };
 
   // Update service price only
@@ -688,6 +719,7 @@ export const useOrderStore = defineStore("pos-order", () => {
     updateItemNote,
     assignEmployeeToService,
     assignTipsToService,
+    distributeTips,
     updateServicePrice,
     setDiscount,
     clearDiscount,

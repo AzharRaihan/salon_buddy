@@ -201,6 +201,7 @@ declare module 'vue' {
     TestimonialsSection: typeof import('./resources/js/components/frontend/TestimonialsSection.vue')['default']
     TheCustomizer: typeof import('./resources/js/@core/components/TheCustomizer.vue')['default']
     ThemeSwitcher: typeof import('./resources/js/@core/components/ThemeSwitcher.vue')['default']
+    TipsDistributionModal: typeof import('./resources/js/components/pos/modals/TipsDistributionModal.vue')['default']
     TipsModal: typeof import('./resources/js/components/pos/modals/TipsModal.vue')['default']
     TiptapEditor: typeof import('./resources/js/@core/components/TiptapEditor.vue')['default']
     TopNavbar: typeof import('./resources/js/components/pos/TopNavbar.vue')['default']

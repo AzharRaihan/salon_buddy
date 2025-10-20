@@ -7,11 +7,8 @@ export function useWhatsappSettings() {
 
     const form = ref({
         whatsapp_type: 'RC Soft',
-        whatsapp_api_key: '',
         whatsapp_auth_key: '',
         whatsapp_app_key: '',
-        whatsapp_sender_id: '',
-        whatsapp_phone_number: '',
         whatsapp_account_sid: '',
         whatsapp_auth_token: '',
         whatsapp_from_number: ''
@@ -54,11 +51,8 @@ export function useWhatsappSettings() {
     const resetForm = () => {
         form.value = {
             whatsapp_type: 'RC Soft',
-            whatsapp_api_key: '',
             whatsapp_auth_key: '',
             whatsapp_app_key: '',
-            whatsapp_sender_id: '',
-            whatsapp_phone_number: '',
             whatsapp_account_sid: '',
             whatsapp_auth_token: '',
             whatsapp_from_number: ''

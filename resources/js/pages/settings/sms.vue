@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+// SMS settings form
 const form = ref({
     sms_type: 'mobishastra',
     sms_api_key: '',
@@ -14,8 +15,19 @@ const form = ref({
     sms_password: ''
 })
 
+// Test SMS form
+const testForm = ref({
+    to: '',
+    message: ''
+})
+
 const errors = ref({})
+const testErrors = ref({})
 const loadings = ref(false)
+const testLoading = ref(false)
+
+// Offcanvas state
+const showOffcanvas = ref(false)
 
 const validateForm = () => {
     errors.value = {}
@@ -116,6 +128,89 @@ const updateSmsSettings = async () => {
         loadings.value = false
         return
     }
+}
+
+// Test SMS validation
+const validateTestForm = () => {
+    testErrors.value = {}
+
+    if (!testForm.value.to) testErrors.value.to = t('Mobile number is required')
+    if (!testForm.value.message) testErrors.value.message = t('Message is required')
+
+    return Object.keys(testErrors.value).length == 0
+}
+
+// Test SMS function
+const testSms = async () => {
+    testLoading.value = true
+    if (!validateTestForm()) {
+        testLoading.value = false
+        return
+    }
+
+    try {
+        const res = await $api('/test-sms', {
+            method: 'POST',
+            body: testForm.value,
+            headers: {
+                'Accept': 'application/json',
+            },
+            onResponseError({ response }) {
+                toast(response._data.message, {
+                    type: 'error',
+                })
+                testLoading.value = false
+                return Promise.reject(response._data)
+            },
+        })
+        
+        const { status, message } = res
+        if (status == 'error') {
+            toast(message, {
+                type: 'error',
+            })
+            testLoading.value = false
+            return
+        }
+        
+        toast(message || t('Test SMS sent successfully'), {
+            type: "success",
+        })
+        testLoading.value = false
+        closeOffcanvas()
+    } catch (err) {
+        if (err.errors) {
+            for (const [field, messages] of Object.entries(err.errors)) {
+                messages.forEach(msg => {
+                    toast(msg, { type: 'error' })
+                })
+            }
+        } else {
+            toast(err.message || t('Failed to send test SMS'), {
+                type: 'error',
+            })
+        }
+        testLoading.value = false
+    }
+}
+
+// Offcanvas functions
+const openOffcanvas = () => {
+    showOffcanvas.value = true
+    testForm.value = {
+        to: '',
+        message: 'This is a test SMS to verify SMS configuration.'
+    }
+    testErrors.value = {}
+}
+
+const closeOffcanvas = () => {
+    showOffcanvas.value = false
+    testForm.value = {
+        to: '',
+        message: ''
+    }
+    testErrors.value = {}
 }
 
 onMounted(() => {
@@ -224,10 +319,15 @@ onMounted(() => {
                             </VCol>
 
                             <!-- Action Buttons -->
-                            <VCol cols="12">
-                                <VBtn type="submit" :loading="loadings" :disabled="loadings">
+                            <VCol cols="12" class="d-flex flex-wrap gap-4">
+                                <VBtn type="submit" color="primary" :loading="loadings" :disabled="loadings">
                                     <VIcon start icon="tabler-checkbox" />
-                                    {{ t('Submit') }}
+                                    {{ t('Save Changes') }}
+                                </VBtn>
+                                <!-- Test SMS button -->
+                                <VBtn color="secondary" variant="outlined" @click="openOffcanvas()">
+                                    <VIcon start icon="tabler-message" />
+                                    {{ t('Test SMS') }}
                                 </VBtn>
                             </VCol>
                         </VRow>
@@ -235,5 +335,80 @@ onMounted(() => {
                 </VCardText>
             </VCard>
         </VCol>
+
+        <!-- Offcanvas for Test SMS -->
+        <VNavigationDrawer
+            v-model="showOffcanvas"
+            location="end"
+            temporary
+            width="500"
+        >
+            <VCard flat>
+                <VCardTitle class="d-flex justify-space-between align-center pa-4">
+                    <span>{{ t('Test SMS Configuration') }}</span>
+                    <VBtn icon variant="text" @click="closeOffcanvas">
+                        <VIcon icon="tabler-x" />
+                    </VBtn>
+                </VCardTitle>
+
+                <VDivider />
+
+                <VCardText class="pa-4">
+                    <VForm @submit.prevent="testSms">
+                        <VRow>
+                            <!-- Mobile Number -->
+                            <VCol cols="12">
+                                <AppTextField
+                                    v-model="testForm.to"
+                                    :label="t('Mobile Number')"
+                                    type="tel"
+                                    :placeholder="t('Enter recipient mobile number')"
+                                    :error-messages="testErrors.to"
+                                    required
+                                />
+                            </VCol>
+
+                            <!-- Message -->
+                            <VCol cols="12">
+                                <AppTextarea
+                                    v-model="testForm.message"
+                                    :label="t('Message')"
+                                    :placeholder="t('Enter SMS message')"
+                                    :error-messages="testErrors.message"
+                                    rows="5"
+                                    required
+                                />
+                            </VCol>
+                        </VRow>
+
+                        <!-- Form Actions -->
+                        <VRow class="mt-4">
+                            <VCol cols="12" class="d-flex gap-3">
+                                <VBtn
+                                    type="submit"
+                                    color="primary"
+                                    :loading="testLoading"
+                                    :disabled="testLoading"
+                                    block
+                                >
+                                    <VIcon start icon="tabler-send" />
+                                    {{ t('Send Test SMS') }}
+                                </VBtn>
+                                <VBtn
+                                    type="button"
+                                    color="secondary"
+                                    variant="outlined"
+                                    @click="closeOffcanvas"
+                                    block
+                                >
+                                    <VIcon start icon="tabler-x" />
+                                    {{ t('Cancel') }}
+                                </VBtn>
+                            </VCol>
+                        </VRow>
+                    </VForm>
+                </VCardText>
+            </VCard>
+        </VNavigationDrawer>
     </VRow>
 </template> 

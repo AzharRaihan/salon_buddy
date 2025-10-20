@@ -1,12 +1,16 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Company;
 use App\Models\Setting;
 use App\Traits\ApiResponse;
-use App\Traits\FileUploadTrait;
+use App\Services\SMSService;
 use Illuminate\Http\Request;
+use App\Services\EmailService;
+use App\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller
 {
@@ -330,6 +334,71 @@ class SettingController extends Controller
 
 
     /**
+     * Get payment settings
+     *
+     * @return JsonResponse
+     */
+    public function whatsappSettings()
+    {
+        $settings = [
+            'whatsapp_type' => Setting::getSetting('whatsapp_type'),
+            'whatsapp_app_key' => Setting::getSetting('whatsapp_app_key'),
+            'whatsapp_auth_key' => Setting::getSetting('whatsapp_auth_key'),
+            'whatsapp_account_sid' => Setting::getSetting('whatsapp_account_sid'),
+            'whatsapp_auth_token' => Setting::getSetting('whatsapp_auth_token'),
+            'whatsapp_from_number' => Setting::getSetting('whatsapp_from_number'),
+        ];
+
+        return $this->successResponse($settings, 'Payment settings fetched successfully');
+    }
+
+     /**
+     * Update whatsapp settings
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function whatsappSettingsPost(Request $request)
+    {
+
+        if($request->whatsapp_type == 'RC Soft'){
+            $request->validate([
+                'whatsapp_type' => 'required|string|in:RC Soft',
+                'whatsapp_app_key' => 'required|string|max:255',
+                'whatsapp_auth_key' => 'required|string|max:255',
+            ]);
+        }else if($request->whatsapp_type == 'Twilio'){
+            $request->validate([
+                'whatsapp_type' => 'required|string|in:Twilio',
+                'whatsapp_account_sid' => 'required|string|max:255',
+                'whatsapp_auth_token' => 'required|string|max:255',
+                'whatsapp_from_number' => 'required|string|max:255',
+            ]);
+        }
+
+        // $request->validate([
+        //     'whatsapp_type' => 'required|string|in:RC Soft,Twilio',
+        //     'whatsapp_app_key' => 'required_if:whatsapp_type,RC Soft|string|max:255',
+        //     'whatsapp_auth_key' => 'required_if:whatsapp_type,RC Soft|string|max:255',
+        //     'whatsapp_account_sid' => 'required_if:whatsapp_type,Twilio|string|max:255',
+        //     'whatsapp_auth_token' => 'required_if:whatsapp_type,Twilio|string|max:255',
+        //     'whatsapp_from_number' => 'required|string|max:255',
+        // ]);
+
+        // Save whatsapp settings
+        Setting::setSetting('whatsapp_type', $request->whatsapp_type);
+        Setting::setSetting('whatsapp_app_key', $request->whatsapp_app_key);
+        Setting::setSetting('whatsapp_auth_key', $request->whatsapp_auth_key);
+        Setting::setSetting('whatsapp_account_sid', $request->whatsapp_account_sid);
+        Setting::setSetting('whatsapp_auth_token', $request->whatsapp_auth_token);
+        Setting::setSetting('whatsapp_from_number', $request->whatsapp_from_number);
+
+        return $this->successResponse(null, 'Mail settings updated successfully');
+    }
+
+
+
+    /**
      * Get social auth settings
      *
      * @return JsonResponse
@@ -464,15 +533,15 @@ class SettingController extends Controller
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
         ]);
-
         try {
-            $emailService = new \App\Services\EmailService();
+            $emailService = new EmailService();
             $result = $emailService->sendEmail(
                 $request->to,
                 $request->subject,
-                $request->message
+                $request->message,
+                'Test Email',
+                [],
             );
-
             if ($result['status'] === 'Success') {
                 return $this->successResponse(null, 'Test email sent successfully');
             } else {
@@ -497,7 +566,7 @@ class SettingController extends Controller
         ]);
 
         try {
-            $smsService = new \App\Services\SMSService();
+            $smsService = new SMSService();
             $result = $smsService->sendSMS($request->to, $request->message);
 
             if ($result['status'] === 'Success') {
@@ -507,6 +576,32 @@ class SettingController extends Controller
             }
         } catch (\Exception $e) {
             return $this->errorResponse('Test SMS failed: ' . $e->getMessage());
+        }
+    }
+    /**
+     * Test WhatsApp functionality
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function testWhatsapp(Request $request)
+    {
+        $request->validate([
+            'to' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            $whatsappService = new WhatsappService();
+            $result = $whatsappService->sendWhatsapp($request->to, $request->message);
+
+            if ($result['status'] === 'Success') {
+                return $this->successResponse(null, 'Test WhatsApp sent successfully');
+            } else {
+                return $this->errorResponse('Test WhatsApp failed: ' . $result['message']);
+            }
+        } catch (\Exception $e) {
+            return $this->errorResponse('Test WhatsApp failed: ' . $e->getMessage());
         }
     }
 
@@ -522,9 +617,268 @@ class SettingController extends Controller
         foreach ($settings as $setting) {
             $settingsArray[$setting->key] = $setting->value;
         }
-
         $settingsArray['logo_url']    = logo_url();
         $settingsArray['favicon_url'] = favicon_url();
         return $this->successResponse($settingsArray, 'All settings fetched successfully');
     }
+
+    /**
+     * Get marketing statistics
+     *
+     * @return JsonResponse
+     */
+    public function marketingStats()
+    {
+        try {
+            $today = now()->format('m-d');
+            
+            // Get customers with birthday today
+            $birthdayCustomers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_birth, '%m-%d') = ?", [$today])
+
+                ->where('email', '!=', null)
+                ->whereNotNull('email')
+                ->where('del_status', 'Live')
+                ->count();
+
+            
+            // Get customers with anniversary today
+            $anniversaryCustomers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_anniversary, '%m-%d') = ?", [$today])
+                ->where('email', '!=', null)
+                ->whereNotNull('email')
+                ->where('del_status', 'Live')
+                ->count();
+
+            return $this->successResponse([
+                'birthdayCustomers' => $birthdayCustomers,
+                'anniversaryCustomers' => $anniversaryCustomers,
+            ], 'Marketing statistics fetched successfully');
+        } catch (\Exception $e) {
+            Log::error('Marketing stats failed', ['exception' => $e]);
+            return $this->errorResponse('Failed to fetch marketing statistics: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send marketing email campaign
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendMarketingEmail(Request $request)
+    {
+        $request->validate([
+            'campaign_type' => 'required|in:birthday,anniversary',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            $today = now()->format('m-d');
+            $campaignType = $request->campaign_type;
+            
+            // Get customers based on campaign type
+            if ($campaignType == 'birthday') {
+                $customers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_birth, '%m-%d') = ?", [$today])
+                    ->where('email', '!=', null)
+                    ->whereNotNull('email')
+                    ->where('del_status', 'Live')
+                    ->get();
+            } else {
+                $customers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_anniversary, '%m-%d') = ?", [$today])
+                    ->where('email', '!=', null)
+                    ->whereNotNull('email')
+                    ->where('del_status', 'Live')
+                    ->get();
+            }
+
+            if ($customers->isEmpty()) {
+                return $this->errorResponse('No customers found for this campaign');
+            }
+
+            $emailService = new EmailService();
+            $successCount = 0;
+            $failCount = 0;
+
+            foreach ($customers as $customer) {
+                try {
+                    $result = $emailService->sendEmail(
+                        $customer->email,
+                        $request->subject,
+                        $request->message,
+                        'Marketing Email',
+                        array('customer_id' => $customer->id, 'campaign_type' => $campaignType),
+                    );
+                    $successCount++;
+                } catch (\Exception $e) {
+                    Log::error('Marketing email failed for customer: ' . $customer->id, ['exception' => $e]);
+                    $failCount++;
+                }
+            }
+            return $this->successResponse([
+                'success' => $successCount,
+                'failed' => $failCount,
+                'total' => $customers->count()
+            ], "Campaign sent successfully to {$successCount} customers");
+        } catch (\Exception $e) {
+            Log::error('Marketing email campaign failed', ['exception' => $e]);
+            return $this->errorResponse('Failed to send email campaign: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send marketing SMS campaign
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendMarketingSms(Request $request)
+    {
+        $request->validate([
+            'campaign_type' => 'required|in:birthday,anniversary',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            $today = now()->format('m-d');
+            $campaignType = $request->campaign_type;
+            
+            // Get customers based on campaign type
+            if ($campaignType == 'birthday') {
+                $customers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_birth, '%m-%d') = ?", [$today])
+                    ->where('phone', '!=', null)
+                    ->whereNotNull('phone')
+                    ->where('del_status', 'Live')
+                    ->get();
+            } else {
+                $customers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_anniversary, '%m-%d') = ?", [$today])
+                    ->where('phone', '!=', null)
+                    ->whereNotNull('phone')
+                    ->where('del_status', 'Live')
+                    ->get();
+            }
+
+            if ($customers->isEmpty()) {
+                return $this->errorResponse('No customers found for this campaign');
+            }
+
+            $smsService = new \App\Services\SMSService();
+            $successCount = 0;
+            $failCount = 0;
+
+            foreach ($customers as $customer) {
+                try {
+                    $result = $smsService->sendSMS($customer->phone, $request->message);
+                    if ($result['status'] === 'Success') {
+                        $successCount++;
+                    } else {
+                        $failCount++;
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Marketing SMS failed for customer: ' . $customer->id, ['exception' => $e]);
+                    $failCount++;
+                }
+            }
+
+            return $this->successResponse([
+                'success' => $successCount,
+                'failed' => $failCount,
+                'total' => $customers->count()
+            ], "Campaign sent successfully to {$successCount} customers");
+        } catch (\Exception $e) {
+            Log::error('Marketing SMS campaign failed', ['exception' => $e]);
+            return $this->errorResponse('Failed to send SMS campaign: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send marketing WhatsApp campaign
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendMarketingWhatsapp(Request $request)
+    {
+        $request->validate([
+            'campaign_type' => 'required|in:birthday,anniversary',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            $today = now()->format('m-d');
+            $campaignType = $request->campaign_type;
+            
+            // Get customers based on campaign type
+            if ($campaignType == 'birthday') {
+                $customers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_birth, '%m-%d') = ?", [$today])
+                    ->where('phone', '!=', null)
+                    ->whereNotNull('phone')
+                    ->where('del_status', 'Live')
+                    ->get();
+            } else {
+                $customers = \App\Models\Customer::whereRaw("DATE_FORMAT(date_of_anniversary, '%m-%d') = ?", [$today])
+                    ->where('phone', '!=', null)
+                    ->whereNotNull('phone')
+                    ->where('del_status', 'Live')
+                    ->get();
+            }
+
+            if ($customers->isEmpty()) {
+                return $this->errorResponse('No customers found for this campaign');
+            }
+
+            $whatsappService = new \App\Services\WhatsappService();
+            $successCount = 0;
+            $failCount = 0;
+
+            foreach ($customers as $customer) {
+                try {
+                    $result = $whatsappService->sendWhatsapp($customer->phone, $request->message);
+                    if ($result['status'] === 'Success') {
+                        $successCount++;
+                    } else {
+                        $failCount++;
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Marketing WhatsApp failed for customer: ' . $customer->id, ['exception' => $e]);
+                    $failCount++;
+                }
+            }
+
+            return $this->successResponse([
+                'success' => $successCount,
+                'failed' => $failCount,
+                'total' => $customers->count()
+            ], "Campaign sent successfully to {$successCount} customers");
+        } catch (\Exception $e) {
+            Log::error('Marketing WhatsApp campaign failed', ['exception' => $e]);
+            return $this->errorResponse('Failed to send WhatsApp campaign: ' . $e->getMessage());
+        }
+    }
+
+
+    public function getAllEmployeesForGenerateSalary()
+    {
+        $date = date('Y-m-d');
+        $listEmployees = User::where('company_id', Auth::user()->company_id)
+                    ->where('status', 'Active')
+                    ->where('salary', '>', 0)
+                    ->where('del_status', 'Live')
+                    ->get();
+
+        if($listEmployees->isEmpty()){
+            return $this->errorResponse('No employees found');
+        }
+        
+        foreach($listEmployees as $employee){
+            $employee->salary = $employee->salary;
+        }
+
+        
+
+        return $this->successResponse($listEmployees, 'Employees fetched successfully');
+    }
+
+    // Calculate tips  from sale_deatls of 
+
+
 }

@@ -39,8 +39,13 @@
                             {{ (promotionDiscount ?? 0).toFixed(2) }}
                          </td>
                     </tr> -->
-                    <tr v-if="tips > 0">
-                        <td>{{ t('Tips') }}</td>
+                    <tr>
+                        <td>
+                            {{ t('Tips') }}
+                            <button class="btn-icon-edit ms-2" @click="$emit('show-tips-distribution-modal')" :title="t('Edit Tips')">
+                                <VIcon icon="tabler-edit" size="18" />
+                            </button>
+                        </td>
                         <td class="text-end">{{ (tips ?? 0).toFixed(2) }}</td>
                     </tr>
                     <tr>
@@ -155,6 +160,7 @@ const emit = defineEmits([
     'show-discount-modal',
     'show-tips-modal',
     'show-charge-modal',
+    'show-tips-distribution-modal',
     'clear-discount'
 ])
 
@@ -187,5 +193,27 @@ const clearDiscount = () => {
 
 .ms-2 {
     margin-left: 0.5rem;
+}
+
+.btn-icon-edit {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #007bff;
+    transition: all 0.2s;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-edit:hover {
+    background-color: #e7f3ff;
+    color: #0056b3;
+}
+
+.btn-icon-edit:active {
+    transform: scale(0.95);
 }
 </style>

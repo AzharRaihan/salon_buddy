@@ -1,10 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
+
+
 
 const { t } = useI18n()
 const router = useRouter()
@@ -18,7 +20,6 @@ const form = ref({
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
     generated_date: '',
-
     total_amount: 0,
     items: [],
     payments: []
@@ -97,7 +98,7 @@ const validateItem = (item) => {
 onMounted(async () => {
     try {
         const [employeesResponse, paymentMethodsResponse] = await Promise.all([
-            $api('/get-all-employees'),
+            $api('/get-all-employees-for-generate-salary'),
             $api('/get-all-payment-methods')
         ])
         employees.value = [...employeesResponse.data]
@@ -114,10 +115,14 @@ onMounted(async () => {
             deduction_amount: 0,
             absent_day: 0,
             absent_day_amount: 0,
+            tips: 0,
             advance_taken: 0,
             net_salary: formatNumberPrecision(employee.salary) || 0,
             note: ''
         }))
+
+        // Fetch tips and advance taken for all employees
+        await fetchTipsAndAdvanceForAllEmployees()
 
         // Calculate initial total
         calculateTotalAmount()
@@ -154,12 +159,47 @@ const removePaymentMethod = (index) => {
     form.value.payments.splice(index, 1)
 }
 
+const fetchTipsAndAdvanceForAllEmployees = async () => {
+    for (const item of form.value.items) {
+        await fetchEmployeeTipsAndAdvance(item)
+    }
+}
+
+const fetchEmployeeTipsAndAdvance = async (item) => {
+    try {
+        // Fetch tips
+        const tipsResponse = await $api('/employee-tips-by-month', {
+            params: {
+                employee_id: item.employee_id,
+                year: form.value.year,
+                month: form.value.month
+            }
+        })
+        item.tips = formatNumberPrecision(tipsResponse.data.tips) || 0
+
+        // Fetch advance taken (staff payments)
+        const advanceResponse = await $api('/employee-staff-payments-by-month', {
+            params: {
+                employee_id: item.employee_id,
+                year: form.value.year,
+                month: form.value.month
+            }
+        })
+        item.advance_taken = formatNumberPrecision(advanceResponse.data.advance_taken) || 0
+
+        // Recalculate net salary
+        calculateNetSalary(item)
+    } catch (error) {
+        console.error('Error fetching tips and advance:', error)
+    }
+}
+
 const calculateNetSalary = (item) => {
     // Calculate overtime amount
     const overtimeAmount = parseFloat(item.overtime_rate || 0) * parseFloat(item.overtime_hour || 0)
     
-    // Calculate total additions
-    const totalAdditions = overtimeAmount + parseFloat(item.additional_amount || 0)
+    // Calculate total additions (including tips)
+    const totalAdditions = overtimeAmount + parseFloat(item.additional_amount || 0) + parseFloat(item.tips || 0)
     
     // Calculate total deductions
     const totalDeductions = parseFloat(item.deduction_amount || 0) + 
@@ -202,11 +242,16 @@ const openConfirmDialog = (index) => {
     isConfirmDialogOpen.value = true
     selectedSalaryId.value = index
 }
+
 const removeItem = () => {
-    form.value.items.splice(selectedSalaryId, 1)
-    calculateTotalAmount()
-    isConfirmDialogOpen.value = false
-    selectedSalaryId.value = null
+  if (selectedSalaryId.value === null) return
+  
+  const empId = form.value.items[selectedSalaryId.value]?.employee_id
+  form.value.items = form.value.items.filter(i => i.employee_id !== empId)
+  
+  calculateTotalAmount()
+  isConfirmDialogOpen.value = false
+  selectedSalaryId.value = null
 }
 
 const createSalary = async () => {
@@ -264,6 +309,44 @@ const createSalary = async () => {
         loadings.value = false
     }
 }
+
+
+
+const totalPaymentAmount = computed(() => {
+  return form.value.payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0)
+})
+
+// Watch for total payment changes
+watch(totalPaymentAmount, (newValue) => {
+  if (newValue > form.value.total_amount) {
+    toast(t('Total payment amount cannot be greater than total salary amount'), { type: 'error' })
+    
+    // Calculate how much to reduce from the last edited payment
+    const diff = newValue - form.value.total_amount
+    
+    // Adjust only the last non-empty payment field
+    const lastPayment = [...form.value.payments].reverse().find(p => parseFloat(p.amount || 0) > 0)
+    if (lastPayment) {
+      lastPayment.amount = parseFloat(lastPayment.amount) - diff
+      if (lastPayment.amount < 0) lastPayment.amount = 0
+    }
+  }
+})
+
+// Watch for year changes to recalculate tips and advance taken
+watch(() => form.value.year, async (newYear) => {
+  if (newYear && form.value.items.length > 0) {
+    await fetchTipsAndAdvanceForAllEmployees()
+  }
+})
+
+// Watch for month changes to recalculate tips and advance taken
+watch(() => form.value.month, async (newMonth) => {
+  if (newMonth && form.value.items.length > 0) {
+    await fetchTipsAndAdvanceForAllEmployees()
+  }
+})
+
 </script>
 
 <template>
@@ -312,8 +395,8 @@ const createSalary = async () => {
                             <VCol cols="12" md="6" lg="4">
                                 <AppDateTimePicker
                                     v-model="form.generated_date"
-                                    :label="t('Generated Date')" :required="true"
-                                    :placeholder="t('Select date')" 
+                                    :label="t('Generation Date')" :required="true"
+                                    :placeholder="t('Select Generation Date')" 
                                     :error-messages="dateError"
                                     @update:model-value="validateDate"
                                     :config="{
@@ -435,6 +518,19 @@ const createSalary = async () => {
 
                                                     <VCol cols="6" sm="4" md="3" lg="2">
                                                         <AppTextField
+                                                            v-model="item.tips"
+                                                            :label="t('Tips')"
+                                                            type="number"
+                                                            density="compact"
+                                                            hide-details
+                                                            @input="calculateNetSalary(item)"
+                                                            @focus="$event.target.select()"
+                                                            readonly
+                                                        />
+                                                    </VCol>
+
+                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                        <AppTextField
                                                             v-model="item.advance_taken"
                                                             :label="t('Advance Taken')"
                                                             type="number"
@@ -442,6 +538,7 @@ const createSalary = async () => {
                                                             hide-details
                                                             @input="calculateNetSalary(item)"
                                                             @focus="$event.target.select()"
+                                                            readonly
                                                         />
                                                     </VCol>
 
@@ -477,6 +574,7 @@ const createSalary = async () => {
                                     v-model="form.total_amount" 
                                     :label="t('Total Amount')" 
                                     type="number"
+                                    
                                     readonly 
                                 />
                             </VCol>
@@ -507,6 +605,7 @@ const createSalary = async () => {
                                     density="compact"
                                     hide-details
                                     class="mb-2"
+                                    @focus="$event.target.select()"
                                 >
                                     <template #append>
                                         <VBtn

@@ -289,6 +289,28 @@ export function usePOSModals() {
     modal.closeModal("employee-assignment");
   };
 
+  // Tips Distribution Modal Management
+  const openTipsDistributionModal = async () => {
+    return await openModalWithAutoClose("tips-distribution");
+  };
+
+  const toggleTipsDistributionModal = async () => {
+    if (modal.isModalOpen("tips-distribution")) {
+      modal.closeModal("tips-distribution");
+    } else {
+      await openTipsDistributionModal();
+    }
+  };
+
+  const handleTipsDistributionConfirm = () => {
+    modal.closeModal("tips-distribution");
+  };
+
+  const handleTipsDistributionClose = (resetHandler) => {
+    if (resetHandler) resetHandler();
+    modal.closeModal("tips-distribution");
+  };
+
   // General Modal Methods
   const closeAllModals = () => {
     modal.closeAllModals();
@@ -374,6 +396,12 @@ export function usePOSModals() {
     toggleEmployeeAssignmentModal,
     handleEmployeeAssignmentConfirm,
     handleEmployeeAssignmentClose,
+
+    // Tips Distribution Modal
+    openTipsDistributionModal,
+    toggleTipsDistributionModal,
+    handleTipsDistributionConfirm,
+    handleTipsDistributionClose,
 
     // General
     closeAllModals,

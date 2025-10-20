@@ -117,7 +117,7 @@ export default [
     ],
   },
   
-  { heading: 'Employee Management' },
+  { heading: 'Human Resource Management' },
   {
     title: "Roles & Permissions",
     icon: { icon: "tabler-lock" },
@@ -135,22 +135,29 @@ export default [
     ],
   },
   {
-    title: "HRM",
-    icon: { icon: "tabler-hospital-circle" },
+    title: "Attendance",
+    icon: { icon: "tabler-clock" },
     
     children: [
       { title: "Add Attendance", to: { name: "attendance-create" }, permission: ["attendance-create"] },
       { title: "List Attendance", to: { name: "attendance" }, permission: ["attendance-list"] },
+    ],
+  },
+  {
+    title: "Salary",
+    icon: { icon: "tabler-wallet" },
+    
+    children: [
       { title: "Add Salary", to: { name: "salary-create" }, permission: ["salary-create"] },
       { title: "List Salary", to: { name: "salary" }, permission: ["salary-list"] },
     ],
   },
   {
-    title: "Staff Payment",
+    title: "Staff Advance Payment",
     icon: { icon: "tabler-user-dollar" },
     children: [
-      { title: "Add Staff Payment", to: { name: "staff-payment-create" }, permission: ["staff_payment-create"] },
-      { title: "List Staff Payment", to: { name: "staff-payment" }, permission: ["staff_payment-list"] },
+      { title: "Add Staff Advance Payment", to: { name: "staff-payment-create" }, permission: ["staff_payment-create"] },
+      { title: "List Staff Advance Payment", to: { name: "staff-payment" }, permission: ["staff_payment-list"] },
     ],
   },
   { heading: 'Settings & Reports' },
@@ -184,6 +191,7 @@ export default [
       { title: "Email Settings", to: { name: "settings-email" }, permission: ["settings-email"] },
       { title: "SMS Settings", to: { name: "settings-sms" }, permission: ["settings-sms"] },
       { title: "WhatsApp Settings", to: { name: "settings-whatsapp" }, permission: ["settings-whatsapp"] },
+      { title: "Marketing Settings", to: { name: "settings-marketing" }, permission: ["settings-marketing"] },
       { title: "Payment Settings", to: { name: "settings-payment" }, permission: ["settings-payment"] },
       { title: "Social Auth Settings", to: { name: "settings-social-auth" }, permission: ["settings-social_auth"] },
       { title: "Vacation", to: { name: "vacation" }, permission: ["settings-vacation"] },

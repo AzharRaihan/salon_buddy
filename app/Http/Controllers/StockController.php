@@ -9,10 +9,12 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\ItemDetail;
 use App\Models\SaleDetail;
-use App\Models\DamageDetail;
 use App\Traits\ApiResponse;
+use App\Models\DamageDetail;
 use Illuminate\Http\Request;
+use App\Models\ProductUsages;
 use App\Models\PurchaseDetail;
+use App\Models\ProductUsageDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -259,7 +261,7 @@ class StockController extends Controller
         $totalPackageSales = $this->calculatePackageSales($itemId, $companyId);
 
         // 4. Calculate total product usages
-        $totalProductUsages = \App\Models\ProductUsages::where('item_id', $itemId)
+        $totalProductUsages = ProductUsageDetail::where('item_id', $itemId)
             ->where('company_id', $companyId)
             ->where('del_status', 'Live')
             ->sum('quantity');
@@ -339,7 +341,7 @@ class StockController extends Controller
         $totalPackageSales = $this->calculatePackageSales($itemId, $companyId);
 
         // Total product usages
-        $totalProductUsages = \App\Models\ProductUsages::where('item_id', $itemId)
+        $totalProductUsages = ProductUsageDetail::where('item_id', $itemId)
             ->where('company_id', $companyId)
             ->where('del_status', 'Live')
             ->sum('quantity');

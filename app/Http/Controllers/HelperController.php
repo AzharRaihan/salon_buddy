@@ -448,4 +448,62 @@ class HelperController extends Controller
 
         return $this->successResponse($updated, 'Notifications marked as unread successfully');
     }
+
+    /**
+     * Get employee tips by month and year
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getEmployeeTipsByMonth(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|integer',
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        $employeeId = $request->employee_id;
+        $year = $request->year;
+        $month = $request->month;
+
+        // Get tips from sale_details for this employee for the given month/year
+        $tips = \App\Models\SaleDetail::where('employee_id', $employeeId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id)
+            ->sum('tips');
+
+        return $this->successResponse(['tips' => $tips ?? 0], 'Employee tips fetched successfully');
+    }
+
+    /**
+     * Get employee staff payments (advance taken) by month and year
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getEmployeeStaffPaymentsByMonth(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|integer',
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        $employeeId = $request->employee_id;
+        $year = $request->year;
+        $month = $request->month;
+
+        // Get staff payments for this employee for the given month/year
+        $advanceTaken = StaffPayment::where('employee_id', $employeeId)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id)
+            ->sum('amount');
+
+        return $this->successResponse(['advance_taken' => $advanceTaken ?? 0], 'Employee staff payments fetched successfully');
+    }
 }

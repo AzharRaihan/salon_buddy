@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+// Mail settings form
 const form = ref({
     mail_type: 'SMTP',
     host_address: '',
@@ -17,8 +18,20 @@ const form = ref({
     mail_api_key: ''
 })
 
+// Test email form
+const testForm = ref({
+    to: '',
+    subject: '',
+    message: ''
+})
+
 const errors = ref({})
+const testErrors = ref({})
 const loadings = ref(false)
+const testLoading = ref(false)
+
+// Offcanvas state
+const showOffcanvas = ref(false)
 
 const validateForm = () => {
     errors.value = {}
@@ -121,6 +134,92 @@ const updateMailSettings = async () => {
     }
 }
 
+// Test email validation
+const validateTestForm = () => {
+    testErrors.value = {}
+
+    if (!testForm.value.to) testErrors.value.to = t('Email is required')
+    if (!testForm.value.subject) testErrors.value.subject = t('Subject is required')
+    if (!testForm.value.message) testErrors.value.message = t('Message is required')
+
+    return Object.keys(testErrors.value).length == 0
+}
+
+// Test email function
+const testEmail = async () => {
+    testLoading.value = true
+    if (!validateTestForm()) {
+        testLoading.value = false
+        return
+    }
+
+    try {
+        const res = await $api('/test-email', {
+            method: 'POST',
+            body: testForm.value,
+            headers: {
+                'Accept': 'application/json',
+            },
+            onResponseError({ response }) {
+                toast(response._data.message, {
+                    type: 'error',
+                })
+                testLoading.value = false
+                return Promise.reject(response._data)
+            },
+        })
+        
+        const { status, message } = res
+        if (status == 'error') {
+            toast(message, {
+                type: 'error',
+            })
+            testLoading.value = false
+            return
+        }
+        
+        toast(message || t('Test email sent successfully'), {
+            type: "success",
+        })
+        testLoading.value = false
+        closeOffcanvas()
+    } catch (err) {
+        if (err.errors) {
+            for (const [field, messages] of Object.entries(err.errors)) {
+                messages.forEach(msg => {
+                    toast(msg, { type: 'error' })
+                })
+            }
+        } else {
+            toast(err.message || t('Failed to send test email'), {
+                type: 'error',
+            })
+        }
+        testLoading.value = false
+    }
+}
+
+// Offcanvas functions
+const openOffcanvas = () => {
+    showOffcanvas.value = true
+    testForm.value = {
+        to: '',
+        subject: 'Test Email from Salon Buddy',
+        message: 'This is a test email to verify email configuration.'
+    }
+    testErrors.value = {}
+}
+
+const closeOffcanvas = () => {
+    showOffcanvas.value = false
+    testForm.value = {
+        to: '',
+        subject: '',
+        message: ''
+    }
+    testErrors.value = {}
+}
+
 onMounted(() => {
     getMailSettings()
 })
@@ -198,15 +297,109 @@ onMounted(() => {
                                     <VIcon start icon="tabler-checkbox" />
                                     {{ t('Save Changes') }}
                                 </VBtn>
-                                <VBtn color="error" variant="tonal" @click="resetForm">
+                                <!-- Test Email button -->
+                                <VBtn color="secondary" variant="outlined" @click="openOffcanvas()">
+                                    <VIcon start icon="tabler-mail" />
+                                    {{ t('Test Email') }}
+                                </VBtn>
+                                <!-- <VBtn color="error" variant="tonal" @click="resetForm">
                                     <VIcon start icon="tabler-refresh" />
                                     {{ t('Reset') }}
-                                </VBtn>
+                                </VBtn> -->
                             </VCol>
                         </VRow>
                     </VForm>
                 </VCardText>
             </VCard>
         </VCol>
+
+
+        <!-- Offcanvas for Test Email -->
+        <VNavigationDrawer
+            v-model="showOffcanvas"
+            location="end"
+            temporary
+            width="500"
+        >
+            <VCard flat>
+                <VCardTitle class="d-flex justify-space-between align-center pa-4">
+                    <span>{{ t('Test Email Configuration') }}</span>
+                    <VBtn icon variant="text" @click="closeOffcanvas">
+                        <VIcon icon="tabler-x" />
+                    </VBtn>
+                </VCardTitle>
+
+                <VDivider />
+
+                <VCardText class="pa-4">
+                    <VForm @submit.prevent="testEmail">
+                        <VRow>
+                            <!-- Email Address -->
+                            <VCol cols="12">
+                                <AppTextField
+                                    v-model="testForm.to"
+                                    :label="t('Email Address')"
+                                    type="email"
+                                    :placeholder="t('Enter recipient email')"
+                                    :error-messages="testErrors.to"
+                                    required
+                                />
+                            </VCol>
+
+                            <!-- Subject -->
+                            <VCol cols="12">
+                                <AppTextField
+                                    v-model="testForm.subject"
+                                    :label="t('Subject')"
+                                    :placeholder="t('Enter email subject')"
+                                    :error-messages="testErrors.subject"
+                                    required
+                                />
+                            </VCol>
+
+                            <!-- Message -->
+                            <VCol cols="12">
+                                <AppTextarea
+                                    v-model="testForm.message"
+                                    :label="t('Message')"
+                                    :placeholder="t('Enter email message')"
+                                    :error-messages="testErrors.message"
+                                    rows="5"
+                                    required
+                                />
+                            </VCol>
+                        </VRow>
+
+                        <!-- Form Actions -->
+                        <VRow class="mt-4">
+                            <VCol cols="12" class="d-flex gap-3">
+                                <VBtn
+                                    type="submit"
+                                    color="primary"
+                                    :loading="testLoading"
+                                    :disabled="testLoading"
+                                    block
+                                >
+                                    <VIcon start icon="tabler-send" />
+                                    {{ t('Send Test Email') }}
+                                </VBtn>
+                                <VBtn
+                                    type="button"
+                                    color="secondary"
+                                    variant="outlined"
+                                    @click="closeOffcanvas"
+                                    block
+                                >
+                                    <VIcon start icon="tabler-x" />
+                                    {{ t('Cancel') }}
+                                </VBtn>
+                            </VCol>
+                        </VRow>
+                    </VForm>
+                </VCardText>
+            </VCard>
+        </VNavigationDrawer>
+
+
     </VRow>
 </template>

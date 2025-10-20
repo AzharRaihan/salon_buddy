@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
@@ -112,7 +112,7 @@ onMounted(async () => {
 
         const [salaryResponse, employeesResponse, paymentMethodsResponse] = await Promise.all([
             $api(`/salaries/${route.query.id}`),
-            $api('/get-all-employees'),
+            $api('/get-all-employees-for-generate-salary'),
             $api('/get-all-payment-methods')
         ])
 
@@ -137,6 +137,7 @@ onMounted(async () => {
                 deduction_amount: formatNumberPrecision(item.deduction_amount),
                 absent_day: formatNumberPrecision(item.absent_day),
                 absent_day_amount: formatNumberPrecision(item.absent_day_amount),
+                tips: formatNumberPrecision(item.tips) || 0,
                 advance_taken: formatNumberPrecision(item.advance_taken),
                 net_salary: formatNumberPrecision(item.net_salary),
                 note: item.note || ''
@@ -149,6 +150,9 @@ onMounted(async () => {
 
         employees.value = [...employeesResponse.data]
         paymentMethods.value = [...paymentMethodsResponse.data]
+
+        // Fetch tips and advance taken for all employees based on current month/year
+        await fetchTipsAndAdvanceForAllEmployees()
 
     } catch (error) {
         console.error('Error fetching data:', error)
@@ -184,12 +188,59 @@ const removePaymentMethod = (index) => {
     form.value.payments.splice(index, 1)
 }
 
+const fetchTipsAndAdvanceForAllEmployees = async () => {
+    for (const item of form.value.items) {
+        await fetchEmployeeTipsAndAdvance(item)
+    }
+}
+
+const fetchEmployeeTipsAndAdvance = async (item) => {
+    try {
+        // Get month number from month name
+        const monthNumber = getMonthNumber(form.value.month)
+        
+        // Fetch tips
+        const tipsResponse = await $api('/employee-tips-by-month', {
+            params: {
+                employee_id: item.employee_id,
+                year: form.value.year,
+                month: monthNumber
+            }
+        })
+        item.tips = formatNumberPrecision(tipsResponse.data.tips) || 0
+
+        // Fetch advance taken (staff payments)
+        const advanceResponse = await $api('/employee-staff-payments-by-month', {
+            params: {
+                employee_id: item.employee_id,
+                year: form.value.year,
+                month: monthNumber
+            }
+        })
+        item.advance_taken = formatNumberPrecision(advanceResponse.data.advance_taken) || 0
+
+        // Recalculate net salary
+        calculateNetSalary(item)
+    } catch (error) {
+        console.error('Error fetching tips and advance:', error)
+    }
+}
+
+// Helper function to get month number from month name
+const getMonthNumber = (monthName) => {
+    const months = {
+        'January': 1, 'February': 2, 'March': 3, 'April': 4, 'May': 5, 'June': 6,
+        'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12
+    }
+    return months[monthName] || 1
+}
+
 const calculateNetSalary = (item) => {
     // Calculate overtime amount
     const overtimeAmount = parseFloat(item.overtime_rate || 0) * parseFloat(item.overtime_hour || 0)
     
-    // Calculate total additions
-    const totalAdditions = overtimeAmount + parseFloat(item.additional_amount || 0)
+    // Calculate total additions (including tips)
+    const totalAdditions = overtimeAmount + parseFloat(item.additional_amount || 0) + parseFloat(item.tips || 0)
     
     // Calculate total deductions
     const totalDeductions = parseFloat(item.deduction_amount || 0) + 
@@ -235,10 +286,14 @@ const openConfirmDialog = (index) => {
     selectedSalaryId.value = index
 }
 const removeItem = () => {
-    form.value.items.splice(selectedSalaryId, 1)
-    calculateTotalAmount()
-    isConfirmDialogOpen.value = false
-    selectedSalaryId.value = null
+  if (selectedSalaryId.value === null) return
+  
+  const empId = form.value.items[selectedSalaryId.value]?.employee_id
+  form.value.items = form.value.items.filter(i => i.employee_id !== empId)
+  
+  calculateTotalAmount()
+  isConfirmDialogOpen.value = false
+  selectedSalaryId.value = null
 }
 
 const updateSalary = async () => {
@@ -305,6 +360,43 @@ const updateSalary = async () => {
 const resetForm = () => {
     router.push({ name: 'salary' })
 }
+
+
+const totalPaymentAmount = computed(() => {
+  return form.value.payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0)
+})
+
+// Watch for total payment changes
+watch(totalPaymentAmount, (newValue) => {
+  if (newValue > form.value.total_amount) {
+    toast(t('Total payment amount cannot be greater than total salary amount'), { type: 'error' })
+    
+    // Calculate how much to reduce from the last edited payment
+    const diff = newValue - form.value.total_amount
+    
+    // Adjust only the last non-empty payment field
+    const lastPayment = [...form.value.payments].reverse().find(p => parseFloat(p.amount || 0) > 0)
+    if (lastPayment) {
+      lastPayment.amount = parseFloat(lastPayment.amount) - diff
+      if (lastPayment.amount < 0) lastPayment.amount = 0
+    }
+  }
+})
+
+// Watch for year changes to recalculate tips and advance taken
+watch(() => form.value.year, async (newYear) => {
+  if (newYear && form.value.items.length > 0) {
+    await fetchTipsAndAdvanceForAllEmployees()
+  }
+})
+
+// Watch for month changes to recalculate tips and advance taken
+watch(() => form.value.month, async (newMonth) => {
+  if (newMonth && form.value.items.length > 0) {
+    await fetchTipsAndAdvanceForAllEmployees()
+  }
+})
+
 </script>
 
 <template>
@@ -476,6 +568,19 @@ const resetForm = () => {
 
                                                     <VCol cols="6" sm="4" md="3" lg="2">
                                                         <AppTextField
+                                                            v-model="item.tips"
+                                                            :label="t('Tips')"
+                                                            type="number"
+                                                            density="compact"
+                                                            hide-details
+                                                            @input="calculateNetSalary(item)"
+                                                            @focus="$event.target.select()"
+                                                            readonly
+                                                        />
+                                                    </VCol>
+
+                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                        <AppTextField
                                                             v-model="item.advance_taken"
                                                             :label="t('Advance Taken')"
                                                             type="number"
@@ -483,6 +588,7 @@ const resetForm = () => {
                                                             hide-details
                                                             @input="calculateNetSalary(item)"
                                                             @focus="$event.target.select()"
+                                                            readonly
                                                         />
                                                     </VCol>
 
@@ -579,6 +685,10 @@ const resetForm = () => {
                     </VForm>
                 </VCardText>
             </VCard>
+            <ConfirmDialog v-model:is-dialog-visible="isConfirmDialogOpen"
+            :confirmation-question="t('Are you sure you want to delete this salary?')" :confirm-title="t('Deleted!')"
+            :confirm-msg="t('Salary has been deleted successfully.')" :cancel-title="t('Cancelled')"
+            :cancel-msg="t('Salary Deletion Cancelled!')" @confirm="removeItem" />
         </VCol>
     </VRow>
 </template>
