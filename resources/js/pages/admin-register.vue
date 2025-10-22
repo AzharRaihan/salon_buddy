@@ -75,6 +75,7 @@ const register = async () => {
 
     useCookie('userData').value = userData
     useCookie('accessToken').value = accessToken
+    useCookie('company_settings').value = company_settings
 
     await nextTick(() => {
       toast("Register Success. Redirecting...", {

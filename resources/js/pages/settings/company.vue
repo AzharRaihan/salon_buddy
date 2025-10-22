@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import { useI18n } from 'vue-i18n'
 import defaultAvater from '@images/system-config/default-picture.png';
+import { useCompanySettings } from '@/composables/useCompanySettings';
 
 
 
@@ -112,6 +113,8 @@ const resetImage = () => {
 
 const { t } = useI18n()
 
+// Get the company settings composable to update after save
+const { fetchCompanySettings: refreshCompanySettings } = useCompanySettings()
 
 const form = ref({
     name: '',
@@ -290,6 +293,7 @@ const updateCompanySettings = async () => {
                 type: 'success'
             })
             await getCompanySettings() // Refresh data after successful update
+            await refreshCompanySettings() // Refresh company settings composable for reactive updates
         }
     } catch (err) {
         console.error(err)

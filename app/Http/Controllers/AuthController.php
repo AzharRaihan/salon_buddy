@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -36,10 +37,13 @@ class AuthController extends Controller
             $tokenResult = $user->createToken('Personal Access Token');
             $token       = $tokenResult->plainTextToken;
 
+            $companyinfo = Company::where('id', $user->company_id)->first();
+
             return response()->json([
                 'message'     => 'Successfully created user!',
                 'accessToken' => $token,
                 'userData'    => $user,
+                'company_settings'  => $companyinfo,
             ], 201);
         } else {
             return response()->json(['error' => 'Something went wrong! Please try again later.']);
@@ -75,11 +79,14 @@ class AuthController extends Controller
         $tokenResult = $user->createToken('Personal Access Token');
         $token       = $tokenResult->plainTextToken;
 
+        $companyinfo = Company::where('id', $user->company_id)->first();
+
         return response()->json([
             'accessToken'      => $token,
             'token_type'       => 'Bearer',
             'userData'         => $user->makeHidden('roles'),
             'userAbilityRules' => $user->getAllPermissions()->pluck('name'),
+            'company_settings'      => $companyinfo,
         ]);
     }
 

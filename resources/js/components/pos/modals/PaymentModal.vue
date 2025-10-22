@@ -186,7 +186,7 @@ const router = useRouter();
 const { formatAmount, formatNumber,  formatNumberInvoice} = useCompanyFormatters()
 
 // Company Settings for default checkbox values
-const { defaultEmailSelect, defaultSmsSelect, defaultWhatsappSelect } = useCompanySettings()
+const { defaultEmailSelect, defaultSmsSelect, defaultWhatsappSelect, companySettings } = useCompanySettings()
 
 // Props
 const props = defineProps({
@@ -258,10 +258,17 @@ const selectedTip = ref(0)
 const customTipAmount = ref('')
 const availablePaymentMethods = ref([])
 const isLoadingPaymentMethods = ref(false)
-const sendSMS = ref(defaultSmsSelect.value)
-const sendEmail = ref(defaultEmailSelect.value)
-const sendWhatsapp = ref(defaultWhatsappSelect.value)
+const sendSMS = ref(false)
+const sendEmail = ref(false)
+const sendWhatsapp = ref(false)
 const paidAmount = ref(0)
+
+// Watch company settings and update checkbox defaults when they change
+watch([defaultSmsSelect, defaultEmailSelect, defaultWhatsappSelect], ([sms, email, whatsapp]) => {
+  sendSMS.value = sms
+  sendEmail.value = email
+  sendWhatsapp.value = whatsapp
+}, { immediate: true })
 
 // Card details for card payments
 const cardDetails = reactive({
@@ -354,11 +361,6 @@ watch(() => props.show, async (newValue) => {
     // When modal opens, set Paid = Total, Due = 0
     props.formData.amount = totalWithTip.value.toFixed(2)
     paidAmount.value = totalWithTip.value.toFixed(2)
-    
-    // Reset checkboxes to default values from company settings
-    sendSMS.value = defaultSmsSelect.value
-    sendEmail.value = defaultEmailSelect.value
-    sendWhatsapp.value = defaultWhatsappSelect.value
     
     fetchPaymentMethods()
     
@@ -547,9 +549,6 @@ const handleConfirm = async () => {
             if (response.success) {
                 emit('confirm', response.data)
                 selectedMethodId.value = null;
-                sendSMS.value = defaultSmsSelect.value
-                sendEmail.value = defaultEmailSelect.value
-                sendWhatsapp.value = defaultWhatsappSelect.value
             } else {
                 throw new Error(response.message || 'Failed to update sale')
             }
@@ -598,9 +597,6 @@ const handleConfirm = async () => {
                         path: '/pos'
                     });
                     selectedMethodId.value = null;
-                    sendSMS.value = defaultSmsSelect.value
-                    sendEmail.value = defaultEmailSelect.value
-                    sendWhatsapp.value = defaultWhatsappSelect.value
                 } else {
                     throw new Error(response.message || 'Failed to save order')
                 }

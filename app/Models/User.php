@@ -117,5 +117,23 @@ class User extends Authenticatable
     }
 
 
+    // write a relationship to user to purchase
+    public function purchase(): HasMany
+    {
+        return $this->hasMany(Purchase::class, 'user_id', 'id');
+    }
+
+    public function supplierPayment(): HasMany
+    {
+        return $this->hasMany(SupplierPayment::class, 'user_id', 'id');
+    }
+
+    public function staffPayment(): HasMany
+    {
+        return $this->hasMany(StaffPayment::class, 'user_id', 'id');
+    }
+
+
+
 
 }

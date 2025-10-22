@@ -96,10 +96,12 @@ export function useAuth() {
       // Clear cookies regardless of API response
       const accessTokenCookie = useCookie('accessToken')
       const userDataCookie = useCookie('userData')
-      
+      const companySettingsCookie = useCookie('company_settings')
+        
       accessTokenCookie.value = null
       userDataCookie.value = null
       user.value = null
+      companySettingsCookie.value = null
       
       isLoading.value = false
     }

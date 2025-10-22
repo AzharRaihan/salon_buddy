@@ -14,6 +14,13 @@ class PermissionTableSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
+            'accounting-management' => [
+                'accounting-account_balance',
+                'accounting-account_statement',
+                'accounting-balance_sheet',
+                'accounting-trial_balance',
+                'accounting-transaction_history',
+            ],
             'attendance-management' => [
                 'attendance-create',
                 'attendance-delete',
@@ -89,9 +96,17 @@ class PermissionTableSeeder extends Seeder
                 'payment_method-delete',
                 'payment_method-edit', 
                 'payment_method-list',
+                'payment_method-sorting_account',
+
             ],
             'POS' => [
                 'POS',
+            ],
+            'product_usages-management' => [
+                'product_usages-create',
+                'product_usages-delete',
+                'product_usages-edit', 
+                'product_usages-list',
             ],
             'promotion-management' => [
                 'promotion-create',

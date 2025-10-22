@@ -467,6 +467,11 @@
     "useUser": true,
     "useUserData": true,
     "useBranchInfo": true,
-    "useCompanySettings": true
+    "useCompanySettings": true,
+    "useAccountBalanceReport": true,
+    "useBalanceSheetReport": true,
+    "useTrialBalanceReport": true,
+    "useAccountStatementReport": true,
+    "usePaymentMethodSort": true
   }
 }

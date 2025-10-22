@@ -26,6 +26,7 @@ const logout = async () => {
     useCookie('userData').value = null
     useCookie('accessToken').value = null
     useCookie('branch_info').value = null
+    useCookie('company_settings').value = null
 
     // Redirect to login page
     await nextTick(() => {

@@ -55,4 +55,9 @@ class PaymentMethod extends Model
         return $this->hasMany(StaffPayment::class, 'payment_method_id', 'id');
     }
 
+    public function depositWithdraws(): HasMany
+    {
+        return $this->hasMany(DepositWithdraw::class, 'payment_method_id', 'id');
+    }
+
 }

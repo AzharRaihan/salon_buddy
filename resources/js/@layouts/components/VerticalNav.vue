@@ -93,6 +93,7 @@ const logout = async () => {
     useCookie('userAbilityRules').value = null
     useCookie('userData').value = null
     useCookie('accessToken').value = null
+    useCookie('company_settings').value = null
 
     // Redirect to login page
     await nextTick(() => {

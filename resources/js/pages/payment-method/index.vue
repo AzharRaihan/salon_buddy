@@ -160,8 +160,16 @@ onMounted(async () => {
                     <AppTextField v-model="searchQuery" style="max-inline-size: 280px; min-inline-size: 280px;"
                         :placeholder="$t('Search Payment Method')" /> <!-- Fixed: Changed placeholder -->
                     <div class="d-flex flex-row gap-4 align-center flex-wrap">
-                        <VBtn prepend-icon="tabler-plus" :to="{ name: 'payment-method-create' }"> <!-- Fixed: Changed route name -->
-                            {{ $t('Add Payment Method') }} <!-- Fixed: Changed button text -->
+                        <VBtn 
+                            prepend-icon="tabler-arrows-sort" 
+                            variant="tonal"
+                            color="secondary"
+                            :to="{ name: 'payment-method-sorting-payment-method' }"
+                        >
+                            {{ $t('Sort') }}
+                        </VBtn>
+                        <VBtn prepend-icon="tabler-plus" :to="{ name: 'payment-method-create' }"> 
+                            {{ $t('Add Payment Method') }}
                         </VBtn>
                         <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 

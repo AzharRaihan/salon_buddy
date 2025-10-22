@@ -1,38 +1,50 @@
 // useCompanySettings.js
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 
-// Shared reactive state for company settings
-const companySettings = ref(null)
-const isLoading = ref(false)
-const error = ref(null)
+// Get initial data from cookie or set default structure
+const getInitialSettings = () => {
+  const cookieData = useCookie('company_settings').value
+  return cookieData || {
+    default_email_select: 'No',
+    default_sms_select: 'No',
+    default_whatsapp_select: 'No'
+  }
+}
 
-// Fetch company settings from API
+// Shared reactive state for company settings (stored in cookie)
+const companySettings = ref(getInitialSettings())
+
+// Watch for changes and sync to cookie
+watch(companySettings, (newVal) => {
+  useCookie('company_settings').value = newVal
+}, { deep: true })
+
+// Fetch company settings from API and update cookie
 async function fetchCompanySettings() {
-  if (isLoading.value) return // Prevent duplicate calls
-  
   try {
-    isLoading.value = true
-    error.value = null
     const response = await $api('/get-company-info')
     
-    if (response.success) {
-      companySettings.value = response.data
+    if (response.success && response.data) {
+      // Update the reactive ref with new data
+      companySettings.value = {
+        ...response.data,
+        default_email_select: response.data.default_email_select || 'No',
+        default_sms_select: response.data.default_sms_select || 'No',
+        default_whatsapp_select: response.data.default_whatsapp_select || 'No'
+      }
     }
   } catch (err) {
-    error.value = err
     console.error('Failed to fetch company settings:', err)
-  } finally {
-    isLoading.value = false
   }
 }
 
 // Initialize settings on first import
-if (!companySettings.value) {
+if (!companySettings.value || !companySettings.value.default_email_select) {
   fetchCompanySettings()
 }
 
 export function useCompanySettings() {
-  // Computed properties for notification defaults
+  // Reactive computed properties for notification defaults
   const defaultEmailSelect = computed(() => {
     return companySettings.value?.default_email_select === 'Yes'
   })
@@ -47,8 +59,6 @@ export function useCompanySettings() {
 
   return {
     companySettings,
-    isLoading,
-    error,
     defaultEmailSelect,
     defaultSmsSelect,
     defaultWhatsappSelect,

@@ -14,16 +14,18 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Models\Attendance;
 use App\Models\ItemDetail;
-use App\Models\DamageDetail;
 use App\Models\SaleDetail;
-use App\Models\StaffPayment;
 use App\Traits\ApiResponse;
+use App\Models\DamageDetail;
+use App\Models\StaffPayment;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethod;
 use App\Models\PurchaseDetail;
 use App\Models\CustomerReceive;
 use App\Models\ExpenseCategory;
 use App\Models\SupplierPayment;
+use App\Models\DepositWithdraw;
+use App\Models\ProductUsageDetail;
 use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
@@ -1407,10 +1409,12 @@ class ReportController extends Controller
         $totalPackageSales = $this->calculatePackageSales($itemId, $companyId);
 
         // 4. Calculate total product usages
-        $totalProductUsages = \App\Models\ProductUsages::where('item_id', $itemId)
+        $totalProductUsages = ProductUsageDetail::where('item_id', $itemId)
             ->where('company_id', $companyId)
             ->where('del_status', 'Live')
             ->sum('quantity');
+
+
 
         // 5. Calculate total damage stock
         $totalDamageStock = DamageDetail::join('damages', 'damage_details.damage_id', '=', 'damages.id')
@@ -1721,6 +1725,1290 @@ class ReportController extends Controller
         return $this->successResponse([
             'branches' => $branches,
             'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get account balance report
+     */
+    public function accountBalanceReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $branchId = $request->get('branch_id');
+
+        // Get all payment methods
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name')
+            ->get();
+
+        $accountBalances = [];
+        $totalBalance = 0;
+
+        foreach ($paymentMethods as $index => $paymentMethod) {
+            $balance = $this->calculatePaymentMethodBalance($paymentMethod->id, $companyId, $branchId);
+            
+            $accountBalances[] = [
+                'sn' => $index + 1,
+                'account_name' => $paymentMethod->name,
+                'balance' => $balance,
+            ];
+
+            $totalBalance += $balance;
+        }
+
+        return $this->successResponse([
+            'accounts' => $accountBalances,
+            'total' => count($accountBalances),
+            'summary' => [
+                'totalBalance' => $totalBalance,
+            ],
+        ]);
+    }
+
+    /**
+     * Calculate balance for a specific payment method
+     */
+    private function calculatePaymentMethodBalance($paymentMethodId, $companyId, $branchId = null)
+    {
+        $balance = 0;
+
+        // Sales income (Debit)
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        $balance += $salesQuery->sum('total_paid');
+
+        // Customer receives (Debit)
+        $customerReceivesQuery = CustomerReceive::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        $balance += $customerReceivesQuery->sum('amount');
+
+        // Deposits (Debit)
+        $depositsQuery = DepositWithdraw::where('type', 'Deposit')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $depositsQuery->where('branch_id', $branchId);
+        }
+        $balance += $depositsQuery->sum('amount');
+
+        // Purchases expense (Credit)
+        $purchasesQuery = Purchase::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        $balance -= $purchasesQuery->sum('paid_amount');
+
+        // Supplier payments (Credit)
+        $supplierPaymentsQuery = SupplierPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $supplierPaymentsQuery->sum('amount');
+
+        // Expenses (Credit)
+        $expensesQuery = Expense::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        $balance -= $expensesQuery->sum('amount');
+
+        // Staff payments (Credit)
+        $staffPaymentsQuery = StaffPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $staffPaymentsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $staffPaymentsQuery->sum('amount');
+
+        // Withdraws (Credit)
+        $withdrawsQuery = DepositWithdraw::where('type', 'Withdraw')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $withdrawsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $withdrawsQuery->sum('amount');
+
+        return $balance;
+    }
+
+    /**
+     * Get filter options for account balance report
+     */
+    public function accountBalanceReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
+     * Get balance sheet report
+     */
+    public function balanceSheetReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $branchId = $request->get('branch_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        // Assets calculation
+        $assets = [];
+        $totalAssets = 0;
+
+        // 1. Customer Due (Asset)
+        $customerDue = $this->calculateCustomerDue($companyId, $branchId, $dateFrom, $dateTo);
+        $assets[] = [
+            'sn' => 1,
+            'title' => 'Customer Due',
+            'amount' => $customerDue,
+        ];
+        $totalAssets += $customerDue;
+
+        // 2. Current Stock (Asset)
+        $currentStock = $this->calculateCurrentStockValue($companyId, $branchId);
+        $assets[] = [
+            'sn' => 2,
+            'title' => 'Current Stock',
+            'amount' => $currentStock,
+        ];
+        $totalAssets += $currentStock;
+
+        // 3. Payment Methods (Cash, Bank, etc.)
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->get();
+
+        $sn = 3;
+        foreach ($paymentMethods as $paymentMethod) {
+            $balance = $this->calculatePaymentMethodBalance($paymentMethod->id, $companyId, $branchId);
+            if ($balance != 0) {
+                $assets[] = [
+                    'sn' => $sn++,
+                    'title' => $paymentMethod->name,
+                    'amount' => $balance,
+                ];
+                $totalAssets += $balance;
+            }
+        }
+
+        // Liabilities calculation
+        $liabilities = [];
+        $totalLiabilities = 0;
+
+        // 1. Supplier Due (Liability)
+        $supplierDue = $this->calculateSupplierDue($companyId, $branchId, $dateFrom, $dateTo);
+        $liabilities[] = [
+            'sn' => 1,
+            'title' => 'Supplier Due',
+            'amount' => $supplierDue,
+        ];
+        $totalLiabilities += $supplierDue;
+
+        return $this->successResponse([
+            'assets' => $assets,
+            'liabilities' => $liabilities,
+            'summary' => [
+                'totalAssets' => $totalAssets,
+                'totalLiabilities' => $totalLiabilities,
+                'netWorth' => $totalAssets - $totalLiabilities,
+            ],
+        ]);
+    }
+
+    /**
+     * Calculate customer due
+     */
+    private function calculateCustomerDue($companyId, $branchId = null, $dateFrom = null, $dateTo = null)
+    {
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $salesQuery->whereDate('order_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $salesQuery->whereDate('order_date', '<=', $dateTo);
+        }
+
+        return $salesQuery->sum('total_due');
+    }
+
+    /**
+     * Calculate supplier due
+     */
+    private function calculateSupplierDue($companyId, $branchId = null, $dateFrom = null, $dateTo = null)
+    {
+        $purchasesQuery = Purchase::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $purchasesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $purchasesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        return $purchasesQuery->sum('due_amount');
+    }
+
+    /**
+     * Calculate current stock value
+     */
+    private function calculateCurrentStockValue($companyId, $branchId = null)
+    {
+        $items = Item::where('type', 'Product')
+            ->where('company_id', $companyId)
+            ->where('del_status', 'Live')
+            ->where('status', 'Enable')
+            ->get();
+
+        $totalStockValue = 0;
+
+        foreach ($items as $item) {
+            $stock = $this->calculateItemStock($item->id);
+            $unitPrice = $item->last_purchase_price ?? $item->purchase_price ?? 0;
+            $totalStockValue += $stock * $unitPrice;
+        }
+
+        return $totalStockValue;
+    }
+
+    /**
+     * Get filter options for balance sheet report
+     */
+    public function balanceSheetReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
+     * Get trial balance report
+     */
+    public function trialBalanceReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $branchId = $request->get('branch_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        $trialBalance = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
+        $sn = 1;
+
+        // Customer Due (Debit)
+        $customerDue = $this->calculateCustomerDue($companyId, $branchId, $dateFrom, $dateTo);
+        if ($customerDue > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Customer Due',
+                'debit' => $customerDue,
+                'credit' => 0,
+            ];
+            $totalDebit += $customerDue;
+        }
+
+        // Sales (Credit)
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $salesQuery->whereDate('order_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $salesQuery->whereDate('order_date', '<=', $dateTo);
+        }
+        $totalSales = $salesQuery->sum('total_paid');
+        if ($totalSales > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Sales',
+                'debit' => 0,
+                'credit' => $totalSales,
+            ];
+            $totalCredit += $totalSales;
+        }
+
+        // Customer Receives (Credit)
+        $customerReceivesQuery = CustomerReceive::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $customerReceivesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $customerReceivesQuery->whereDate('date', '<=', $dateTo);
+        }
+        $totalCustomerReceives = $customerReceivesQuery->sum('amount');
+        if ($totalCustomerReceives > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Customer Receives',
+                'debit' => 0,
+                'credit' => $totalCustomerReceives,
+            ];
+            $totalCredit += $totalCustomerReceives;
+        }
+
+        // Supplier Due (Credit)
+        $supplierDue = $this->calculateSupplierDue($companyId, $branchId, $dateFrom, $dateTo);
+        if ($supplierDue > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Supplier Due',
+                'debit' => 0,
+                'credit' => $supplierDue,
+            ];
+            $totalCredit += $supplierDue;
+        }
+
+        // Purchases (Debit)
+        $purchasesQuery = Purchase::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $purchasesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $purchasesQuery->whereDate('date', '<=', $dateTo);
+        }
+        $totalPurchases = $purchasesQuery->sum('paid_amount');
+        if ($totalPurchases > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Purchases',
+                'debit' => $totalPurchases,
+                'credit' => 0,
+            ];
+            $totalDebit += $totalPurchases;
+        }
+
+        // Supplier Payments (Debit)
+        $supplierPaymentsQuery = SupplierPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $supplierPaymentsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $supplierPaymentsQuery->whereDate('date', '<=', $dateTo);
+        }
+        $totalSupplierPayments = $supplierPaymentsQuery->sum('amount');
+        if ($totalSupplierPayments > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Supplier Payments',
+                'debit' => $totalSupplierPayments,
+                'credit' => 0,
+            ];
+            $totalDebit += $totalSupplierPayments;
+        }
+
+        // Expenses (Debit)
+        $expensesQuery = Expense::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $expensesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $expensesQuery->whereDate('date', '<=', $dateTo);
+        }
+        $totalExpenses = $expensesQuery->sum('amount');
+        if ($totalExpenses > 0) {
+            $trialBalance[] = [
+                'sn' => $sn++,
+                'title' => 'Expenses',
+                'debit' => $totalExpenses,
+                'credit' => 0,
+            ];
+            $totalDebit += $totalExpenses;
+        }
+
+        // Payment Methods Balances
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->get();
+
+        foreach ($paymentMethods as $paymentMethod) {
+            $balance = $this->calculatePaymentMethodBalance($paymentMethod->id, $companyId, $branchId);
+            if ($balance > 0) {
+                $trialBalance[] = [
+                    'sn' => $sn++,
+                    'title' => $paymentMethod->name,
+                    'debit' => $balance,
+                    'credit' => 0,
+                ];
+                $totalDebit += $balance;
+            } elseif ($balance < 0) {
+                $trialBalance[] = [
+                    'sn' => $sn++,
+                    'title' => $paymentMethod->name,
+                    'debit' => 0,
+                    'credit' => abs($balance),
+                ];
+                $totalCredit += abs($balance);
+            }
+        }
+
+        return $this->successResponse([
+            'trialBalance' => $trialBalance,
+            'total' => count($trialBalance),
+            'summary' => [
+                'totalDebit' => $totalDebit,
+                'totalCredit' => $totalCredit,
+                'difference' => $totalDebit - $totalCredit,
+            ],
+        ]);
+    }
+
+    /**
+     * Get filter options for trial balance report
+     */
+    public function trialBalanceReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
+     * Get account statement report
+     */
+    public function accountStatementReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $branchId = $request->get('branch_id');
+        $paymentMethodId = $request->get('payment_method_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        $statements = [];
+        $runningBalance = 0;
+
+        // Opening Balance
+        if ($dateFrom) {
+            $openingBalance = $this->calculateOpeningBalance($companyId, $branchId, $paymentMethodId, $dateFrom);
+            $statements[] = [
+                'date' => $dateFrom,
+                'title' => 'Opening Balance',
+                'debit' => $openingBalance >= 0 ? $openingBalance : 0,
+                'credit' => $openingBalance < 0 ? abs($openingBalance) : 0,
+                'balance' => $openingBalance,
+                'added_by' => 'System',
+                'added_date_time' => $dateFrom . ' 00:00:00',
+            ];
+            $runningBalance = $openingBalance;
+        }
+
+        // Get all transactions
+        $transactions = $this->getAccountTransactions($companyId, $branchId, $paymentMethodId, $dateFrom, $dateTo);
+
+        foreach ($transactions as $transaction) {
+            $runningBalance += $transaction['debit'] - $transaction['credit'];
+            $transaction['balance'] = $runningBalance;
+            $statements[] = $transaction;
+        }
+
+        // Calculate totals
+        $totalDebit = array_sum(array_column($statements, 'debit'));
+        $totalCredit = array_sum(array_column($statements, 'credit'));
+        $closingBalance = $runningBalance;
+
+        return $this->successResponse([
+            'statements' => $statements,
+            'total' => count($statements),
+            'summary' => [
+                'totalDebit' => $totalDebit,
+                'totalCredit' => $totalCredit,
+                'openingBalance' => $dateFrom ? $openingBalance : 0,
+                'closingBalance' => $closingBalance,
+            ],
+        ]);
+    }
+
+    /**
+     * Calculate opening balance for account statement
+     */
+    private function calculateOpeningBalance($companyId, $branchId, $paymentMethodId, $beforeDate)
+    {
+        $balance = 0;
+
+        // Sales
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('order_date', '<', $beforeDate);
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $salesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance += $salesQuery->sum('total_paid');
+
+        // Customer receives
+        $customerReceivesQuery = CustomerReceive::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $customerReceivesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance += $customerReceivesQuery->sum('amount');
+
+        // Deposits
+        $depositsQuery = DepositWithdraw::where('type', 'Deposit')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $depositsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $depositsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance += $depositsQuery->sum('amount');
+
+        // Purchases
+        $purchasesQuery = Purchase::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $purchasesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance -= $purchasesQuery->sum('paid_amount');
+
+        // Supplier payments
+        $supplierPaymentsQuery = SupplierPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $supplierPaymentsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance -= $supplierPaymentsQuery->sum('amount');
+
+        // Expenses
+        $expensesQuery = Expense::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $expensesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance -= $expensesQuery->sum('amount');
+
+        // Staff payments
+        $staffPaymentsQuery = StaffPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $staffPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $staffPaymentsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance -= $staffPaymentsQuery->sum('amount');
+
+        // Withdraws
+        $withdrawsQuery = DepositWithdraw::where('type', 'Withdraw')
+            ->where('company_id', $companyId)
+            ->whereDate('date', '<', $beforeDate);
+        if ($branchId) {
+            $withdrawsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $withdrawsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        $balance -= $withdrawsQuery->sum('amount');
+
+        return $balance;
+    }
+
+    /**
+     * Get all account transactions
+     */
+    private function getAccountTransactions($companyId, $branchId, $paymentMethodId, $dateFrom, $dateTo)
+    {
+        $transactions = [];
+
+        // Sales
+        $salesQuery = Sale::with(['customer:id,name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $salesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $salesQuery->whereDate('order_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $salesQuery->whereDate('order_date', '<=', $dateTo);
+        }
+
+        $sales = $salesQuery->get();
+        foreach ($sales as $sale) {
+            $transactions[] = [
+                'date' => $sale->order_date,
+                'title' => "Sale\nCustomer: " . ($sale->customer->name ?? 'Walk-in') . "\nInvoice: " . $sale->reference_no,
+                'debit' => $sale->total_paid,
+                'credit' => 0,
+                'balance' => 0,
+                'added_by' => $sale->user->name ?? 'N/A',
+                'added_date_time' => $sale->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $sale->order_date,
+                'sort_time' => $sale->created_at->timestamp,
+            ];
+        }
+
+        // Customer receives
+        $customerReceivesQuery = CustomerReceive::with(['customer:id,name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $customerReceivesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $customerReceivesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $customerReceivesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $customerReceives = $customerReceivesQuery->get();
+        foreach ($customerReceives as $receive) {
+            $transactions[] = [
+                'date' => $receive->date,
+                'title' => "Customer Receive\nCustomer: " . ($receive->customer->name ?? 'N/A') . "\nRef: " . $receive->reference_no,
+                'debit' => $receive->amount,
+                'credit' => 0,
+                'balance' => 0,
+                'added_by' => $receive->user->name ?? 'N/A',
+                'added_date_time' => $receive->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $receive->date,
+                'sort_time' => $receive->created_at->timestamp,
+            ];
+        }
+
+        // Purchases
+        $purchasesQuery = Purchase::with(['supplier:id,name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $purchasesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $purchasesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $purchasesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $purchases = $purchasesQuery->get();
+        foreach ($purchases as $purchase) {
+            $transactions[] = [
+                'date' => $purchase->date,
+                'title' => "Purchase\nSupplier: " . ($purchase->supplier->name ?? 'N/A') . "\nRef: " . $purchase->reference_no,
+                'debit' => 0,
+                'credit' => $purchase->paid_amount,
+                'balance' => 0,
+                'added_by' => $purchase->user->name ?? 'N/A',
+                'added_date_time' => $purchase->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $purchase->date,
+                'sort_time' => $purchase->created_at->timestamp,
+            ];
+        }
+
+        // Supplier payments
+        $supplierPaymentsQuery = SupplierPayment::with(['supplier:id,name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $supplierPaymentsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $supplierPaymentsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $supplierPaymentsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $supplierPayments = $supplierPaymentsQuery->get();
+        foreach ($supplierPayments as $payment) {
+            $transactions[] = [
+                'date' => $payment->date,
+                'title' => "Supplier Payment\nSupplier: " . ($payment->supplier->name ?? 'N/A') . "\nRef: " . $payment->reference_no,
+                'debit' => 0,
+                'credit' => $payment->amount,
+                'balance' => 0,
+                'added_by' => $payment->user->name ?? 'N/A',
+                'added_date_time' => $payment->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $payment->date,
+                'sort_time' => $payment->created_at->timestamp,
+            ];
+        }
+
+        // Expenses
+        $expensesQuery = Expense::with(['employee:id,name', 'category:id,name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $expensesQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $expensesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $expensesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $expenses = $expensesQuery->get();
+        foreach ($expenses as $expense) {
+            $transactions[] = [
+                'date' => $expense->date,
+                'title' => "Expense\nCategory: " . ($expense->category->name ?? 'N/A') . "\nRef: " . $expense->reference_no,
+                'debit' => 0,
+                'credit' => $expense->amount,
+                'balance' => 0,
+                'added_by' => $expense->user->name ?? 'N/A',
+                'added_date_time' => $expense->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $expense->date,
+                'sort_time' => $expense->created_at->timestamp,
+            ];
+        }
+
+        // Staff payments
+        $staffPaymentsQuery = StaffPayment::with(['employee:id,name', 'user:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $staffPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $staffPaymentsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $staffPaymentsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $staffPaymentsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $staffPayments = $staffPaymentsQuery->get();
+        foreach ($staffPayments as $payment) {
+            $transactions[] = [
+                'date' => $payment->date,
+                'title' => "Staff Payment\nEmployee: " . ($payment->employee->name ?? 'N/A') . "\nRef: " . $payment->reference_no,
+                'debit' => 0,
+                'credit' => $payment->amount,
+                'balance' => 0,
+                'added_by' => $payment->user->name ?? 'N/A',
+                'added_date_time' => $payment->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $payment->date,
+                'sort_time' => $payment->created_at->timestamp,
+            ];
+        }
+
+        // Deposits
+        $depositsQuery = DepositWithdraw::with(['paymentMethod:id,name', 'user:id,name'])
+            ->where('type', 'Deposit')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $depositsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $depositsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $depositsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $depositsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $deposits = $depositsQuery->get();
+        foreach ($deposits as $deposit) {
+            $transactions[] = [
+                'date' => $deposit->date,
+                'title' => "Deposit\nRef: " . $deposit->reference_no . "\nNote: " . ($deposit->note ?? 'N/A'),
+                'debit' => $deposit->amount,
+                'credit' => 0,
+                'balance' => 0,
+                'added_by' => $deposit->user->name ?? 'N/A',
+                'added_date_time' => $deposit->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $deposit->date,
+                'sort_time' => $deposit->created_at->timestamp,
+            ];
+        }
+
+        // Withdraws
+        $withdrawsQuery = DepositWithdraw::with(['paymentMethod:id,name', 'user:id,name'])
+            ->where('type', 'Withdraw')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $withdrawsQuery->where('branch_id', $branchId);
+        }
+        if ($paymentMethodId) {
+            $withdrawsQuery->where('payment_method_id', $paymentMethodId);
+        }
+        if ($dateFrom) {
+            $withdrawsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $withdrawsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $withdraws = $withdrawsQuery->get();
+        foreach ($withdraws as $withdraw) {
+            $transactions[] = [
+                'date' => $withdraw->date,
+                'title' => "Withdraw\nRef: " . $withdraw->reference_no . "\nNote: " . ($withdraw->note ?? 'N/A'),
+                'debit' => 0,
+                'credit' => $withdraw->amount,
+                'balance' => 0,
+                'added_by' => $withdraw->user->name ?? 'N/A',
+                'added_date_time' => $withdraw->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $withdraw->date,
+                'sort_time' => $withdraw->created_at->timestamp,
+            ];
+        }
+
+        // Sort transactions by date and time
+        usort($transactions, function ($a, $b) {
+            if ($a['sort_date'] === $b['sort_date']) {
+                return $a['sort_time'] - $b['sort_time'];
+            }
+            return strcmp($a['sort_date'], $b['sort_date']);
+        });
+
+        // Add serial numbers
+        foreach ($transactions as $index => &$transaction) {
+            $transaction['sn'] = $index + 1;
+            unset($transaction['sort_date']);
+            unset($transaction['sort_time']);
+        }
+
+        return $transactions;
+    }
+
+    /**
+     * Get filter options for account statement report
+     */
+    public function accountStatementReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get payment methods
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    /**
+     * Get transaction history report
+     */
+    public function transactionHistoryReport(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+        $branchId = $request->get('branch_id');
+        $paymentMethodId = $request->get('payment_method_id');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        // Payment method is required
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment method is required', 422);
+        }
+
+        $transactions = [];
+
+        // Get payment method name
+        $paymentMethod = PaymentMethod::find($paymentMethodId);
+        $paymentMethodName = $paymentMethod ? $paymentMethod->name : 'N/A';
+
+        // Sales
+        $salesQuery = Sale::with(['customer:id,name', 'user:id,name', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $salesQuery->whereDate('order_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $salesQuery->whereDate('order_date', '<=', $dateTo);
+        }
+
+        $sales = $salesQuery->get();
+        foreach ($sales as $sale) {
+            $transactions[] = [
+                'date' => $sale->order_date,
+                'reference_no' => $sale->reference_no,
+                'type' => 'Sale',
+                'payment_account' => $paymentMethodName,
+                'amount' => $sale->total_paid,
+                'added_by' => $sale->user->name ?? 'N/A',
+                'added_date_time' => $sale->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $sale->order_date,
+                'sort_time' => $sale->created_at->timestamp,
+            ];
+        }
+
+        // Customer Receives
+        $customerReceivesQuery = CustomerReceive::with(['customer:id,name', 'user:id,name', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $customerReceivesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $customerReceivesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $customerReceives = $customerReceivesQuery->get();
+        foreach ($customerReceives as $receive) {
+            $transactions[] = [
+                'date' => $receive->date,
+                'reference_no' => $receive->reference_no,
+                'type' => 'Customer Receive',
+                'payment_account' => $paymentMethodName,
+                'amount' => $receive->amount,
+                'added_by' => $receive->user->name ?? 'N/A',
+                'added_date_time' => $receive->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $receive->date,
+                'sort_time' => $receive->created_at->timestamp,
+            ];
+        }
+
+        // Deposits
+        $depositsQuery = DepositWithdraw::with(['user:id,name', 'paymentMethod:id,name'])
+            ->where('type', 'Deposit')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $depositsQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $depositsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $depositsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $deposits = $depositsQuery->get();
+        foreach ($deposits as $deposit) {
+            $transactions[] = [
+                'date' => $deposit->date,
+                'reference_no' => $deposit->reference_no,
+                'type' => 'Deposit',
+                'payment_account' => $paymentMethodName,
+                'amount' => $deposit->amount,
+                'added_by' => $deposit->user->name ?? 'N/A',
+                'added_date_time' => $deposit->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $deposit->date,
+                'sort_time' => $deposit->created_at->timestamp,
+            ];
+        }
+
+        // Purchases
+        $purchasesQuery = Purchase::with(['supplier:id,name', 'user:id,name', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $purchasesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $purchasesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $purchases = $purchasesQuery->get();
+        foreach ($purchases as $purchase) {
+            $transactions[] = [
+                'date' => $purchase->date,
+                'reference_no' => $purchase->reference_no,
+                'type' => 'Purchase',
+                'payment_account' => $paymentMethodName,
+                'amount' => $purchase->paid_amount,
+                'added_by' => $purchase->user->name ?? 'N/A',
+                'added_date_time' => $purchase->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $purchase->date,
+                'sort_time' => $purchase->created_at->timestamp,
+            ];
+        }
+
+        // Supplier Payments
+        $supplierPaymentsQuery = SupplierPayment::with(['supplier:id,name', 'user:id,name', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $supplierPaymentsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $supplierPaymentsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $supplierPayments = $supplierPaymentsQuery->get();
+        foreach ($supplierPayments as $payment) {
+            $transactions[] = [
+                'date' => $payment->date,
+                'reference_no' => $payment->reference_no,
+                'type' => 'Supplier Payment',
+                'payment_account' => $paymentMethodName,
+                'amount' => $payment->amount,
+                'added_by' => $payment->user->name ?? 'N/A',
+                'added_date_time' => $payment->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $payment->date,
+                'sort_time' => $payment->created_at->timestamp,
+            ];
+        }
+
+        // Expenses
+        $expensesQuery = Expense::with(['employee:id,name', 'category:id,name', 'user:id,name', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $expensesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $expensesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $expenses = $expensesQuery->get();
+        foreach ($expenses as $expense) {
+            $transactions[] = [
+                'date' => $expense->date,
+                'reference_no' => $expense->reference_no,
+                'type' => 'Expense',
+                'payment_account' => $paymentMethodName,
+                'amount' => $expense->amount,
+                'added_by' => $expense->user->name ?? 'N/A',
+                'added_date_time' => $expense->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $expense->date,
+                'sort_time' => $expense->created_at->timestamp,
+            ];
+        }
+
+        // Staff Payments
+        $staffPaymentsQuery = StaffPayment::with(['employee:id,name', 'user:id,name', 'paymentMethod:id,name'])
+            ->where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $staffPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $staffPaymentsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $staffPaymentsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $staffPayments = $staffPaymentsQuery->get();
+        foreach ($staffPayments as $payment) {
+            $transactions[] = [
+                'date' => $payment->date,
+                'reference_no' => $payment->reference_no,
+                'type' => 'Staff Payment',
+                'payment_account' => $paymentMethodName,
+                'amount' => $payment->amount,
+                'added_by' => $payment->user->name ?? 'N/A',
+                'added_date_time' => $payment->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $payment->date,
+                'sort_time' => $payment->created_at->timestamp,
+            ];
+        }
+
+        // Withdraws
+        $withdrawsQuery = DepositWithdraw::with(['user:id,name', 'paymentMethod:id,name'])
+            ->where('type', 'Withdraw')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $withdrawsQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $withdrawsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $withdrawsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $withdraws = $withdrawsQuery->get();
+        foreach ($withdraws as $withdraw) {
+            $transactions[] = [
+                'date' => $withdraw->date,
+                'reference_no' => $withdraw->reference_no,
+                'type' => 'Withdraw',
+                'payment_account' => $paymentMethodName,
+                'amount' => $withdraw->amount,
+                'added_by' => $withdraw->user->name ?? 'N/A',
+                'added_date_time' => $withdraw->created_at->format('Y-m-d H:i:s'),
+                'sort_date' => $withdraw->date,
+                'sort_time' => $withdraw->created_at->timestamp,
+            ];
+        }
+
+        // Sort transactions by date and time
+        usort($transactions, function ($a, $b) {
+            if ($a['sort_date'] === $b['sort_date']) {
+                return $a['sort_time'] - $b['sort_time'];
+            }
+            return strcmp($a['sort_date'], $b['sort_date']);
+        });
+
+        // Add serial numbers and remove sorting fields
+        $totalAmount = 0;
+        foreach ($transactions as $index => &$transaction) {
+            $transaction['sn'] = $index + 1;
+            $totalAmount += $transaction['amount'];
+            unset($transaction['sort_date']);
+            unset($transaction['sort_time']);
+        }
+
+        return $this->successResponse([
+            'transactions' => $transactions,
+            'total' => count($transactions),
+            'summary' => [
+                'totalTransactions' => count($transactions),
+                'totalAmount' => $totalAmount,
+            ],
+        ]);
+    }
+
+    /**
+     * Get filter options for transaction history report
+     */
+    public function transactionHistoryReportFilters(Request $request)
+    {
+        $companyId = Auth::user()->company_id;
+
+        // Get branches
+        $branches = Branch::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'branch_name as name')
+            ->get();
+
+        // Get payment methods
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->select('id', 'name')
+            ->get();
+
+        return $this->successResponse([
+            'branches' => $branches,
+            'paymentMethods' => $paymentMethods,
         ]);
     }
 

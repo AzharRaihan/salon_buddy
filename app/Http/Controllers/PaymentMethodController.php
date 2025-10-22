@@ -42,7 +42,9 @@ class PaymentMethodController extends Controller
             $direction = $request->orderBy === 'desc' ? 'desc' : 'asc';
             $query->orderBy($request->sortBy, $direction);
         } else {
-            $query->orderBy('payment_methods.id', 'desc');
+            // Default sorting by sort_id first, then by id
+            $query->orderBy('payment_methods.sort_id', 'asc')
+                  ->orderBy('payment_methods.id', 'asc');
         }
 
         // Pagination
@@ -257,5 +259,86 @@ class PaymentMethodController extends Controller
             'del_status' => 'Deleted'
         ]);
         return $this->successResponse(null, 'Payment method deleted successfully');
+    }
+
+    /**
+     * Get all payment methods for sorting (without pagination)
+     */
+    public function getPaymentMethodsForSorting(Request $request)
+    {
+        $paymentMethods = PaymentMethod::where('del_status', 'Live')
+            ->where('company_id', Auth::user()->company_id)
+            ->orderBy('sort_id', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        return $this->successResponse([
+            'paymentMethods' => $paymentMethods,
+        ]);
+    }
+
+    /**
+     * Update sort order of payment methods
+     */
+    public function updateSortOrder(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'sort_order' => 'required|array',
+            'sort_order.*.id' => 'required|integer|exists:payment_methods,id',
+            'sort_order.*.sort_id' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors());
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->sort_order as $item) {
+                $paymentMethod = PaymentMethod::where('id', $item['id'])
+                    ->where('company_id', Auth::user()->company_id)
+                    ->first();
+                
+                if ($paymentMethod) {
+                    $paymentMethod->update([
+                        'sort_id' => $item['sort_id'],
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return $this->successResponse(null, 'Sort order updated successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+
+    /**
+     * Reset sort order to default (by ID)
+     */
+    public function resetSortOrder(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $paymentMethods = PaymentMethod::where('del_status', 'Live')
+                ->where('company_id', Auth::user()->company_id)
+                ->orderBy('id', 'asc')
+                ->get();
+
+            foreach ($paymentMethods as $index => $paymentMethod) {
+                $paymentMethod->update([
+                    'sort_id' => $index + 1,
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+            return $this->successResponse(null, 'Sort order reset successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage());
+        }
     }
 }

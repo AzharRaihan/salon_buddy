@@ -94,11 +94,12 @@ const login = async () => {
       },
     })
 
-    const { accessToken, token_type, userData, userAbilityRules } = res
+    const { accessToken, token_type, userData, userAbilityRules, company_settings } = res
 
     useCookie('userAbilityRules').value = userAbilityRules
     useCookie('userData').value = userData
     useCookie('accessToken').value = accessToken
+    useCookie('company_settings').value = company_settings
 
     await nextTick(() => {
       toast("Login Success. Redirecting...", {

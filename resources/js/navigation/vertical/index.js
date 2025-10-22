@@ -109,11 +109,25 @@ export default [
   },
   { heading: 'Accounting' },
   {
-    title: "Accounting",
+    title: "Payment Account",
     icon: { icon: "tabler-receipt-dollar" },
     children: [
       { title: "Add Payment Method", to: { name: "payment-method-create" }, permission: ["payment_method-create"] },
       { title: "List Payment Method", to: { name: "payment-method" }, permission: ["payment_method-list"] },
+      { title: "Sorting Account", to: { name: "payment-method-sorting-payment-method" }, permission: ["payment_method-sorting_account"] },
+    ],
+  },
+  {
+    title: "Accounting",
+    icon: { icon: "tabler-receipt-dollar" },
+    children: [
+      { title: "Add Deposit Withdraw", to: { name: "deposit-withdraw-create" }, permission: ["deposit-withdraw-create"] },
+      { title: "List Deposit Withdraw", to: { name: "deposit-withdraw" }, permission: ["deposit-withdraw-list"] },
+      { title: "Account Balance", to: { name: "accounting-account-balance" }, permission: ["accounting-account_balance"] },
+      { title: "Account Statement", to: { name: "accounting-account-statement" }, permission: ["accounting-account_statement"] },
+      { title: "Balance Sheet", to: { name: "accounting-balance-sheet" }, permission: ["accounting-balance_sheet"] },
+      { title: "Trial Balance", to: { name: "accounting-trial-balance" }, permission: ["accounting-trial_balance"] },
+      { title: "Transaction History", to: { name: "accounting-transaction-history" }, permission: ["accounting-transaction_history"] },
     ],
   },
   

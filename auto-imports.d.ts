@@ -192,6 +192,8 @@ declare global {
   const useAboutSection: typeof import('./resources/js/composables/useAboutSection.js')['useAboutSection']
   const useAboutUsForm: typeof import('./resources/js/composables/useAboutUsForm.js')['useAboutUsForm']
   const useAbs: typeof import('@vueuse/math')['useAbs']
+  const useAccountBalanceReport: typeof import('./resources/js/composables/useAccountBalanceReport.js')['useAccountBalanceReport']
+  const useAccountStatementReport: typeof import('./resources/js/composables/useAccountStatementReport.js')['useAccountStatementReport']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
   const useAnimations: typeof import('./resources/js/composables/useAnimations.js')['useAnimations']
@@ -215,6 +217,7 @@ declare global {
   const useAuth: typeof import('./resources/js/composables/useAuth.js')['useAuth']
   const useAuthState: typeof import('./resources/js/composables/useAuthState.js')['useAuthState']
   const useAverage: typeof import('@vueuse/math')['useAverage']
+  const useBalanceSheetReport: typeof import('./resources/js/composables/useBalanceSheetReport.js')['useBalanceSheetReport']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBattery: typeof import('@vueuse/core')['useBattery']
   const useBluetooth: typeof import('@vueuse/core')['useBluetooth']
@@ -343,6 +346,7 @@ declare global {
   const useParallax: typeof import('@vueuse/core')['useParallax']
   const useParentElement: typeof import('@vueuse/core')['useParentElement']
   const usePayment: typeof import('./resources/js/composables/usePayment.js')['usePayment']
+  const usePaymentMethodSort: typeof import('./resources/js/composables/usePaymentMethodSort.js')['usePaymentMethodSort']
   const usePerformanceObserver: typeof import('@vueuse/core')['usePerformanceObserver']
   const usePermission: typeof import('@vueuse/core')['usePermission']
   const usePointer: typeof import('@vueuse/core')['usePointer']
@@ -425,6 +429,7 @@ declare global {
   const useToggle: typeof import('@vueuse/core')['useToggle']
   const useTransactionHistory: typeof import('./resources/js/composables/useTransactionHistory.js')['useTransactionHistory']
   const useTransition: typeof import('@vueuse/core')['useTransition']
+  const useTrialBalanceReport: typeof import('./resources/js/composables/useTrialBalanceReport.js')['useTrialBalanceReport']
   const useTrunc: typeof import('@vueuse/math')['useTrunc']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
   const useUser: typeof import('./resources/js/composables/useUser.js')['useUser']
@@ -660,6 +665,8 @@ declare module 'vue' {
     readonly useAboutSection: UnwrapRef<typeof import('./resources/js/composables/useAboutSection.js')['useAboutSection']>
     readonly useAboutUsForm: UnwrapRef<typeof import('./resources/js/composables/useAboutUsForm.js')['useAboutUsForm']>
     readonly useAbs: UnwrapRef<typeof import('@vueuse/math')['useAbs']>
+    readonly useAccountBalanceReport: UnwrapRef<typeof import('./resources/js/composables/useAccountBalanceReport.js')['useAccountBalanceReport']>
+    readonly useAccountStatementReport: UnwrapRef<typeof import('./resources/js/composables/useAccountStatementReport.js')['useAccountStatementReport']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useApi: UnwrapRef<typeof import('./resources/js/composables/useApi.js')['useApi']>
@@ -682,6 +689,7 @@ declare module 'vue' {
     readonly useAuth: UnwrapRef<typeof import('./resources/js/composables/useAuth.js')['useAuth']>
     readonly useAuthState: UnwrapRef<typeof import('./resources/js/composables/useAuthState.js')['useAuthState']>
     readonly useAverage: UnwrapRef<typeof import('@vueuse/math')['useAverage']>
+    readonly useBalanceSheetReport: UnwrapRef<typeof import('./resources/js/composables/useBalanceSheetReport.js')['useBalanceSheetReport']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
     readonly useBluetooth: UnwrapRef<typeof import('@vueuse/core')['useBluetooth']>
@@ -804,6 +812,7 @@ declare module 'vue' {
     readonly useParallax: UnwrapRef<typeof import('@vueuse/core')['useParallax']>
     readonly useParentElement: UnwrapRef<typeof import('@vueuse/core')['useParentElement']>
     readonly usePayment: UnwrapRef<typeof import('./resources/js/composables/usePayment.js')['usePayment']>
+    readonly usePaymentMethodSort: UnwrapRef<typeof import('./resources/js/composables/usePaymentMethodSort.js')['usePaymentMethodSort']>
     readonly usePerformanceObserver: UnwrapRef<typeof import('@vueuse/core')['usePerformanceObserver']>
     readonly usePermission: UnwrapRef<typeof import('@vueuse/core')['usePermission']>
     readonly usePointer: UnwrapRef<typeof import('@vueuse/core')['usePointer']>
@@ -882,6 +891,7 @@ declare module 'vue' {
     readonly useToggle: UnwrapRef<typeof import('@vueuse/core')['useToggle']>
     readonly useTransactionHistory: UnwrapRef<typeof import('./resources/js/composables/useTransactionHistory.js')['useTransactionHistory']>
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
+    readonly useTrialBalanceReport: UnwrapRef<typeof import('./resources/js/composables/useTrialBalanceReport.js')['useTrialBalanceReport']>
     readonly useTrunc: UnwrapRef<typeof import('@vueuse/math')['useTrunc']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserData: UnwrapRef<typeof import('./resources/js/composables/useUserData.js')['useUserData']>

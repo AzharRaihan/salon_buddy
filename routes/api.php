@@ -18,7 +18,6 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\StaffPaymentController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
@@ -35,6 +34,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\DeliveryAreaController;
+use App\Http\Controllers\StaffPaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\ProductUsagesController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -43,6 +43,7 @@ use App\Http\Controllers\WebsiteSettingController;
 use App\Http\Controllers\WorkingProcessController;
 use App\Http\Controllers\CustomerReceiveController;
 use App\Http\Controllers\DeliveryPartnerController;
+use App\Http\Controllers\DepositWithdrawController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\SupplierPaymentController;
 
@@ -164,6 +165,17 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::apiResource('staff-payments', StaffPaymentController::class);
     Route::apiResource('suppliers', SupplierController::class);
     Route::apiResource('payment-methods', PaymentMethodController::class);
+
+    Route::apiResource('deposit-withdraws', DepositWithdrawController::class);
+    Route::get('generate-deposit-withdraw-reference-no', [DepositWithdrawController::class, 'generateReferenceNo']);
+    
+    // Payment method sorting routes
+    Route::controller(PaymentMethodController::class)->group(function () {
+        Route::get('payment-methods-for-sorting', 'getPaymentMethodsForSorting');
+        Route::post('payment-methods/update-sort-order', 'updateSortOrder');
+        Route::post('payment-methods/reset-sort-order', 'resetSortOrder');
+    });
+    
     Route::apiResource('attendances', AttendanceController::class);
     Route::apiResource('promotions', PromotionController::class);
     Route::apiResource('purchases', PurchaseController::class);
@@ -227,6 +239,18 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('staff-evaluation-report', 'staffEvaluationReport');
         Route::get('staff-evaluation-report-filters', 'staffEvaluationReportFilters');
         Route::get('staff-evaluation-details-report', 'staffEvaluationDetailsReport');
+
+        // Accounting Reports
+        Route::get('account-balance-report', 'accountBalanceReport');
+        Route::get('account-balance-report-filters', 'accountBalanceReportFilters');
+        Route::get('balance-sheet-report', 'balanceSheetReport');
+        Route::get('balance-sheet-report-filters', 'balanceSheetReportFilters');
+        Route::get('trial-balance-report', 'trialBalanceReport');
+        Route::get('trial-balance-report-filters', 'trialBalanceReportFilters');
+        Route::get('account-statement-report', 'accountStatementReport');
+        Route::get('account-statement-report-filters', 'accountStatementReportFilters');
+        Route::get('transaction-history-report', 'transactionHistoryReport');
+        Route::get('transaction-history-report-filters', 'transactionHistoryReportFilters');
 
     });
 

@@ -16,9 +16,16 @@ const { t } = useI18n()
 const route = useRoute();
 const router = useRouter();
 const loadings = ref(false)
-const sendSMS = ref(defaultSmsSelect.value)
-const sendEmail = ref(defaultEmailSelect.value)
-const sendWhatsapp = ref(defaultWhatsappSelect.value)
+const sendSMS = ref(false)
+const sendEmail = ref(false)
+const sendWhatsapp = ref(false)
+
+// Watch company settings and update checkbox defaults when they change
+watch([defaultSmsSelect, defaultEmailSelect, defaultWhatsappSelect], ([sms, email, whatsapp]) => {
+  sendSMS.value = sms
+  sendEmail.value = email
+  sendWhatsapp.value = whatsapp
+}, { immediate: true })
 
 const form = ref({
     reference_no: '',

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Unit;
 use App\Models\ItemDetail;
+use App\Models\ProductUsageDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -77,7 +78,7 @@ class Item extends Model
 
     public function productUsages(): HasMany
     {
-        return $this->hasMany(ProductUsages::class, 'item_id', 'id');
+        return $this->hasMany(ProductUsageDetail::class, 'item_id', 'id');
     }
 
 

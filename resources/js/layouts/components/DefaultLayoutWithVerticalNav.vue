@@ -45,9 +45,6 @@ function handlePosClick() {
   }
 }
 
-// const branch_info = computed(() => {
-//   return useCookie("branch_info").value || 0;
-// });
 import { useBranchInfo } from '@/composables/useBranchInfo'
 const { branchInfo } = useBranchInfo()
 
@@ -87,7 +84,8 @@ const { branchInfo } = useBranchInfo()
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
 
-        <div class="outlet-name" v-if="branchInfo != 0">
+
+        <div class="outlet-name" v-if="branchInfo._value != 0">
           <VIcon icon="tabler-building" />
           {{ branchInfo.branch_name }}
         </div>
