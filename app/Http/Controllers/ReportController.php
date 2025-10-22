@@ -1739,7 +1739,7 @@ class ReportController extends Controller
         // Get all payment methods
         $paymentMethods = PaymentMethod::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'name')
+            ->select('id', 'name', 'current_balance')
             ->get();
 
         $accountBalances = [];
@@ -1747,7 +1747,7 @@ class ReportController extends Controller
 
         foreach ($paymentMethods as $index => $paymentMethod) {
             $balance = $this->calculatePaymentMethodBalance($paymentMethod->id, $companyId, $branchId);
-            
+            $balance = (float)$paymentMethod->current_balance + ($balance) ;
             $accountBalances[] = [
                 'sn' => $index + 1,
                 'account_name' => $paymentMethod->name,

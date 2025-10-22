@@ -110,7 +110,7 @@ export default [
   { heading: 'Accounting' },
   {
     title: "Payment Account",
-    icon: { icon: "tabler-receipt-dollar" },
+    icon: { icon: "tabler-cash-banknote" },
     children: [
       { title: "Add Payment Method", to: { name: "payment-method-create" }, permission: ["payment_method-create"] },
       { title: "List Payment Method", to: { name: "payment-method" }, permission: ["payment_method-list"] },

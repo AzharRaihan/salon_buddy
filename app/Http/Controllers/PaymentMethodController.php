@@ -51,9 +51,9 @@ class PaymentMethodController extends Controller
         $perPage = $request->itemsPerPage ?? 10;
         $paymentMethods = $query->paginate($perPage);
 
-        foreach ($paymentMethods->items() as $paymentMethod) {
-            $paymentMethod->current_balance = $this->calculateCurrentBalance($paymentMethod->id);
-        }
+        // foreach ($paymentMethods->items() as $paymentMethod) {
+        //     $paymentMethod->current_balance = $this->calculateCurrentBalance($paymentMethod->id);
+        // }
 
         return $this->successResponse([
             'paymentMethods' => $paymentMethods->items(),

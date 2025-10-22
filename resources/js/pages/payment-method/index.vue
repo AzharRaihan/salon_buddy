@@ -35,7 +35,7 @@ const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber } = useC
 const SN = computed(() => t('SN'))
 const Name = computed(() => t('Name'))
 const AccountType = computed(() => t('Account Type'))
-const CurrentBalance = computed(() => t('Current Balance'))
+const OpeningBalance = computed(() => t('Opening Balance'))
 const UseInWebsite = computed(() => t('Use in website'))
 const Icon = computed(() => t('Icon'))
 const Action = computed(() => t('Action'))
@@ -58,7 +58,7 @@ const headers = [
         sortable: false,
     },
     {
-        title: CurrentBalance,
+        title: OpeningBalance,
         key: 'current_balance',
         sortable: false,
     },

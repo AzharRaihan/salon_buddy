@@ -201,6 +201,11 @@ onMounted(async () => {
                     </div>
                 </template>
 
+                <!-- Role name -->
+                <template #item.role_name="{ item }">
+                    {{ item.role.name }}
+                </template>
+
                 <!-- Status badge -->
                 <template #item.status_name="{ item }">
                     <VChip
