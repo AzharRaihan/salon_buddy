@@ -285,6 +285,12 @@ const validateForm = () => {
         errors.value.email = 'Invalid email format'
         isValid = false
     }
+
+    // Website title validation
+    if (!form.value.website_title) {
+        errors.value.website_title = 'Website title is required'
+        isValid = false
+    }
     
     // Phone validation
     if (!form.value.phone) {
@@ -569,7 +575,7 @@ const resetForm = () => {
                             </VCol>
                             <!-- Footer -->
                             <VCol cols="12" md="6" lg="4">
-                                <AppTextField v-model="form.website_title" :label="t('Website Title')" :error-messages="errors.website_title"
+                                <AppTextField v-model="form.website_title" required="true" :label="t('Website Title')" :error-messages="errors.website_title"
                                     :placeholder="t('Enter website title')" />
                             </VCol>
                             <VCol cols="12" md="6" lg="4" class="mb-4">

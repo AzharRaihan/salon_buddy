@@ -19,6 +19,7 @@ const form = ref({
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
     generated_date: '',
+    branch_id: branch_info.id,
     total_amount: 0,
     items: [],
     payments: []
@@ -38,7 +39,8 @@ const itemErrors = ref({
     absent_day: '',
     absent_day_amount: '',
     advance_taken: '',
-    net_salary: ''
+    net_salary: '',
+    branch_id: ''
 })
 
 const validateYear = (year) => {
@@ -126,6 +128,7 @@ onMounted(async () => {
             year: salary.year,
             month: monthName(salary.month),
             generated_date: salary.generated_date,
+            branch_id: salary.branch_id || branch_info.id,
             total_amount: formatNumberPrecision(salary.total_amount),
             items: salary.salary_details?.map(item => ({
                 employee_id: item.employee?.id,
@@ -138,13 +141,15 @@ onMounted(async () => {
                 absent_day: formatNumberPrecision(item.absent_day),
                 absent_day_amount: formatNumberPrecision(item.absent_day_amount),
                 tips: formatNumberPrecision(item.tips) || 0,
+                branch_id: item.branch_id || branch_info.id,
                 advance_taken: formatNumberPrecision(item.advance_taken),
                 net_salary: formatNumberPrecision(item.net_salary),
                 note: item.note || ''
             })) || [],
             payments: salary.salary_payments?.map(payment => ({
                 payment_method_id: (payment.payment_method?.id),
-                amount: formatNumberPrecision(payment.amount)
+                amount: formatNumberPrecision(payment.amount),
+                branch_id: payment.branch_id || branch_info.id
             })) || []
         }
 
@@ -271,6 +276,13 @@ const validateForm = () => {
     
     form.value.items.forEach(item => {
         if (!validateItem(item)) isValid = false
+    })
+
+    form.value.payments.forEach(payment => {
+        if (!payment.amount || parseFloat(payment.amount) <= 0) {
+        toast(`${payment.name} ${t("can't be 0 or empty")}`, { type: 'error' })
+        isValid = false
+        }
     })
     
     return isValid

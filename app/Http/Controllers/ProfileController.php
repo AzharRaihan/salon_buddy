@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Traits\FileUploadTrait;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
@@ -28,7 +29,7 @@ class ProfileController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $user        = User::find($request->user_id);
+        $user        = User::find(Auth::user()->id);
         $user->name  = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
@@ -38,6 +39,7 @@ class ProfileController extends Controller
         }
 
         $user->save();
+
         return response()->json([
             'status'  => 'success',
             'message' => 'Profile updated successfully',

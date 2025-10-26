@@ -65,7 +65,7 @@ const headers = [
     },
     {
         title: Role,
-        key: 'role_name',
+        key: 'actual_role_name',
         sortable: true,
     },
     {
@@ -202,8 +202,8 @@ onMounted(async () => {
                 </template>
 
                 <!-- Role name -->
-                <template #item.role_name="{ item }">
-                    {{ item.role.name }}
+                <template #item.actual_role_name="{ item }">
+                    {{ item.actual_role_name }}
                 </template>
 
                 <!-- Status badge -->

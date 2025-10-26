@@ -21,6 +21,7 @@ const form = ref({
     month: new Date().getMonth() + 1,
     generated_date: '',
     total_amount: 0,
+    branch_id: branch_info.id,
     items: [],
     payments: []
 })
@@ -39,7 +40,8 @@ const itemErrors = ref({
     absent_day: '',
     absent_day_amount: '',
     advance_taken: '',
-    net_salary: ''
+    net_salary: '',
+    branch_id: ''
 })
 
 const validateYear = (year) => {
@@ -116,6 +118,7 @@ onMounted(async () => {
             absent_day: 0,
             absent_day_amount: 0,
             tips: 0,
+            branch_id: form.value.branch_id,
             advance_taken: 0,
             net_salary: formatNumberPrecision(employee.salary) || 0,
             note: ''
@@ -151,7 +154,8 @@ const addPaymentMethod = (methodId) => {
     form.value.payments.push({
         payment_method_id: method.id,
         name: method.name,
-        amount: 0
+        amount: 0,
+        branch_id: form.value.branch_id
     })
 }
 
@@ -231,6 +235,13 @@ const validateForm = () => {
     form.value.items.forEach(item => {
         if (!validateItem(item)) isValid = false
     })
+
+    form.value.payments.forEach(payment => {
+        if (!payment.amount || parseFloat(payment.amount) <= 0) {
+        toast(`${payment.name} ${t("can't be 0 or empty")}`, { type: 'error' })
+        isValid = false
+        }
+    })
     
     return isValid
 }
@@ -266,7 +277,8 @@ const createSalary = async () => {
         // Format payments data
         const formattedPayments = form.value.payments.map(payment => ({
             payment_method_id: payment.payment_method_id,
-            amount: payment.amount
+            amount: payment.amount,
+            branch_id: form.value.branch_id
         }))
 
         const payload = {

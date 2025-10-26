@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('salary_id')->nullable();
             $table->unsignedInteger('payment_method_id')->nullable();
             $table->decimal('amount', 10, 3);
+            $table->unsignedInteger('branch_id')->nullable();
             $table->unsignedInteger('company_id')->nullable();
             $table->enum('del_status', ['Live', 'Deleted'])->default('Live');
             $table->timestamps();

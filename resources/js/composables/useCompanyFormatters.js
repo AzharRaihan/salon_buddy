@@ -57,6 +57,37 @@ export function useCompanyFormatters() {
     return formattedDate
   }
 
+
+  // 2025-10-22 04:55:52 thi is my date tim now modify the function
+  const formatDateWithTime = (dateString, settings = null) => {
+    if (!dateString) return ''
+    
+    const settingsToUse = settings || companySettings.value
+    if (!settingsToUse?.date_format) {
+      // Default format if no company settings
+      return new Date(dateString).toLocaleString()
+    }
+
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return ''
+
+    const format = settingsToUse.date_format
+    
+    // Convert PHP date format to JavaScript
+    const formatMap = {
+      'H': date.getHours(),
+      'i': date.getMinutes(),
+      's': date.getSeconds(),
+    }
+
+    let formattedDateWithTime = format
+    Object.entries(formatMap).forEach(([key, value]) => {
+      formattedDateWithTime = formattedDateWithTime.replace(new RegExp(key, 'g'), value)
+    })
+
+    return formattedDateWithTime
+  }
+
   // Format amount based on company settings
   const formatAmount = (amount, settings = null) => {
     if (amount === null || amount === undefined || isNaN(amount)) return '0'
@@ -168,6 +199,7 @@ export function useCompanyFormatters() {
     isLoading,
     fetchCompanySettings,
     formatDate,
+    formatDateWithTime,
     formatAmount,
     formatNumber,
     formatNumberInvoice,

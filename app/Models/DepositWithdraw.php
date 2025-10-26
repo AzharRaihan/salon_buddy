@@ -26,7 +26,7 @@ class DepositWithdraw extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'added_by', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**

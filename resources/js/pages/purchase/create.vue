@@ -78,6 +78,7 @@ const validatePaidAmount = (paidAmount) => {
         paidAmountError.value = t('Paid amount cannot exceed grand total')
         return false
     }
+
     paidAmountError.value = ''
     return true
 }
@@ -235,6 +236,11 @@ const validateForm = () => {
     
     if (form.value.items.length == 0) {
         toast(t('At least one item is required'), { type: 'error' })
+        isValid = false
+    }
+
+    if (form.value.paid_amount > 0 && !form.value.payment_method_id) {
+        toast(t('Payment method is required when paid amount is greater than 0'), { type: 'error' })
         isValid = false
     }
     

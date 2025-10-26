@@ -206,7 +206,7 @@ export default [
       { title: "SMS Settings", to: { name: "settings-sms" }, permission: ["settings-sms"] },
       { title: "WhatsApp Settings", to: { name: "settings-whatsapp" }, permission: ["settings-whatsapp"] },
       { title: "Marketing Settings", to: { name: "settings-marketing" }, permission: ["settings-marketing"] },
-      { title: "Payment Settings", to: { name: "settings-payment" }, permission: ["settings-payment"] },
+      // { title: "Payment Settings", to: { name: "settings-payment" }, permission: ["settings-payment"] },
       { title: "Social Auth Settings", to: { name: "settings-social-auth" }, permission: ["settings-social_auth"] },
       { title: "Vacation", to: { name: "vacation" }, permission: ["settings-vacation"] },
       { title: "Weekly Holiday", to: { name: "holiday" }, permission: ["settings-holiday"] },

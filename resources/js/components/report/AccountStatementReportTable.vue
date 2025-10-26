@@ -109,7 +109,7 @@
                     <!-- Added Date Time -->
                     <template #item.added_date_time="{ item }">
                         <span class="text-medium-emphasis">
-                            {{ item.added_date_time }}
+                            {{ formatDateWithTime(item.added_date_time) }}
                         </span>
                     </template>
 
@@ -159,7 +159,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate, formatAmount } = useCompanyFormatters()
+const { formatDate, formatAmount, formatDateWithTime } = useCompanyFormatters()
 
 const props = defineProps({
     statements: {

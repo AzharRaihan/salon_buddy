@@ -39,6 +39,11 @@ class UserController extends Controller
         $perPage = $request->itemsPerPage ?? 10;
         $users   = $query->paginate($perPage);
 
+        foreach ($users as $user) {
+            $user->actual_role_name = DB::table('roles')->where('id', $user->role)->first()->name;
+        }
+
+
         return $this->successResponse([
             'users' => $users->items(),
             'total' => $users->total(),

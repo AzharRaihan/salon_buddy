@@ -20,11 +20,12 @@ use App\Models\DamageDetail;
 use App\Models\StaffPayment;
 use Illuminate\Http\Request;
 use App\Models\PaymentMethod;
+use App\Models\SalaryPayment;
 use App\Models\PurchaseDetail;
 use App\Models\CustomerReceive;
+use App\Models\DepositWithdraw;
 use App\Models\ExpenseCategory;
 use App\Models\SupplierPayment;
-use App\Models\DepositWithdraw;
 use App\Models\ProductUsageDetail;
 use Illuminate\Support\Facades\Auth;
 
@@ -1845,6 +1846,17 @@ class ReportController extends Controller
         }
         $balance -= $withdrawsQuery->sum('amount');
 
+        // Salary payments (Credit)
+        $salaryPaymentsQuery = SalaryPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $salaryPaymentsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $salaryPaymentsQuery->sum('amount');
+
+
+
         return $balance;
     }
 
@@ -1881,7 +1893,7 @@ class ReportController extends Controller
         $totalAssets = 0;
 
         // 1. Customer Due (Asset)
-        $customerDue = $this->calculateCustomerDue($companyId, $branchId, $dateFrom, $dateTo);
+        $customerDue = $this->calculateCustomerActualDue($companyId, $branchId, $dateFrom, $dateTo);
         $assets[] = [
             'sn' => 1,
             'title' => 'Customer Due',
@@ -1906,6 +1918,7 @@ class ReportController extends Controller
         $sn = 3;
         foreach ($paymentMethods as $paymentMethod) {
             $balance = $this->calculatePaymentMethodBalance($paymentMethod->id, $companyId, $branchId);
+            $balance = (float)$paymentMethod->current_balance + ($balance) ;
             if ($balance != 0) {
                 $assets[] = [
                     'sn' => $sn++,
@@ -1921,7 +1934,7 @@ class ReportController extends Controller
         $totalLiabilities = 0;
 
         // 1. Supplier Due (Liability)
-        $supplierDue = $this->calculateSupplierDue($companyId, $branchId, $dateFrom, $dateTo);
+        $supplierDue = $this->calculateSupplierActualDue($companyId, $branchId, $dateFrom, $dateTo);
         $liabilities[] = [
             'sn' => 1,
             'title' => 'Supplier Due',
@@ -1960,6 +1973,45 @@ class ReportController extends Controller
 
         return $salesQuery->sum('total_due');
     }
+    
+    /**
+     * Calculate customer due
+     */
+    private function calculateCustomerActualDue($companyId, $branchId = null, $dateFrom = null, $dateTo = null)
+    {
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $salesQuery->whereDate('order_date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $salesQuery->whereDate('order_date', '<=', $dateTo);
+        }
+
+        $totalDue = $salesQuery->sum('total_due');
+
+
+        $customerReceivesQuery = CustomerReceive::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $customerReceivesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $customerReceivesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $totalReceive = $customerReceivesQuery->sum('amount');
+
+        return $totalDue - $totalReceive;
+    }
+    
 
     /**
      * Calculate supplier due
@@ -1980,6 +2032,42 @@ class ReportController extends Controller
         }
 
         return $purchasesQuery->sum('due_amount');
+    }
+    /**
+     * Calculate supplier due
+     */
+    private function calculateSupplierActualDue($companyId, $branchId = null, $dateFrom = null, $dateTo = null)
+    {
+        $purchasesQuery = Purchase::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $purchasesQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $purchasesQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $totalDue = $purchasesQuery->sum('due_amount');
+
+        $supplierPaymentsQuery = SupplierPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        if ($dateFrom) {
+            $supplierPaymentsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $supplierPaymentsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $totalPayment = $supplierPaymentsQuery->sum('amount');
+
+        return $totalDue - $totalPayment;
     }
 
     /**
@@ -2183,6 +2271,7 @@ class ReportController extends Controller
 
         foreach ($paymentMethods as $paymentMethod) {
             $balance = $this->calculatePaymentMethodBalance($paymentMethod->id, $companyId, $branchId);
+            $balance = (float)$paymentMethod->current_balance + ($balance) ;
             if ($balance > 0) {
                 $trialBalance[] = [
                     'sn' => $sn++,

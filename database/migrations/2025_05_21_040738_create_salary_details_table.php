@@ -26,6 +26,7 @@ return new class extends Migration
             $table->decimal('advance_taken', 10, 3);
             $table->decimal('net_salary', 10, 3);
             $table->string('note', 255)->nullable();
+            $table->unsignedInteger('branch_id')->nullable();
             $table->unsignedInteger('company_id')->nullable();
             $table->enum('del_status', ['Live', 'Deleted'])->default('Live');
             $table->timestamps();

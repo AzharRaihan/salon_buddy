@@ -64,6 +64,7 @@ class SalaryController extends Controller
             $validator = Validator::make($request->all(), [
                 'year' => 'required|integer',
                 'generated_date' => 'required|string|max:25',
+                'branch_id' => 'required|exists:branches,id',
                 'total_amount' => 'required',
                 'items' => 'required|array',
                 'payments' => 'required|array',
@@ -84,6 +85,7 @@ class SalaryController extends Controller
                     'employee_id' => 'required|exists:users,id',
                     'salary_amount' => 'required|numeric|min:1',
                     'net_salary' => 'required|numeric|min:0',
+                    'branch_id' => 'required|exists:branches,id',
                 ]);
 
                 if ($itemValidator->fails()) {
@@ -91,24 +93,13 @@ class SalaryController extends Controller
                 }
             }
 
-            // Validate items array
-            foreach ($items as $item) {
-                $itemValidator = Validator::make($item, [
-                    'employee_id' => 'required|exists:users,id',
-                    'salary_amount' => 'required|numeric|min:1',
-                    'net_salary' => 'required|numeric|min:0',
-                ]);
-
-                if ($itemValidator->fails()) {
-                    return $this->errorResponse($itemValidator->errors(), 422);
-                }
-            }
 
             // Validate payment array
             foreach ($payments as $payment) {
                 $itemValidator = Validator::make($payment, [
                     'payment_method_id' => 'required',
                     'amount' => 'required',
+                    'branch_id' => 'required|exists:branches,id',
                 ]);
                 if ($itemValidator->fails()) {
                     return $this->errorResponse($itemValidator->errors(), 422);
@@ -122,7 +113,7 @@ class SalaryController extends Controller
                 'month' => $request->month,
                 'total_amount' => $request->total_amount,
                 'generated_date' => $request->generated_date,
-                'branch_id' => 1,
+                'branch_id' => $request->branch_id,
                 'user_id' => Auth::user()->id,
                 'company_id' => Auth::user()->company_id,
             ]);
@@ -144,6 +135,7 @@ class SalaryController extends Controller
                     'net_salary' => $item['net_salary'],
                     'note' => $item['note'],
                     'user_id' => Auth::user()->id,
+                    'branch_id' => $item['branch_id'],
                     'company_id' => Auth::user()->company_id,
                 ]);
             }
@@ -153,6 +145,7 @@ class SalaryController extends Controller
                     'salary_id' => $salary->id,
                     'payment_method_id' => $payment['payment_method_id'],
                     'amount' => $payment['amount'],
+                    'branch_id' => $payment['branch_id'],
                     'company_id' => Auth::user()->company_id,
                 ]);
             }
@@ -193,6 +186,7 @@ class SalaryController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
         try {
             $salary = Salary::find($id);
             if (!$salary) {
@@ -206,6 +200,7 @@ class SalaryController extends Controller
                 'total_amount' => 'required',
                 'items' => 'required|array',
                 'payments' => 'required|array',
+                'branch_id' => 'required|exists:branches,id',
             ]);
 
             if ($validator->fails()) {
@@ -222,6 +217,7 @@ class SalaryController extends Controller
                     'employee_id' => 'required|exists:users,id',
                     'salary_amount' => 'required|numeric|min:1',
                     'net_salary' => 'required|numeric|min:0',
+                    'branch_id' => 'required|exists:branches,id',
                 ]);
 
                 if ($itemValidator->fails()) {
@@ -234,6 +230,7 @@ class SalaryController extends Controller
                 $itemValidator = Validator::make($payment, [
                     'payment_method_id' => 'required',
                     'amount' => 'required',
+                    'branch_id' => 'required|exists:branches,id',
                 ]);
                 if ($itemValidator->fails()) {
                     return $this->errorResponse($itemValidator->errors(), 422);
@@ -242,14 +239,22 @@ class SalaryController extends Controller
 
             DB::beginTransaction();
 
+            // this month cames name eg: January now
+            if (is_string($request->month)) {
+                $monthName = $request->month;
+                $monthNumber = date('m', strtotime($monthName));
+            } else {
+                $monthNumber = $request->month;
+            }
+
             // Find and update salary
             $salary = Salary::findOrFail($id);
             $salary->update([
                 'year' => $request->year,
-                'month' => $request->month,
+                'month' => $monthNumber,
                 'total_amount' => $request->total_amount,
                 'generated_date' => $request->generated_date,
-                'branch_id' => 1,
+                'branch_id' => $request->branch_id,
                 'user_id' => Auth::user()->id,
                 'company_id' => Auth::user()->company_id,
             ]);
@@ -275,6 +280,7 @@ class SalaryController extends Controller
                     'net_salary' => $item['net_salary'],
                     'note' => $item['note'],
                     'user_id' => Auth::user()->id,
+                    'branch_id' => $item['branch_id'],
                     'company_id' => Auth::user()->company_id,
                 ]);
             }
@@ -285,6 +291,7 @@ class SalaryController extends Controller
                     'salary_id' => $salary->id,
                     'payment_method_id' => $payment['payment_method_id'],
                     'amount' => $payment['amount'],
+                    'branch_id' => $payment['branch_id'],
                     'company_id' => Auth::user()->company_id,
                 ]);
             }
