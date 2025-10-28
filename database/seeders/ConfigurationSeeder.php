@@ -88,7 +88,7 @@ class ConfigurationSeeder extends Seeder
             ['name' => 'Loyalty Point', 'account_type' => 'Loyalty Point', 'payment_method_icon' => 'payment-method/cash.png'],
             ['name' => 'Razorpay', 'account_type' => 'Razorpay', 'payment_method_icon' => 'payment-method/razorpay.png'],
             ['name' => 'Paytm', 'account_type' => 'Paytm', 'payment_method_icon' => 'payment-method/paytm.png'],
-            ['name' => 'Paystack', 'account_type' => 'Paystack', 'payment_method_icon' => 'payment-method/paytm.png'],
+            ['name' => 'PayStack', 'account_type' => 'PayStack', 'payment_method_icon' => 'payment-method/paytm.png'],
             ['name' => 'Mobile Banking', 'account_type' => 'Mobile Banking', 'payment_method_icon' => 'payment-method/cash.png'],
             ['name' => 'Cash On Delivery', 'account_type' => 'Cash On Delivery', 'payment_method_icon' => 'payment-method/cash.png'],
 

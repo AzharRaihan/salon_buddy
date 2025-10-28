@@ -81,8 +81,7 @@ router.replace = function (location, ...args) {
 };
 
 // Updated navigation guard
-// router.beforeEach((to, from, next) => {
-
+let permissionToastShown = false; 
 
 router.beforeEach(async (to, from, next) => {
   const websiteStore = useWebsiteSettingsStore()
@@ -249,19 +248,34 @@ router.beforeEach(async (to, from, next) => {
 
   // 9️⃣ Check route permissions
   if (!isPermissionExcludedRoute(to.path)) {
+    if(to.path == "/home") {
+      return next();
+    }
     const requiredPermissions = getRoutePermissions(to);
     if (requiredPermissions && requiredPermissions.length > 0) {
       const hasPermission = hasAnyPermission(requiredPermissions);
       if (!hasPermission) {
-        toast("You don't have permission to access this page.", {
-          type: "error",
-          position: "top-right",
-          autoClose: 5000,
-        });
-        return next({ path: "/admin-dashboard" });
+        if(!permissionToastShown) {
+          permissionToastShown = true;
+          toast("You don't have permission to access this page.", {
+            type: "error",
+            position: "top-right",
+            autoClose: 5000,
+          });
+        }
+        return next({ path: "/home" });
+
+        setTimeout(() => {
+          permissionToastShown = false;
+        }, 1000);
+
+        return;
+
       }
     }
   }
+
+
 
 
   next();

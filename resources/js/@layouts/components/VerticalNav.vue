@@ -177,6 +177,7 @@ const logout = async () => {
   .company-logo {
     max-height: 40px;
     width: auto;
+    max-width: 100%;
   }
 
   .app-logo-title {

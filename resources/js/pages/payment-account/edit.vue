@@ -2,7 +2,7 @@
 import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import { ref, onMounted, watch } from 'vue';
-import defaultAvater from '@images/system-config/default-picture.png';
+import defaultAvater from '@images/system-config/default-cash.png';
 import { useI18n } from 'vue-i18n';
 
 // Image Cropper
@@ -201,7 +201,7 @@ const validateUseInWebsite = (useInWebsite) => {
 }
 
 const resetForm = () => {
-    router.push({ name: 'payment-method' })
+    router.push({ name: 'payment-account' })
 }
 
 const validateForm = () => {
@@ -226,7 +226,7 @@ const fetchPaymentMethod = async () => {
         toast(t('Error fetching payment method'), {
             type: 'error'
         })
-        router.push({ name: 'payment-method' })
+        router.push({ name: 'payment-account' })
     }
 }
 
@@ -285,7 +285,7 @@ const updatePaymentMethod = async () => {
             type: "success",
         })
         loadings.value = false
-        router.push({ name: 'payment-method' })
+        router.push({ name: 'payment-account' })
     }
     catch (err) {
         if (err.errors) {
@@ -306,6 +306,19 @@ const updatePaymentMethod = async () => {
     }
 }
 
+// Make a function to check if the account type is valid
+watch(() => form.value.account_type, (newType) => {
+  checkAccountType(newType)
+})
+const checkAccountType = (accountType) => {
+    console.log('accountType', accountType)
+    if (accountType == 'Paypal' || accountType == 'Stripe' || accountType == 'Razorpay' || accountType == 'PayStack' || accountType == 'Paytm') {
+        console.log('accountType is valid')
+    } else {
+        console.log('accountType is not valid')
+    }
+}
+
 onMounted(() => {
     fetchPaymentMethod()
 })
@@ -314,14 +327,16 @@ onMounted(() => {
 <template>
     <VRow>
         <VCol cols="12">
-            <VCard :title="$t('Edit Payment Method')">
+            <VCard :title="$t('Edit Payment Account')">
                 <VCardText>
                     <VForm class="mt-3" @submit.prevent="updatePaymentMethod">
                         <VRow>
                             <!-- Account Type -->
                             <VCol cols="12" md="6" lg="4">
-                                <AppAutocomplete v-model="form.account_type"
-                                    :label="$t('Type')" :required="true"
+                                <AppAutocomplete
+                                    v-model="form.account_type"
+                                    :label="$t('Type')"
+                                    :required="true"
                                     :items="[
                                         'Cash',
                                         'Bank',
@@ -335,6 +350,8 @@ onMounted(() => {
                                     :error-messages="accountTypeError"
                                     @input="validateAccountType($event)"
                                     clearable
+                                    readonly
+                                    @change="checkAccountType($event)"
                                 />
                             </VCol>
                         </VRow>
@@ -465,7 +482,7 @@ onMounted(() => {
                             </template>
 
                             <!-- PayStack Specific Fields -->
-                            <template v-if="form.account_type === 'PayStack'">
+                            <template v-if="form.account_type == 'PayStack'">
                                 <VCol cols="12" md="6" lg="4">
                                     <AppTextField v-model="form.api_key"
                                         :label="$t('API Key')" :required="true"
@@ -511,8 +528,8 @@ onMounted(() => {
                             </VCol>
 
                             <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description"
+                            <VCol cols="12" md="12" lg="12">
+                                <AppTextField v-model="form.description"
                                     :label="$t('Description')"
                                     :placeholder="$t('Enter Description')"
                                     :error-messages="descriptionError"
@@ -539,12 +556,12 @@ onMounted(() => {
                             <!-- User in website -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.use_in_website"
-                                    :label="$t('Enable Website')" :required="true"
+                                    :label="$t('Enable In Website')" :required="true"
                                     :items="[
                                         'Yes',
                                         'No'
                                     ]"
-                                    :placeholder="$t('Select Enable Website')"
+                                    :placeholder="$t('Select Enable In Website')"
                                     :error-messages="useInWebsiteError"
                                     @input="validateUseInWebsite($event)"
                                     clearable
@@ -581,7 +598,7 @@ onMounted(() => {
                                             {{ $t('Allowed JPG, GIF or PNG. Max size of 1 MB Required') }}
                                         </p>
                                         <p class="text-body-1 mb-0">
-                                            {{ $t('Recommended size: 250px x 250px') }} - <small>{{ $t("Use the exact size for best results, but don't use less.") }}</small>
+                                            {{ $t('Recommended size: 250px X 250px') }} - <small>{{ $t("Use the exact size for best results, but don't use less.") }}</small>
                                         </p>
                                     </form>
                                 </VCardText>
@@ -593,7 +610,7 @@ onMounted(() => {
                                     <VIcon start icon="tabler-checkbox" />
                                     {{ $t('Update') }}
                                 </VBtn>
-                                <VBtn color="primary" variant="tonal" type="reset" @click.prevent="router.push({ name: 'payment-method' })">
+                                <VBtn color="primary" variant="tonal" type="reset" @click.prevent="router.push({ name: 'payment-account' })">
                                     <VIcon start icon="tabler-arrow-back" />
                                     {{ $t('Back') }}
                                 </VBtn>

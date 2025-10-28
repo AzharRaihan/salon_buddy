@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Traits\ApiResponse;
 use App\Services\SMSService;
 use Illuminate\Http\Request;
+use App\Models\PaymentMethod;
 use App\Services\EmailService;
 use App\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Log;
@@ -879,6 +880,12 @@ class SettingController extends Controller
     }
 
     // Calculate tips  from sale_deatls of 
+
+    public function getPaymentTypeCount($type)
+    {
+        $count = PaymentMethod::where('account_type', $type)->count();
+        return $this->successResponse($count, 'Payment type count fetched successfully');
+    }
 
 
 }

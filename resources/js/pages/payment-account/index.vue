@@ -36,7 +36,7 @@ const SN = computed(() => t('SN'))
 const Name = computed(() => t('Name'))
 const AccountType = computed(() => t('Account Type'))
 const OpeningBalance = computed(() => t('Opening Balance'))
-const UseInWebsite = computed(() => t('Use in website'))
+const UseInWebsite = computed(() => t('Enable In Website'))
 const Icon = computed(() => t('Icon'))
 const Action = computed(() => t('Action'))
 
@@ -154,7 +154,7 @@ onMounted(async () => {
 
 <template>
     <div>
-        <VCard :title="$t('List Payment Method')"> <!-- Fixed: Changed title -->
+        <VCard :title="$t('List Payment Account')"> <!-- Fixed: Changed title -->
             <VCardText>
                 <div class="d-flex justify-space-between flex-wrap gap-y-4">
                     <AppTextField v-model="searchQuery" style="max-inline-size: 280px; min-inline-size: 280px;"
@@ -164,20 +164,20 @@ onMounted(async () => {
                             prepend-icon="tabler-arrows-sort" 
                             variant="tonal"
                             color="secondary"
-                            :to="{ name: 'payment-method-sorting-payment-method' }"
+                            :to="{ name: 'payment-account-sorting-payment-account' }"
                         >
                             {{ $t('Sort') }}
                         </VBtn>
-                        <VBtn prepend-icon="tabler-plus" :to="{ name: 'payment-method-create' }"> 
-                            {{ $t('Add Payment Method') }}
+                        <VBtn prepend-icon="tabler-plus" :to="{ name: 'payment-account-create' }"> 
+                            {{ $t('Add Payment Account') }}
                         </VBtn>
                         <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 
                         <ExportTable 
                             :data="paymentMethods" 
                             :headers="exportHeaders" 
-                            filename="payment-method-report"
-                            :title="$t('List Payment Method')"
+                            filename="payment-account-report"
+                            :title="$t('List Payment Account')"
                         />
                     </div>
                 </div>
@@ -223,7 +223,7 @@ onMounted(async () => {
                 <template #item.action="{ item }">
                     <div class="d-flex justify-center gap-1">
                         <VBtn icon variant="text" color="info" size="small"
-                            @click="$router.push({ name: 'payment-method-edit', query: { id: item.id } })"
+                            @click="$router.push({ name: 'payment-account-edit', query: { id: item.id } })"
                             >
                             <VIcon size="22" icon="tabler-edit" />
                         </VBtn>

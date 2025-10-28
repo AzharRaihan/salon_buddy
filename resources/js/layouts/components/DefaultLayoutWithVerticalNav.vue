@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify';
 import { useUserData } from '@/composables/useUserData';
 import { computed } from 'vue';
+import { filterNavItems } from '@/utils/permissions';
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -17,8 +18,21 @@ import NavBarI18n from '@core/components/I18n.vue'
 import { VerticalNavLayout } from '@layouts'
 
 const { userData } = useUserData()
-const userAbilityRules = useCookie("userAbilityRules").value;
 const router = useRouter();
+
+// Computed property to filter navigation items based on permissions
+// Make it reactive by depending on userData and userAbilityRules cookies
+const filteredNavItems = computed(() => {
+  // Access cookies reactively so the computed updates when they change
+  const currentUserData = useCookie("userData").value;
+  // If user is super admin (role = 1), show all items
+  if (currentUserData && currentUserData.role == 1) {
+    return navItems;
+  }
+  // Otherwise, filter based on permissions
+  const filtered = filterNavItems(navItems);
+  return filtered;
+})
 
 // Computed property for POS access
 const posAccess = computed(() => {
@@ -27,6 +41,7 @@ const posAccess = computed(() => {
   if (userData.value.id === 1) {
     return true
   } else {
+    const userAbilityRules = useCookie("userAbilityRules").value;
     return userAbilityRules && userAbilityRules.includes('pos')
   }
 })
@@ -86,7 +101,7 @@ const hasBranchInfo = computed(() => {
 </style>
 
 <template>
-  <VerticalNavLayout :nav-items="navItems">
+  <VerticalNavLayout :nav-items="filteredNavItems">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">

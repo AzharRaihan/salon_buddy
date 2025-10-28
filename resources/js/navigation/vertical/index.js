@@ -8,7 +8,7 @@ export default [
     title: "Dashboard",
     to: { name: "admin-dashboard" }, 
     icon: { icon: "tabler-gauge" },
-    permission: ["dashboard"],
+    permission: ["admin-dashboard"],
   },
   {
     title: "Branch",

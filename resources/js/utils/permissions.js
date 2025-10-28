@@ -54,8 +54,6 @@ export const hasAnyPermission = (permissions) => {
     ? permissions
     : [permissions];
 
-    console.log('test', permissionsArray);
-
   // Return true if user has any of the permissions
   return permissionsArray.some((permission) => hasPermission(permission));
 };
@@ -89,7 +87,8 @@ export const canViewNavItem = (item) => {
 
   // If item has permission array, check that first
   if (item.permission && Array.isArray(item.permission)) {
-    return hasAnyPermission(item.permission);
+    const canView = hasAnyPermission(item.permission);
+    return canView;
   }
 
   // If it's a heading, check if any items in the following section have permissions
@@ -140,7 +139,9 @@ export const canViewNavGroup = (item) => {
  */
 export const filterNavItems = (navItems) => {
   const userData = useCookie("userData").value;
-  if (userData && userData.role == 1) return navItems; // Admin sees everything
+  if (userData && userData.role == 1) {
+    return navItems; // Admin sees everything
+  }
 
   const filteredItems = [];
   let currentHeading = null;
@@ -148,12 +149,14 @@ export const filterNavItems = (navItems) => {
 
   for (let i = 0; i < navItems.length; i++) {
     const item = navItems[i];
-
     // If it's a heading
     if (item.heading) {
-      // First, process any accumulated section
-      if (currentHeading && currentSectionItems.length > 0) {
-        filteredItems.push(currentHeading, ...currentSectionItems);
+      if (currentSectionItems.length > 0) {
+        if (currentHeading) {
+          filteredItems.push(currentHeading, ...currentSectionItems);
+        } else {
+          filteredItems.push(...currentSectionItems);
+        }
       }
       
       // Start a new section
@@ -168,7 +171,6 @@ export const filterNavItems = (navItems) => {
     if (item.children) {
       // For groups, check if any children are visible
       shouldShow = canViewNavGroup(item);
-      
       // If group is visible, filter its children
       if (shouldShow) {
         const filteredChildren = item.children.filter(child => {
@@ -195,10 +197,14 @@ export const filterNavItems = (navItems) => {
     }
   }
 
-  // Add the last section if it has visible items
-  if (currentHeading && currentSectionItems.length > 0) {
-    filteredItems.push(currentHeading, ...currentSectionItems);
+  if (currentSectionItems.length > 0) {
+    // If there was a heading, add it first, otherwise just add items
+    if (currentHeading) {
+      filteredItems.push(currentHeading, ...currentSectionItems);
+    } else {
+      // All items without any heading - add them directly
+      filteredItems.push(...currentSectionItems);
+    }
   }
-
   return filteredItems;
 };

@@ -367,6 +367,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('send-marketing-email', 'sendMarketingEmail');
         Route::post('send-marketing-sms', 'sendMarketingSms');
         Route::post('send-marketing-whatsapp', 'sendMarketingWhatsapp');
+
+        Route::get('get-payment-type-count/{type}', 'getPaymentTypeCount');
+
     });
 
     // Website settings routes

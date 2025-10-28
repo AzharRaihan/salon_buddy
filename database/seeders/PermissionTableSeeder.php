@@ -59,7 +59,7 @@ class PermissionTableSeeder extends Seeder
                 'customer_receive-list',
             ],
             'dashboard' => [
-                'dashboard',
+                'admin-dashboard',
             ],
             'damage-management' => [
                 'damage-create',

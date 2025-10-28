@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import { ref, computed, watch } from 'vue';
-import defaultAvater from '@images/system-config/default-picture.png';
+import defaultAvater from '@images/system-config/default-cash.png';
 import { useI18n } from 'vue-i18n';
 
 // Image Cropper
@@ -319,12 +319,42 @@ const createPaymentMethod = async () => {
         return
     }
 }
+
+
+// Make a function to check if the account type is valid
+watch(() => form.value.account_type, (newType) => {
+  checkAccountType(newType)
+})
+const checkAccountType = async (accountType) => {
+    console.log('accountType', accountType)
+    if (accountType == 'Paypal' || accountType == 'Stripe' || accountType == 'Razorpay' || accountType == 'PayStack' || accountType == 'Paytm') {
+        
+        try {
+            const res = await $api(`/get-payment-type-count/${accountType}`)
+            if (res.success) {
+                if (res.data > 0) {
+                    toast(t(`Payment type already exists, you can't add more than one ${accountType} account`), {
+                        type: 'error'
+                    })
+                    form.value.account_type = null
+                    return false
+                }
+                return true
+            }
+        } catch (err) {
+            console.error(err)
+            return false
+        }
+    } else {
+        return true
+    }
+}
 </script>
 
 <template>
     <VRow>
         <VCol cols="12">
-            <VCard :title="$t('Add Payment Method')">
+            <VCard :title="$t('Add Payment Account')">
                 <VCardText>
                     <VForm class="mt-3" @submit.prevent="createPaymentMethod">
                         <VRow>
@@ -345,6 +375,7 @@ const createPaymentMethod = async () => {
                                     :error-messages="accountTypeError"
                                     @input="validateAccountType($event)"
                                     clearable
+                                    @change="checkAccountType($event)"
                                 />
                             </VCol>
                         </VRow>
@@ -473,7 +504,7 @@ const createPaymentMethod = async () => {
                             </template>
 
                             <!-- PayStack Specific Fields -->
-                            <template v-if="form.account_type === 'PayStack'">
+                            <template v-if="form.account_type == 'PayStack'">
                                 <VCol cols="12" md="6" lg="4">
                                     <AppTextField v-model="form.api_key"
                                         :label="$t('API Key')" :required="true"
@@ -519,8 +550,8 @@ const createPaymentMethod = async () => {
                             </VCol>
 
                             <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description"
+                            <VCol cols="12" md="12" lg="12">
+                                <AppTextField v-model="form.description"
                                     :label="$t('Description')"
                                     :placeholder="$t('Enter Description')"
                                     :error-messages="descriptionError"
@@ -544,15 +575,15 @@ const createPaymentMethod = async () => {
                                 />
                             </VCol>
 
-                            <!-- Use in website -->
+                            <!-- Enable In Website -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.use_in_website"
-                                    :label="$t('Enable Website')" :required="true"
+                                    :label="$t('Enable In Website')" :required="true"
                                     :items="[
                                         'Yes',
                                         'No'
                                     ]"
-                                    :placeholder="$t('Select Enable Website')"
+                                    :placeholder="$t('Select Enable In Website')"
                                     :error-messages="useInWebsiteError"
                                     @input="validateUseInWebsite($event)"
                                     clearable
@@ -589,7 +620,7 @@ const createPaymentMethod = async () => {
                                             {{ $t('Allowed JPG, GIF or PNG. Max size of 1 MB Required') }}
                                         </p>
                                         <p class="text-body-1 mb-0">
-                                            {{ $t('Recommended size: 250px x 250px') }} - <small>{{ $t("Use the exact size for best results, but don't use less.") }}</small>
+                                            {{ $t('Recommended size: 250px X 250px') }} - <small>{{ $t("Use the exact size for best results, but don't use less.") }}</small>
                                         </p>
                                     </form>
                                 </VCardText>

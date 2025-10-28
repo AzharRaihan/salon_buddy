@@ -53,15 +53,6 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <AccountBalanceSummaryCards
-                    :summary="summary"
-                />
-            </VCardText>
-        </VCard>
-
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 

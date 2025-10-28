@@ -6,223 +6,288 @@
 // Route name to permission mapping
 export const routePermissionMap = {
   // Common pages
-  'root': ['home'],
-  'dashboard': ['dashboard'],
+  'home': ['home'],
   'admin-dashboard': ['admin-dashboard'],
-  'branch-list': ['branch-list'],
+
+  'branch-create': ['branch-create'],
+  'branch-edit': ['branch-edit'],
+  'branch-delete': ['branch-delete'],
+  'branch': ['branch-list'],
+
+  'booking-create': ['booking-create'],
+  'booking-edit': ['booking-edit'],
+  'booking-delete': ['booking-delete'],
+  'booking': ['booking-list'],
+  'booking-calendar': ['booking-calendar'],
+
+  'unit-create': ['unit-create'],
+  'unit-edit': ['unit-edit'],
+  'unit-delete': ['unit-delete'],
+  'unit': ['unit-list'],
+
+  'category-create': ['category-create'],
+  'category-edit': ['category-edit'],
+  'category-delete': ['category-delete'],
+  'category': ['category-list'],
+
+  'item-create': ['item-create'],
+  'item-edit': ['item-edit'],
+  'item-delete': ['item-delete'],
+  'item': ['item-list'],
+
+  'customer-create': ['customer-create'],
+  'customer-edit': ['customer-edit'],
+  'customer-delete': ['customer-delete'],
+  'customer': ['customer-list'],
+
+  'customer-receive-create': ['customer-receive-create'],
+  'customer-receive-edit': ['customer-receive-edit'],
+  'customer-receive-delete': ['customer-receive-delete'],
+  'customer-receive': ['customer-receive-list'],
   
-  'outlets': ['outlets'],
-  
-  // Panel routes
-  'panel-kitchen': ['panel-kitchen'],
-  'panel-waiter': ['panel-waiter'],
-  
-  // Table routes
-  'table-area': ['table-area'],
-  'table': ['table'],
-  'table-qrcode': ['table-qrcode'],
-  
-  // Settings routes
-  'settings-restaurant': ['settings-restaurant'],
-  'settings-white-label': ['settings-white-label'],
-  'settings-mail': ['email-settings'],
-  'settings-payment': ['payment-settings'],
-  'settings-tax': ['tax-settings'],
-  'settings-sms': ['sms-settings'],
-  'settings-whatsapp': ['whatsapp-settings'],
-  'settings-delivery-partner': ['delivery-partner-list'],
-  'panel-printer': ['printer-list'],
-  'counter': ['counter-list'],
-  
-  // Food settings routes
-  'food-meal-time': ['food-meal-time-list'],
-  'food-course-type': ['food-course-type-list'],
-  'food-speciality': ['food-speciality-list'],
-  
-  // Customer preference routes
-  'customer-preference-cuisine': ['customer-preference-cuisine-list'],
-  'customer-preference-dietary': ['customer-preference-dietary-list'],
-  'customer-preference-spice-level': ['customer-preference-spice-level-list'],
-  'customer-preference-protein-choice': ['customer-preference-protein-choice-list'],
-  'customer-preference-flavor-profile': ['customer-preference-flavor-profile-list'],
-  'customer-preference-beverage-preferences': ['customer-preference-beverage-preferences-list'],
-  'customer-preference-allergy': ['customer-preference-allergy-list'],
-  'customer-preference-cooking-oil': ['customer-preference-cooking-oil-list'],
-  'customer-preference-health-focused': ['customer-preference-health-focused-list'],
-  'customer-preference-disease': ['customer-preference-disease-list'],
-  'customer-preference-sauce': ['customer-preference-sauce-list'],
-  'customer-preference-texture': ['customer-preference-texture-list'],
-  'customer-preference-religion-preference-islam': ['customer-preference-religion-preference-islam-list'],
-  'customer-preference-religion-preference-judaism': ['customer-preference-religion-preference-judaism-list'],
-  'customer-preference-religion-preference-hinduism': ['customer-preference-religion-preference-hinduism-list'],
-  'customer-preference-religion-preference-buddhism': ['customer-preference-religion-preference-buddhism-list'],
-  'customer-preference-religion-preference-christianity': ['customer-preference-religion-preference-christianity-list'],
-  'customer-preference-religion-preference-sikhism': ['customer-preference-religion-preference-sikhism-list'],
-  'customer-preference-religion-preference-jainism': ['customer-preference-religion-preference-jainism-list'],
-  
-  // Items routes
-  'items-unit': ['items-unit-list'],
-  'items-ingredient-category': ['items-ingredient-category-list'],
-  'items-ingredient': ['items-ingredient-list'],
-  'items-food-menu-category': ['items-food-menu-category-list'],
-  'items-food-menu': ['items-food-menu-list'],
-  'items-modifiers': ['items-modifiers-list'],
-  
-  // Inventory routes
-  'daily-opening-stock': ['daily-opening-stock-list'],
-  'ingredient-stock': ['ingredient-stock'],
-  'ingredient-stock-low-stock': ['ingredient-low-stock'],
-  'stock-adjustment': ['stock-adjustment-list'],
-  
-  // Sales routes
-  'pos': ['pos'],
-  'sales-customer': ['sales-customer-list'],
+  'promotion-create': ['promotion-create'],
+  'promotion-edit': ['promotion-edit'],
+  'promotion-delete': ['promotion-delete'],
   'promotion': ['promotion-list'],
-  'sales-draft': ['sales-draft'],
-  'sales-running': ['sales-running'],
-  'sales-complete': ['sales-complete'],
-  'sales-cancelled': ['sales-cancelled'],
-  'customer-due': ['customer-due-list'],
-  
-  // Purchase routes
-  'supplier': ['supplier-list'],
+
+  'purchase-create': ['purchase-create'],
+  'purchase-edit': ['purchase-edit'],
+  'purchase-delete': ['purchase-delete'],
   'purchase': ['purchase-list'],
-  'supplier-due': ['supplier-due-list'],
-  
-  // Expense routes
+
+  'supplier-create': ['supplier-create'],
+  'supplier-edit': ['supplier-edit'],
+  'supplier-delete': ['supplier-delete'],
+  'supplier': ['supplier-list'],
+
+  'supplier-payment-create': ['supplier-payment-create'],
+  'supplier-payment-edit': ['supplier-payment-edit'],
+  'supplier-payment-delete': ['supplier-payment-delete'],
+  'supplier-payment': ['supplier-payment-list'],
+
   'expense-create': ['expense-create'],
-  'expense': ['expense-list'],
+  'expense-edit': ['expense-edit'],
+  'expense-delete': ['expense-delete'],
+  'expense-list': ['expense-list'],
+  'expense': ['expense'],
+
   'expense-category-create': ['expense-category-create'],
+  'expense-category-edit': ['expense-category-edit'],
+  'expense-category-delete': ['expense-category-delete'],
   'expense-category': ['expense-category-list'],
-  
-  // Transfer routes
-  'stock-transfer-create': ['stock-transfer-create'],
-  'stock-transfer': ['stock-transfer-list'],
-  
-  // Waste routes
-  'waste-create': ['waste-create'],
-  'waste': ['waste-list'],
-  
-  // Reports routes
-  'reports-register': ['reports-register'],
-  'reports-zreport': ['reports-zreport'],
-  'reports-kitchen-performance': ['reports-kitchen-performance'],
-  'reports-product-analysis': ['reports-product-analysis'],
-  'reports-daily-summary': ['reports-daily-summary'],
-  'reports-food-sale': ['reports-food-sale'],
-  'reports-daily-sale': ['reports-daily-sale'],
-  'reports-detailed-sale': ['reports-detailed-sale'],
-  'reports-stock': ['reports-stock'],
-  'reports-low-stock': ['reports-low-stock'],
-  'reports-profit-loss': ['reports-profit-loss'],
-  'reports-attendance': ['reports-attendance'],
-  'reports-supplier-ledger': ['reports-supplier-ledger'],
-  'reports-customer-ledger': ['reports-customer-ledger'],
-  'reports-supplier-due': ['reports-supplier-due'],
-  'reports-customer-due': ['reports-customer-due'],
-  'reports-purchase': ['reports-purchase'],
-  'reports-expense': ['reports-expense'],
-  'reports-waste': ['reports-waste'],
-  'reports-tax': ['reports-tax'],
-  'reports-waiter-tips': ['reports-waiter-tips'],
-  'reports-transfer': ['reports-transfer'],
-  
-  // User & Role routes
-  'role-create': ['role-create'],
-  'role': ['role-list'],
-  'user-create': ['user-create'],
-  'user': ['user-list'],
-  
-  // Attendance routes
-  'attendance-create': ['attendance-create'],
-  'attendance': ['attendance-list'],
-  
-  // POS routes
-  'pos-registers': ['pos-registers'],
+
+  'stock-stock': ['stock-stock'],
+  'stock-alert-stock': ['stock-alert-stock'],
+  'product-usages-create': ['product-usages-create'],
+  'product-usages': ['product-usages'],
+
+  'sale-create': ['sale-create'],
+  'sale-edit': ['sale-edit'],
+  'sale-delete': ['sale-delete'],
+  'sale': ['sale-list'],
+
+  'staff-payment-create': ['staff-payment-create'],
+  'staff-payment-edit': ['staff-payment-edit'],
+  'staff-payment-delete': ['staff-payment-delete'],
+  'staff-payment': ['staff-payment-list'],
 
   'damage-create': ['damage-create'],
+  'damage-edit': ['damage-edit'],
+  'damage-delete': ['damage-delete'],
+  'damage': ['damage-list'],
+
+
+  'payment-account-create': ['payment-account-create'],
+  'payment-account-edit': ['payment-account-edit'],
+  'payment-account-delete': ['payment-account-delete'],
+  'payment-account': ['payment-account-list'],
+
+  'deposit-withdraw-create': ['deposit-withdraw-create'],
+  'deposit-withdraw-edit': ['deposit-withdraw-edit'],
+  'deposit-withdraw-delete': ['deposit-withdraw-delete'],
+  'deposit-withdraw': ['deposit-withdraw-list'],
+
+  'accounting-account-balance': ['accounting-account-balance'],
+  'accounting-account-statement': ['accounting-account-statement'],
+  'accounting-balance-sheet': ['accounting-balance-sheet'],
+  'accounting-trial-balance': ['accounting-trial-balance'],
+  'accounting-transaction-history': ['accounting-transaction-history'],
+
+  'role-create': ['role-create'],
+  'role-edit': ['role-edit'],
+  'role-delete': ['role-delete'],
+  'role': ['role-list'],
+
+  'employee-create': ['employee-create'],
+  'employee-edit': ['employee-edit'],
+  'employee-delete': ['employee-delete'],
+  'employee': ['employee-list'],
+
+  'settings-settings': ['settings-settings'],
+  'settings-tax': ['settings-tax'],
+  'settings-email': ['settings-email'],
+  'settings-sms': ['settings-sms'],
+  'settings-whatsapp': ['settings-whatsapp'],
+  'settings-payment': ['settings-payment'],
+  'settings-social-auth': ['settings-social-auth'],
+  'settings-white-label': ['settings-white-label'],
+  'settings-vacation': ['settings-vacation'],
+  'settings-holiday': ['settings-holiday'],
+
+  'report-daily-summary': ['report-daily-summary'],
+  'report-profit-loss': ['report-profit-loss'],
+  'report-sale': ['report-sale'],
+  'report-purchase': ['report-purchase'],
+  'report-stock': ['report-stock'],
+  'report-commission': ['report-commission'],
+  'report-earning': ['report-earning'],
+  'report-payout': ['report-payout'],
+  'report-evaluation': ['report-evaluation'],
+  'report-evaluation-details': ['report-evaluation-details'],
+  'report-attendance': ['report-attendance'],
+  'report-damage': ['report-damage'],
+
 };
 
 // Path pattern to permission mapping for dynamic routes
 export const pathPermissionMap = {
+  '/home': ['home'],
   '/admin-dashboard': ['admin-dashboard'],
-  // Settings paths
-  '/settings/restaurant': ['settings-restaurant'],
-  '/settings/white-label': ['settings-white-label'],
-  '/settings/mail': ['email-settings'],
-  '/settings/payment': ['payment-settings'],
-  '/settings/tax': ['tax-settings'],
-  '/settings/sms': ['sms-settings'],
-  '/settings/whatsapp': ['whatsapp-settings'],
-  '/settings/delivery-partner': ['delivery-partner-list'],
-  
-  // User and role paths
-  '/user': ['user-list'],
-  '/role': ['role-list'],
-  
-  // Outlets
-  '/outlets': ['outlets'],
-  
-  // Items paths
-  '/items/unit': ['items-unit-list'],
-  '/items/ingredient-category': ['items-ingredient-category-list'],
-  '/items/ingredient': ['items-ingredient-list'],
-  '/items/food-menu-category': ['items-food-menu-category-list'],
-  '/items/food-menu': ['items-food-menu-list'],
-  '/items/modifiers': ['items-modifiers-list'],
-  
-  // Stock/Inventory paths
-  '/ingredient-stock': ['ingredient-stock'],
-  '/daily-opening-stock': ['daily-opening-stock-list'],
-  '/stock-adjustment': ['stock-adjustment-list'],
-  
-  // Sales paths
-  '/pos': ['pos'],
-  '/sales/customer': ['sales-customer-list'],
-  '/sales/draft': ['sales-draft'],
-  '/sales/running': ['sales-running'],
-  '/sales/complete': ['sales-complete'],
-  '/sales/cancelled': ['sales-cancelled'],
-  '/customer-due': ['customer-due-list'],
-  '/promotion': ['promotion-list'],
-  
-  // Purchase paths
-  '/purchase': ['purchase-list'],
-  '/supplier': ['supplier-list'],
-  '/supplier-due': ['supplier-due-list'],
-  
-  // Expense paths
-  '/expense': ['expense-list'],
-  '/expense-category': ['expense-category-list'],
-  
-  // Transfer paths
-  '/stock-transfer': ['stock-transfer-list'],
-  
-  // Waste paths
-  '/waste': ['waste-list'],
-  
-  // Reports paths
-  '/reports': ['reports-register', 'reports-zreport', 'reports-kitchen-performance', 'reports-product-analysis', 'reports-daily-summary', 'reports-food-sale', 'reports-daily-sale', 'reports-detailed-sale', 'reports-stock', 'reports-low-stock', 'reports-profit-loss', 'reports-attendance', 'reports-supplier-ledger', 'reports-customer-ledger', 'reports-supplier-due', 'reports-customer-due', 'reports-purchase', 'reports-expense', 'reports-waste', 'reports-tax', 'reports-waiter-tips', 'reports-transfer'],
-  
-  // Attendance paths
-  '/attendance': ['attendance-list'],
-  
-  // Customer preference paths
-  '/customer-preference': ['customer-preference-cuisine-list', 'customer-preference-dietary-list', 'customer-preference-spice-level-list', 'customer-preference-protein-choice-list', 'customer-preference-flavor-profile-list', 'customer-preference-beverage-preferences-list', 'customer-preference-allergy-list', 'customer-preference-cooking-oil-list', 'customer-preference-health-focused-list', 'customer-preference-disease-list', 'customer-preference-sauce-list', 'customer-preference-texture-list'],
-  
-  // Food settings paths
-  '/food-meal-time': ['food-meal-time-list'],
-  '/food-course-type': ['food-course-type-list'],
-  '/food-speciality': ['food-speciality-list'],
-  
-  // Table paths
-  '/table': ['table-area', 'table', 'table-qrcode'],
-  
-  // Panel paths
-  '/panel': ['panel-kitchen', 'panel-waiter', 'printer-list'],
-  
-  // Counter paths
-  '/counter': ['counter-list'],
+
+  '/branch-create': ['branch-create'],
+  '/branch-edit': ['branch-edit'],
+  '/branch-delete': ['branch-delete'],
+  '/branch-list': ['branch-list'],
+
+  '/booking-create': ['booking-create'],
+  '/booking-edit': ['booking-edit'],
+  '/booking-delete': ['booking-delete'],
+  '/booking-list': ['booking-list'],
+  '/booking-calendar': ['booking-calendar'],
+
+  '/unit-create': ['unit-create'],
+  '/unit-edit': ['unit-edit'],
+  '/unit-delete': ['unit-delete'],
+  '/unit-list': ['unit-list'],
+
+  '/category-create': ['category-create'],
+  '/category-edit': ['category-edit'],
+  '/category-delete': ['category-delete'],
+  '/category-list': ['category-list'],
+
+  '/item-create': ['item-create'],
+  '/item-edit': ['item-edit'],
+  '/item-delete': ['item-delete'],
+  '/item-list': ['item-list'],
+
+  '/customer-create': ['customer-create'],
+  '/customer-edit': ['customer-edit'],
+  '/customer-delete': ['customer-delete'],
+  '/customer-list': ['customer-list'],
+
+  '/customer-receive-create': ['customer-receive-create'],
+  '/customer-receive-edit': ['customer-receive-edit'],
+  '/customer-receive-delete': ['customer-receive-delete'],
+  '/customer-receive-list': ['customer-receive-list'],
+
+  '/promotion-create': ['promotion-create'],
+  '/promotion-edit': ['promotion-edit'],
+  '/promotion-delete': ['promotion-delete'],
+  '/promotion-list': ['promotion-list'],
+
+  '/purchase-create': ['purchase-create'],
+  '/purchase-edit': ['purchase-edit'],
+  '/purchase-delete': ['purchase-delete'],
+  '/purchase-list': ['purchase-list'],
+
+  '/supplier-create': ['supplier-create'],
+  '/supplier-edit': ['supplier-edit'],
+  '/supplier-delete': ['supplier-delete'],
+  '/supplier-list': ['supplier-list'],
+
+  '/supplier-payment-create': ['supplier-payment-create'],
+  '/supplier-payment-edit': ['supplier-payment-edit'],
+  '/supplier-payment-delete': ['supplier-payment-delete'],
+  '/supplier-payment-list': ['supplier-payment-list'],
+
+  '/expense-create': ['expense-create'],
+  '/expense-edit': ['expense-edit'],
+  '/expense-delete': ['expense-delete'],
+  '/expense-list': ['expense-list'],
+
+  '/expense-category-create': ['expense-category-create'],
+  '/expense-category-edit': ['expense-category-edit'],
+  '/expense-category-delete': ['expense-category-delete'],
+  '/expense-category-list': ['expense-category-list'],
+
+  '/stock-stock': ['stock-stock'],
+  '/stock-alert-stock': ['stock-alert-stock'],
+  '/product-usages-create': ['product-usages-create'],
+  '/product-usages': ['product-usages'],
+
+  '/sale-create': ['sale-create'],
+  '/sale-edit': ['sale-edit'],
+  '/sale-delete': ['sale-delete'],
+  '/sale-list': ['sale-list'],
+
+  '/staff-payment-create': ['staff-payment-create'],
+  '/staff-payment-edit': ['staff-payment-edit'],
+  '/staff-payment-delete': ['staff-payment-delete'],
+  '/staff-payment-list': ['staff-payment-list'],
+
+  '/damage-create': ['damage-create'],
+  '/damage-edit': ['damage-edit'],
+  '/damage-delete': ['damage-delete'],
+  '/damage-list': ['damage-list'],
+
+
+
+
+
+  '/deposit-withdraw-create': ['deposit-withdraw-create'],
+  '/deposit-withdraw-edit': ['deposit-withdraw-edit'],
+  '/deposit-withdraw-delete': ['deposit-withdraw-delete'],
+  '/deposit-withdraw-list': ['deposit-withdraw-list'],
+
+  '/accounting-account-balance': ['accounting-account-balance'],
+  '/accounting-account-statement': ['accounting-account-statement'],
+  '/accounting-balance-sheet': ['accounting-balance-sheet'],
+  '/accounting-trial-balance': ['accounting-trial-balance'],
+  '/accounting-transaction-history': ['accounting-transaction-history'],
+
+  '/role-create': ['role-create'],
+  '/role-edit': ['role-edit'],
+  '/role-delete': ['role-delete'],
+  '/role-list': ['role-list'],
+
+  '/employee-create': ['employee-create'],
+  '/employee-edit': ['employee-edit'],
+  '/employee-delete': ['employee-delete'],
+  '/employee-list': ['employee-list'],
+
+  '/settings-settings': ['settings-settings'],
+  '/settings-tax': ['settings-tax'],
+  '/settings-email': ['settings-email'],
+  '/settings-sms': ['settings-sms'],
+  '/settings-whatsapp': ['settings-whatsapp'],
+  '/settings-payment': ['settings-payment'],
+  '/settings-social-auth': ['settings-social-auth'],
+  '/settings-white-label': ['settings-white-label'],
+  '/settings-vacation': ['settings-vacation'],
+  '/settings-holiday': ['settings-holiday'],
+
+  '/report-daily-summary': ['report-daily-summary'],
+  '/report-profit-loss': ['report-profit-loss'],
+  '/report-sale': ['report-sale'],
+  '/report-purchase': ['report-purchase'],
+  '/report-stock': ['report-stock'],
+  '/report-commission': ['report-commission'],
+  '/report-earning': ['report-earning'],
+  '/report-payout': ['report-payout'],
+  '/report-evaluation': ['report-evaluation'],
+  '/report-evaluation-details': ['report-evaluation-details'],
+  '/report-attendance': ['report-attendance'],
+  '/report-damage': ['report-damage'],
 };
 
 /**
