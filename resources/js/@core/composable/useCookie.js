@@ -1,4 +1,3 @@
-// Ported from [Nuxt](https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/composables/cookie.ts)
 import { parse, serialize } from 'cookie-es'
 import { destr } from 'destr'
 
@@ -21,7 +20,7 @@ export const useCookie = (name, _opts) => {
   return cookie
 }
 function serializeCookie(name, value, opts = {}) {
-  if (value === null || value === undefined)
+  if (value == null || value == undefined)
     return serialize(name, value, { ...opts, maxAge: -1 })
   
   return serialize(name, value, { ...opts, maxAge: 60 * 60 * 12 })

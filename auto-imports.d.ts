@@ -540,6 +540,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly emailValidator: UnwrapRef<typeof import('./resources/js/@core/utils/validators.js')['emailValidator']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
+    readonly filterNavItems: UnwrapRef<typeof import('./resources/js/utils/permissions copy.js')['filterNavItems']>
     readonly filterNavItems: UnwrapRef<typeof import('./resources/js/utils/permissions.js')['filterNavItems']>
     readonly formatDate: UnwrapRef<typeof import('./resources/js/@core/utils/formatters.js')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./resources/js/@core/utils/formatters.js')['formatDateToMonthShort']>
@@ -548,6 +549,7 @@ declare module 'vue' {
     readonly getAnimationType: UnwrapRef<typeof import('./resources/js/composables/useAOS.js')['getAnimationType']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getRoutePermissions: UnwrapRef<typeof import('./resources/js/utils/routePermissions.js')['getRoutePermissions']>
     readonly getStaggeredDelay: UnwrapRef<typeof import('./resources/js/composables/useAOS.js')['getStaggeredDelay']>
     readonly getUserData: UnwrapRef<typeof import('./resources/js/utils/storage.js')['getUserData']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
@@ -565,6 +567,7 @@ declare module 'vue' {
     readonly isEmptyArray: UnwrapRef<typeof import('./resources/js/@core/utils/helpers.js')['isEmptyArray']>
     readonly isNullOrUndefined: UnwrapRef<typeof import('./resources/js/@core/utils/helpers.js')['isNullOrUndefined']>
     readonly isObject: UnwrapRef<typeof import('./resources/js/@core/utils/helpers.js')['isObject']>
+    readonly isPermissionExcludedRoute: UnwrapRef<typeof import('./resources/js/utils/routePermissions.js')['isPermissionExcludedRoute']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
@@ -604,8 +607,8 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly paginationMeta: UnwrapRef<typeof import('./resources/js/utils/paginationMeta.js')['paginationMeta']>
     readonly passwordValidator: UnwrapRef<typeof import('./resources/js/@core/utils/validators.js')['passwordValidator']>
+    readonly pathPermissionMap: UnwrapRef<typeof import('./resources/js/utils/routePermissions.js')['pathPermissionMap']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly prefixWithPlus: UnwrapRef<typeof import('./resources/js/@core/utils/formatters.js')['prefixWithPlus']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
@@ -634,6 +637,7 @@ declare module 'vue' {
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
     readonly resolveVuetifyTheme: UnwrapRef<typeof import('./resources/js/@core/utils/vuetify.js')['resolveVuetifyTheme']>
     readonly rgbaToHex: UnwrapRef<typeof import('./resources/js/@core/utils/colorConverter.js')['rgbaToHex']>
+    readonly routePermissionMap: UnwrapRef<typeof import('./resources/js/utils/routePermissions.js')['routePermissionMap']>
     readonly setAccessToken: UnwrapRef<typeof import('./resources/js/utils/storage.js')['setAccessToken']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>

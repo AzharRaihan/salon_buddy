@@ -3,6 +3,13 @@ import { createRouter, createWebHistory } from "vue-router/auto";
 import { toast } from 'vue3-toastify';
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 import { storeToRefs } from 'pinia'
+import { hasAnyPermission } from "@/utils/permissions";
+
+import {
+  getRoutePermissions,
+  isPermissionExcludedRoute,
+} from "@/utils/routePermissions";
+
 import Hashids from "hashids";
 
 // Initialize hashids for encryption/decryption
@@ -238,6 +245,24 @@ router.beforeEach(async (to, from, next) => {
     });
     return next({ path: "/branch" });
   }
+
+
+  // 9️⃣ Check route permissions
+  if (!isPermissionExcludedRoute(to.path)) {
+    const requiredPermissions = getRoutePermissions(to);
+    if (requiredPermissions && requiredPermissions.length > 0) {
+      const hasPermission = hasAnyPermission(requiredPermissions);
+      if (!hasPermission) {
+        toast("You don't have permission to access this page.", {
+          type: "error",
+          position: "top-right",
+          autoClose: 5000,
+        });
+        return next({ path: "/admin-dashboard" });
+      }
+    }
+  }
+
 
   next();
 });

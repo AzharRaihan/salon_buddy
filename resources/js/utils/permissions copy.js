@@ -54,8 +54,6 @@ export const hasAnyPermission = (permissions) => {
     ? permissions
     : [permissions];
 
-    console.log('test', permissionsArray);
-
   // Return true if user has any of the permissions
   return permissionsArray.some((permission) => hasPermission(permission));
 };
