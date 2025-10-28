@@ -82,6 +82,7 @@ const formatQuantity = (value) => {
   return num % 1 === 0 ? num.toString() : num.toString().replace(/\.?0+$/, "")
 }
 
+
 const parseTaxBreakdown = (taxBreakdown) => {
   if (!taxBreakdown) return {};
   try {
@@ -94,6 +95,14 @@ const parseTaxBreakdown = (taxBreakdown) => {
   const props = defineProps({
     modelValue: Boolean,
     order: Object
+  })
+
+  watch(() => props.modelValue, (newVal) => {
+    if(newVal) {
+      setTimeout(() => {
+        printBill()
+      }, 1000)
+    }
   })
 
   
@@ -190,6 +199,10 @@ const parseTaxBreakdown = (taxBreakdown) => {
               word-break: break-all;
               padding-left: 5px;
             }
+            .company-logo {
+              max-width: 200px;
+              max-height: 40px;
+            }
           </style>
         </head>
         <body>
@@ -205,6 +218,8 @@ const parseTaxBreakdown = (taxBreakdown) => {
       printWindow.print();
     }, 500);
   }
+
+
 
 
   function calcSubtotal(details) {
@@ -234,6 +249,8 @@ const parseTaxBreakdown = (taxBreakdown) => {
     font-size: 11px;
     border-radius: 4px;
     box-shadow: 0 2px 8px #0002;
+    max-height: 90vh;
+    overflow-y: auto;
   }
   .center { 
     text-align: center; 
@@ -286,5 +303,9 @@ const parseTaxBreakdown = (taxBreakdown) => {
   .transaction-id {
     word-break: break-all;
     padding-left: 5px;
+  }
+  .company-logo {
+    max-width: 200px;
+    max-height: 40px;
   }
 </style>

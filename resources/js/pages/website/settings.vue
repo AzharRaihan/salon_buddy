@@ -6,6 +6,10 @@ import defaultBanner from '@images/system-config/default-picture.png';
 import { useI18n } from 'vue-i18n'
 import { useWebsiteSettingsStore } from '@/stores/websiteSetting.js'
 
+// Image Cropper
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
+
 const { t } = useI18n()
 
 const router = useRouter()
@@ -19,6 +23,96 @@ const commonBannerPreviewImage = ref(defaultBanner)
 const loginPreviewImage = ref(defaultBanner)
 const googleMapPreviewImage = ref(defaultBanner)
 
+// Image Cropper variables
+const showHeaderCropperModal = ref(false)
+const showFooterCropperModal = ref(false)
+const headerImageSrc = ref(null)
+const footerImageSrc = ref(null)
+const headerCroppedImage = ref(null)
+const footerCroppedImage = ref(null)
+const headerCropPreview = ref(null)
+const footerCropPreview = ref(null)
+let headerCropperRef = null
+let footerCropperRef = null
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const MIN_WIDTH = 100
+const MIN_HEIGHT = 50
+
+// Cropper functions
+function onHeaderCrop({ canvas }) {
+    headerCropperRef = canvas
+    headerCropPreview.value = canvas.toDataURL()
+}
+
+function onFooterCrop({ canvas }) {
+    footerCropperRef = canvas
+    footerCropPreview.value = canvas.toDataURL()
+}
+
+function getHeaderCroppedImage() {
+    if (headerCropperRef) {
+        headerCroppedImage.value = headerCropperRef.toDataURL()
+        headerLogoPreviewImage.value = headerCroppedImage.value
+        form.value.header_logo = convertDataURLtoFile(headerCroppedImage.value, 'header-cropped.jpg')
+        showHeaderCropperModal.value = false
+    }
+}
+
+function getFooterCroppedImage() {
+    if (footerCropperRef) {
+        footerCroppedImage.value = footerCropperRef.toDataURL()
+        footerLogoPreviewImage.value = footerCroppedImage.value
+        form.value.footer_logo = convertDataURLtoFile(footerCroppedImage.value, 'footer-cropped.jpg')
+        showFooterCropperModal.value = false
+    }
+}
+
+function convertDataURLtoFile(dataURL, filename) {
+    const arr = dataURL.split(',')
+    const mime = arr[0].match(/:(.*?);/)[1]
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while(n--) {
+        u8arr[n] = bstr.charCodeAt(n)
+    }
+    return new File([u8arr], filename, {type: mime})
+}
+
+function cancelHeaderCrop() {
+    showHeaderCropperModal.value = false
+    headerImageSrc.value = null
+    headerCropPreview.value = null
+    if (refInputEl.value) {
+        refInputEl.value.value = ''
+    }
+}
+
+function cancelFooterCrop() {
+    showFooterCropperModal.value = false
+    footerImageSrc.value = null
+    footerCropPreview.value = null
+    if (refInputEl.value) {
+        refInputEl.value.value = ''
+    }
+}
+
+function validateImageFile(file) {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+        toast(t('Only JPEG, JPG, PNG, and WEBP formats are allowed.'), { type: 'error' })
+        return false
+    }
+    if (file.size > MAX_FILE_SIZE) {
+        toast(t('File size must be less than or equal to 2 MB.'), { type: 'error' })
+        return false
+    }
+    return true
+}
+
+function validateImageDimensions(img) {
+    return true; // Disabled dimension validation for logos
+}
 
 const languageOptions = [
     { title: 'English', value: 'en' },
@@ -198,14 +292,29 @@ const resetLoginImage = () => {
 
 const changeHeaderLogoImage = (event) => {
     const file = event.target.files[0]
-    if (file) {
-        const reader = new FileReader()
-        reader.onload = e => {
-            headerLogoPreviewImage.value = e.target.result
-            form.value.header_logo = file
-        }
-        reader.readAsDataURL(file)
+    if (!file) return
+    if (!validateImageFile(file)) {
+        event.target.value = ''
+        return
     }
+    const reader = new FileReader()
+    reader.onload = e => {
+        const img = new Image()
+        img.onload = () => {
+            if (!validateImageDimensions(img)) {
+                event.target.value = ''
+                return
+            }
+            headerImageSrc.value = e.target.result
+            showHeaderCropperModal.value = true
+        }
+        img.onerror = () => {
+            toast(t('Invalid image file.'), { type: 'error' })
+            event.target.value = ''
+        }
+        img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
 }
 
 const resetHeaderLogoImage = () => {
@@ -214,18 +323,35 @@ const resetHeaderLogoImage = () => {
     if (refInputEl.value) {
         refInputEl.value.value = ''
     }
+    headerImageSrc.value = null
+    showHeaderCropperModal.value = false
 }
 
 const changeFooterLogoImage = (event) => {
     const file = event.target.files[0]
-    if (file) {
-        const reader = new FileReader()
-        reader.onload = e => {
-            footerLogoPreviewImage.value = e.target.result
-            form.value.footer_logo = file
-        }
-        reader.readAsDataURL(file)
+    if (!file) return
+    if (!validateImageFile(file)) {
+        event.target.value = ''
+        return
     }
+    const reader = new FileReader()
+    reader.onload = e => {
+        const img = new Image()
+        img.onload = () => {
+            if (!validateImageDimensions(img)) {
+                event.target.value = ''
+                return
+            }
+            footerImageSrc.value = e.target.result
+            showFooterCropperModal.value = true
+        }
+        img.onerror = () => {
+            toast(t('Invalid image file.'), { type: 'error' })
+            event.target.value = ''
+        }
+        img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
 }
 
 const resetFooterLogoImage = () => {
@@ -234,6 +360,8 @@ const resetFooterLogoImage = () => {
     if (refInputEl.value) {
         refInputEl.value.value = ''
     }
+    footerImageSrc.value = null
+    showFooterCropperModal.value = false
 }
 
 const changeFavIconImage = (event) => {
@@ -638,6 +766,10 @@ const resetForm = () => {
                                                 <span class="d-none d-sm-block">{{ t('Reset') }}</span>
                                                 <VIcon icon="tabler-refresh" class="d-sm-none" />
                                             </VBtn>
+                                            <VBtn v-if="headerImageSrc" type="reset" size="small" color="secondary" variant="tonal" @click="showHeaderCropperModal = true">
+                                                <span class="d-none d-sm-block">{{ t('Crop Image') }}</span>
+                                                <VIcon icon="tabler-crop" class="d-sm-none" />
+                                            </VBtn>
                                         </div>
                                         <p class="text-body-1 mb-0">
                                             {{ t('Allowed JPG, GIF or PNG. Max size of 2 MB') }}
@@ -662,6 +794,10 @@ const resetForm = () => {
                                             <VBtn type="reset" size="small" color="secondary" variant="tonal" @click="resetFooterLogoImage">
                                                 <span class="d-none d-sm-block">{{ t('Reset') }}</span>
                                                 <VIcon icon="tabler-refresh" class="d-sm-none" />
+                                            </VBtn>
+                                            <VBtn v-if="footerImageSrc" type="reset" size="small" color="secondary" variant="tonal" @click="showFooterCropperModal = true">
+                                                <span class="d-none d-sm-block">{{ t('Crop Image') }}</span>
+                                                <VIcon icon="tabler-crop" class="d-sm-none" />
                                             </VBtn>
                                         </div>
                                         <p class="text-body-1 mb-0">
@@ -768,6 +904,60 @@ const resetForm = () => {
                 </VCardText>
             </VCard>
         </VCol>
+
+        <!-- Header Logo Cropper Modal -->
+        <VDialog v-model="showHeaderCropperModal" persistent max-width="500px">
+            <VCard class="modal-card modal-card-sm">
+                <VCardTitle>{{ t('Crop Header Logo') }}</VCardTitle>
+                <VCardText>
+                    <cropper
+                        class="cropper"
+                        :src="headerImageSrc"
+                        :min-width="100"
+                        :min-height="50"
+                        @change="onHeaderCrop"
+                    />
+                </VCardText>
+                <VCardActions>
+                    <VSpacer />
+                    <VBtn color="primary" variant="tonal" @click="getHeaderCroppedImage">
+                        <VIcon start icon="tabler-crop" />
+                        {{ t('Crop & Save') }}
+                    </VBtn>
+                    <VBtn color="error" variant="tonal" @click="cancelHeaderCrop">
+                        <VIcon start icon="tabler-x" />
+                        {{ t('Cancel') }}
+                    </VBtn>
+                </VCardActions>
+            </VCard>
+        </VDialog>
+
+        <!-- Footer Logo Cropper Modal -->
+        <VDialog v-model="showFooterCropperModal" persistent max-width="500px">
+            <VCard class="modal-card modal-card-sm">
+                <VCardTitle>{{ t('Crop Footer Logo') }}</VCardTitle>
+                <VCardText>
+                    <cropper
+                        class="cropper"
+                        :src="footerImageSrc"
+                        :min-width="100"
+                        :min-height="50"
+                        @change="onFooterCrop"
+                    />
+                </VCardText>
+                <VCardActions>
+                    <VSpacer />
+                    <VBtn color="primary" variant="tonal" @click="getFooterCroppedImage">
+                        <VIcon start icon="tabler-crop" />
+                        {{ t('Crop & Save') }}
+                    </VBtn>
+                    <VBtn color="error" variant="tonal" @click="cancelFooterCrop">
+                        <VIcon start icon="tabler-x" />
+                        {{ t('Cancel') }}
+                    </VBtn>
+                </VCardActions>
+            </VCard>
+        </VDialog>
     </VRow>
 </template>
 
@@ -775,5 +965,10 @@ const resetForm = () => {
 .devider-title {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 10px;
+}
+
+.cropper {
+    height: 200px;
+    background: #DDD;
 }
 </style>

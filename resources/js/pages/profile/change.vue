@@ -279,7 +279,7 @@ const updateProfile = async () => {
                     {{ $t('Allowed JPG, PNG. Max size of 1 MB Required') }}
                 </p>
                 <p class="text-body-1 mb-0">
-                    {{ $t('Recommended size: 250px x 250px') }} - <small>{{ $t("Use the exact size for best results, but don't use less.") }}</small>
+                    {{ $t('Recommended size: 250px X 250px') }} - <small>{{ $t("Use the exact size for best results, but don't use less.") }}</small>
                 </p>
               </form>
             </VCardText>

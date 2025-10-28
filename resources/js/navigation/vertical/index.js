@@ -112,9 +112,9 @@ export default [
     title: "Payment Account",
     icon: { icon: "tabler-cash-banknote" },
     children: [
-      { title: "Add Payment Method", to: { name: "payment-method-create" }, permission: ["payment_method-create"] },
-      { title: "List Payment Method", to: { name: "payment-method" }, permission: ["payment_method-list"] },
-      { title: "Sorting Account", to: { name: "payment-method-sorting-payment-method" }, permission: ["payment_method-sorting_account"] },
+      { title: "Add Payment Account", to: { name: "payment-account-create" }, permission: ["payment_account-create"] },
+      { title: "List Payment Account", to: { name: "payment-account" }, permission: ["payment_account-list"] },
+      { title: "Sorting Account", to: { name: "payment-account-sorting-payment-account" }, permission: ["payment_account-sorting_account"] },
     ],
   },
   {

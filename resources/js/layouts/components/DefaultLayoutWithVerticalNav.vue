@@ -4,6 +4,7 @@ import { themeConfig } from '@themeConfig'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify';
 import { useUserData } from '@/composables/useUserData';
+import { computed } from 'vue';
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -30,8 +31,6 @@ const posAccess = computed(() => {
   }
 })
 
-
-
 function handlePosClick() {
   const branch_info = useCookie("branch_info").value || 0;
 
@@ -48,6 +47,20 @@ function handlePosClick() {
 import { useBranchInfo } from '@/composables/useBranchInfo'
 const { branchInfo } = useBranchInfo()
 
+
+const hasBranchInfo = computed(() => {
+  if (!branchInfo.value) return false
+  if (typeof branchInfo.value === 'number' && branchInfo.value === 0) return false
+  if (typeof branchInfo.value === 'string' && (!branchInfo.value || branchInfo.value === '0')) return false
+  if (typeof branchInfo.value === 'object') {
+    // Sometimes the plugin may return an empty object or missing keys
+    if (Object.keys(branchInfo.value).length === 0) return false
+    if ('branch_name' in branchInfo.value && branchInfo.value.branch_name) return true
+    // fallback: treat any non-empty object as valid
+    return true
+  }
+  return true
+})
 
 </script>
 
@@ -84,8 +97,8 @@ const { branchInfo } = useBranchInfo()
         <NavSearchBar class="ms-lg-n3" />
         <VSpacer />
 
-
-        <div class="outlet-name" v-if="branchInfo._value != 0">
+        <!-- Fix: Show outlet-name only if branchInfo is valid -->
+        <div class="outlet-name" v-if="hasBranchInfo">
           <VIcon icon="tabler-building" />
           {{ branchInfo.branch_name }}
         </div>

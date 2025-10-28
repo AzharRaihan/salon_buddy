@@ -91,13 +91,12 @@ class PermissionTableSeeder extends Seeder
                 'item-edit', 
                 'item-list',
             ],
-            'payment_method-management' => [
-                'payment_method-create',
-                'payment_method-delete',
-                'payment_method-edit', 
-                'payment_method-list',
-                'payment_method-sorting_account',
-
+            'payment_account-management' => [
+                'payment_account-create',
+                'payment_account-delete',
+                'payment_account-edit', 
+                'payment_account-list',
+                'payment_account-sorting_account',
             ],
             'POS' => [
                 'POS',
