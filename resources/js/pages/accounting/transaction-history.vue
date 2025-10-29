@@ -35,9 +35,9 @@ const selectedBranchName = computed(() => {
 })
 
 const selectedPaymentMethodName = computed(() => {
-    if (!paymentMethodId.value) return 'All Payment Methods'
+    if (!paymentMethodId.value) return 'All Payment Accounts'
     const paymentMethod = paymentMethods.value.find(p => p.id == paymentMethodId.value)
-    return paymentMethod?.name || 'All Payment Methods'
+    return paymentMethod?.name || 'All Payment Accounts'
 })
 
 const exportHeaders = computed(() => [

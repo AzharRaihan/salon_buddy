@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { useAccountBalanceReport } from '@/composables/useAccountBalanceReport'
 import AccountBalanceReportFilters from '@/components/report/AccountBalanceReportFilters.vue'
-import AccountBalanceSummaryCards from '@/components/report/AccountBalanceSummaryCards.vue'
 import AccountBalanceReportTable from '@/components/report/AccountBalanceReportTable.vue'
 import ExportTableAccountBalanceReport from '@/components/ExportTableAccountBalanceReport.vue'
 
@@ -23,10 +22,13 @@ const {
     summary,
 } = useAccountBalanceReport()
 
+
+
 // Ref to store report header data from table component
 const reportHeaderData = ref({
     reportTitle: 'Account Balance Report',
     outletName: 'All Outlets',
+    address: 'N/A',
     phone: 'N/A',
     generatedOn: '',
     generatedBy: 'N/A'
@@ -37,11 +39,17 @@ const handleHeaderDataUpdate = (headerData) => {
     reportHeaderData.value = headerData
 }
 
+
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const exportHeaders = computed(() => [
@@ -90,6 +98,7 @@ const handleResetFilters = () => {
         <AccountBalanceReportTable
             :accounts="accounts"
             :export-headers="exportHeaders"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :is-loading="isLoading"
             @update:header-data="handleHeaderDataUpdate"

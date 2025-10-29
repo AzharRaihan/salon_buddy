@@ -34,7 +34,7 @@
                 <thead>
                     <tr>
                         <th>SN</th>
-                        <th>Payment Method</th>
+                        <th>Payment Account</th>
                         <th>Transaction</th>
                         <th>Amount</th>
                     </tr>

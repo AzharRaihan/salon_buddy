@@ -2,39 +2,20 @@
     <div class="account-statement-report-filters">
         <!-- Filter Row -->
         <VRow class="mb-4">
-            <!-- Date From -->
+            <!-- Account Filter -->
             <VCol cols="12" md="3">
-                <AppDateTimePicker 
-                    :model-value="dateFrom" 
-                    @update:model-value="(value) => emit('update:dateFrom', value)"
-                    label="Start Date"
-                    clearable
-                />
-            </VCol>
-
-            <!-- Date To -->
-            <VCol cols="12" md="3">
-                <AppDateTimePicker 
-                    :model-value="dateTo" 
-                    @update:model-value="(value) => emit('update:dateTo', value)"
-                    label="End Date"
-                    clearable
-                />
-            </VCol>
-
-            <!-- Payment Method Filter -->
-            <VCol cols="12" md="3">
-                <AppSelect 
+                <AppAutocomplete 
                     :model-value="paymentMethodId" 
                     @update:model-value="(value) => emit('update:paymentMethodId', value)"
-                    :items="[{ id: '', name: t('All Payment Methods') }, ...paymentMethods]"
+                    :items="paymentMethods"
                     item-title="name"
                     item-value="id"
-                    label="Filter by Payment Account"
+                    label="Payment Account"
+                    placeholder="Select Payment Account"
+                    :required="true"
                     clearable
                 />
             </VCol>
-
             <!-- Branch Filter -->
             <VCol cols="12" md="3">
                 <AppSelect 
@@ -44,6 +25,24 @@
                     item-title="name"
                     item-value="id"
                     label="Filter by Outlet"
+                    clearable
+                />
+            </VCol>
+            <!-- Date From -->
+            <VCol cols="12" md="3">
+                <AppDateTimePicker 
+                    :model-value="dateFrom" 
+                    @update:model-value="(value) => emit('update:dateFrom', value)"
+                    label="Start Date"
+                    clearable
+                />
+            </VCol>
+            <!-- Date To -->
+            <VCol cols="12" md="3">
+                <AppDateTimePicker 
+                    :model-value="dateTo" 
+                    @update:model-value="(value) => emit('update:dateTo', value)"
+                    label="End Date"
                     clearable
                 />
             </VCol>
@@ -81,6 +80,7 @@ const props = defineProps({
         default: () => []
     }
 })
+
 
 const emit = defineEmits([
     'update:dateFrom',

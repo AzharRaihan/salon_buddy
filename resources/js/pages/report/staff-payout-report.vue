@@ -47,7 +47,7 @@ const exportHeaders = computed(() => [
     { title: 'Date', key: 'date' },
     { title: 'Reference No', key: 'reference_no' },
     { title: 'Employee', key: 'employee.name' },
-    { title: 'Payment Method', key: 'payment_method.name' },
+    { title: 'Payment Account', key: 'payment_method.name' },
     { title: 'Amount', key: 'amount' },
     { title: 'Note', key: 'note' },
 ])

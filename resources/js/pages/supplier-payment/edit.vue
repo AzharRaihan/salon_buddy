@@ -25,6 +25,7 @@ const form = ref({
     note: '',
     supplier_id: null,
     payment_method_id: null,
+    old_payment_method_id: null,
     branch_id: branch_info.id
 })
 
@@ -63,7 +64,7 @@ const validateAmount = (amount) => {
         return false
     }
 
-    if(Number(form.value.old_amount) >= Number(amount)) {
+    if(Number(form.value.old_amount) >= Number(amount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         amountError.value = ''
         return true
     }
@@ -100,7 +101,7 @@ const validateSupplierId = (supplierId) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (!paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required')
+        paymentMethodIdError.value = t('Payment account is required')
         return false
     }
     paymentMethodIdError.value = ''
@@ -110,7 +111,7 @@ const validatePaymentMethodId = (paymentMethodId) => {
 watch([() => form.value.amount], ([newAmount]) => {
     if (isInitialLoad.value) return
 
-    if(Number(form.value.old_amount) >= Number(newAmount)) {
+    if(Number(form.value.old_amount) >= Number(newAmount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         amountError.value = ''
         return
     }
@@ -144,7 +145,7 @@ watch(() => form.value.payment_method_id, (newMethodId) => {
     const bal = method.account_balance ?? 0
     selectedAccountBalance.value = bal ? parseFloat(bal) : 0
 
-    if(Number(form.value.old_amount) >= Number(form.value.amount)) {
+    if(Number(form.value.old_amount) >= Number(form.value.amount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         amountError.value = ''
         return
     }
@@ -188,6 +189,7 @@ const fetchSupplierPayment = async () => {
             note: data.note ?? '',
             supplier_id: data.supplier?.id,
             payment_method_id: data.payment_method?.id,
+            old_payment_method_id: data.payment_method?.id,
             branch_id: branch_info.id
         }
         
@@ -228,7 +230,7 @@ const fetchSuppliers = async () => {
     }
 }
 
-// Fetch payment methods
+// Fetch payment accounts
 const fetchPaymentMethods = async () => {
     try {
         const res = await $api('/get-all-payment-methods')
@@ -240,8 +242,8 @@ const fetchPaymentMethods = async () => {
             }))
         ]
     } catch (err) {
-        console.error('Error fetching payment methods:', err)
-        toast(t('Error fetching payment methods'), {
+        console.error('Error fetching payment accounts:', err)
+        toast(t('Error fetching payment accounts'), {
             type: 'error'
         })
     }
@@ -410,12 +412,12 @@ const updateSupplierPayment = async () => {
                                     </div>
                             </VCol>
 
-                            <!-- Payment Method -->
+                            <!-- Payment Account -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.payment_method_id"
                                     :items="paymentMethods"
-                                    :label="t('Payment Method')" :required="true"
-                                    :placeholder="t('Select Payment Method')"
+                                    :label="t('Payment Account')" :required="true"
+                                    :placeholder="t('Select Payment Account')"
                                     :error-messages="paymentMethodIdError"
                                     @change="validatePaymentMethodId($event)"
                                     clearable

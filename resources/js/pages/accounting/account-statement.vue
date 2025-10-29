@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAccountStatementReport } from '@/composables/useAccountStatementReport'
 import AccountStatementReportFilters from '@/components/report/AccountStatementReportFilters.vue'
-import AccountStatementSummaryCards from '@/components/report/AccountStatementSummaryCards.vue'
 import AccountStatementReportTable from '@/components/report/AccountStatementReportTable.vue'
 import ExportTableAccountStatementReport from '@/components/ExportTableAccountStatementReport.vue'
 
@@ -27,17 +26,38 @@ const {
     summary,
 } = useAccountStatementReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Account Statement Report',
+    outletName: 'All Outlets',
+    dateRange: 'All Time',
+    address: 'N/A',
+    phone: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A',
+    paymentAccountName: 'All Payment Account'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedPaymentMethodName = computed(() => {
-    if (!paymentMethodId.value) return 'All Payment Methods'
+    if (!paymentMethodId.value) return 'All Payment Account'
     const paymentMethod = paymentMethods.value.find(p => p.id == paymentMethodId.value)
-    return paymentMethod?.name || 'All Payment Methods'
+    return paymentMethod?.name || 'All Payment Account'
 })
 
 const exportHeaders = computed(() => [
@@ -72,14 +92,6 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <AccountStatementSummaryCards
-                    :summary="summary"
-                />
-            </VCardText>
-        </VCard>
 
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">
@@ -95,7 +107,7 @@ const handleResetFilters = () => {
                 :data="statements" 
                 :headers="exportHeaders" 
                 filename="account-statement-report"
-                title="Account Statement Report"
+                :header-data="reportHeaderData"
                 :summary-data="summary"
             />
         </div>
@@ -106,9 +118,12 @@ const handleResetFilters = () => {
             :export-headers="exportHeaders"
             :date-from="dateFrom"
             :date-to="dateTo"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :selected-payment-method-name="selectedPaymentMethodName"
             :is-loading="isLoading"
+            :summary-data="summary"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

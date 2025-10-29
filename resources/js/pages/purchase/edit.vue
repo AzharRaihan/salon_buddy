@@ -31,6 +31,7 @@ const form = ref({
     grand_total: 0,
     paid_amount: 0,
     old_paid_amount: 0,
+    old_payment_method_id: null,
     due_amount: 0,
     attachment: null,
     attachment_url: null,
@@ -89,7 +90,7 @@ const validatePaidAmount = (paidAmount) => {
         return false
     }
 
-    if(Number(form.value.old_paid_amount) >= Number(paidAmount)) {
+    if(Number(form.value.old_paid_amount) >= Number(paidAmount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         paidAmountError.value = ''
         return true
     }
@@ -108,7 +109,7 @@ const validatePaidAmount = (paidAmount) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (form.value.paid_amount > 0 && !paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required when paid amount is greater than 0')
+        paymentMethodIdError.value = t('Payment account is required when paid amount is greater than 0')
         return false
     }
     paymentMethodIdError.value = ''
@@ -155,7 +156,7 @@ const validateItem = (item) => {
 
 watch([() => form.value.paid_amount, () => form.value.grand_total], ([newPaidAmount, newGrandTotal]) => {
 
-    if(Number(form.value.old_paid_amount) >= Number(newPaidAmount)) {
+    if(Number(form.value.old_paid_amount) >= Number(newPaidAmount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         paidAmountError.value = ''
         return true
     }
@@ -185,7 +186,7 @@ watch(() => form.value.payment_method_id, (newMethodId) => {
         return
     }
 
-    if(Number(form.value.old_paid_amount) >= Number(form.value.paid_amount)) {
+    if(Number(form.value.old_paid_amount) >= Number(form.value.paid_amount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         paidAmountError.value = ''
         return true
     }
@@ -269,6 +270,7 @@ onMounted(async () => {
             attachment_url: purchase.attachment_url,
             note: purchase.note ?? '',
             payment_method_id: purchase.payment_method?.id,
+            old_payment_method_id: purchase.payment_method?.id,
             branch_id: branch_info.id,
             items: purchase.purchase_details?.map(item => ({
                 item_id: item.item?.id,
@@ -686,8 +688,8 @@ const addSupplier = async () => {
                             
 
                             <!-- Note -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.note" :label="$t('Note')" type="text"
+                            <VCol cols="12">
+                                <AppTextField v-model="form.note" :label="$t('Note')" type="text"
                                     :placeholder="$t('Enter note')" />
                             </VCol>
 
@@ -780,10 +782,10 @@ const addSupplier = async () => {
                                 <AppTextField class="mt-4" :model-value="formatNumberPrecision(form.due_amount)" :label="$t('Due Amount')" type="number"
                                     :placeholder="$t('Due amount')" readonly />
 
-                                <!-- Payment Method -->
+                                <!-- Payment Account -->
                                 <AppAutocomplete class="mt-4" v-model="form.payment_method_id" 
-                                    :label="form.paid_amount > 0 ? $t('Payment Method') : $t('Payment Method')" :required="form.paid_amount > 0"
-                                    :placeholder="$t('Select Payment Method')" :items="paymentMethods" item-title="name" item-value="id"
+                                    :label="form.paid_amount > 0 ? $t('Payment Account') : $t('Payment Account')" :required="form.paid_amount > 0"
+                                    :placeholder="$t('Select Payment Account')" :items="paymentMethods" item-title="name" item-value="id"
                                     :error-messages="paymentMethodIdError" @update:model-value="validatePaymentMethodId"
                                     clearable
                                     />

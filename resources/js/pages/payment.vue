@@ -46,7 +46,7 @@ const fetchPaymentMethods = async () => {
       paymentMethods.value = response.data
     }
   } catch (error) {
-    console.error('Error fetching payment methods:', error)
+    console.error('Error fetching payment account:', error)
   } finally {
     isLoading.value = false
   }
@@ -60,7 +60,7 @@ const processPayment = async () => {
   }
   
   if (!selectedPaymentMethod.value) {
-    toast('Please select a payment method', { type: 'error' })
+    toast('Please select a payment account', { type: 'error' })
     return
   }
   
@@ -219,7 +219,7 @@ const paymentAmount = computed(() => {
           <div class="row payment-section">
             <div class="col-lg-5">
               <div class="payment-details">
-                <h3 class="payment-method-title">Payment Method</h3>
+                <h3 class="payment-method-title">Payment Account</h3>
                 
                 <ul class="payment-methods">
                   <li v-for="method in paymentMethods" :key="method.id" class="payment-method-li">

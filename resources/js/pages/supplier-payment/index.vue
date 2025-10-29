@@ -39,7 +39,7 @@ const SupplierName = computed(() => t('Supplier Name'))
 const Amount = computed(() => t('Amount'))
 const Note = computed(() => t('Note'))
 const Action = computed(() => t('Action'))
-const PaymentMethod = computed(() => t('Payment Method'))
+const PaymentMethod = computed(() => t('Payment Account'))
 
 // Data table Headers
 const headers = [

@@ -1,0 +1,28 @@
+Added Tiem tha thik korte hobe.
+
+
+
+These are my file.
+
+Here Account Balance is a reference file  to understand Report Template structure.
+
+Now I want to modify Account Statement below is my Account Statement Requirement.
+
+
+Requirement Summary:
+
+Requirement 1: In the Account Statement Report Payment Account Select is required, without Select Account data should not come.
+
+Requirement 2: Add 2 column Opening balance, and last column closing balance
+
+If I filtered date range eg: 2025-10-25 to 2025-12-25 then before start date all transaction will be calculated for opening balance. 
+eg: current balance + sale ... and so on.
+
+
+
+Follow Account Balance Template structure: eg: Report Header, Report Export Header, Summary Calculation.
+Payment Account Name will be show bottom of the Generate By, Date Range will be how at top of the Generated On.
+Show closing balance, Calculate Total Debit, Calculate Total Credit, and show in the table last row as like Account Balance.
+
+
+Make sure all is working 100% correctly. so be careful. 

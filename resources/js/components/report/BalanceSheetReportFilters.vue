@@ -2,26 +2,6 @@
     <div class="balance-sheet-report-filters">
         <!-- Filter Row -->
         <VRow class="mb-4">
-            <!-- Date From -->
-            <VCol cols="12" md="4">
-                <AppDateTimePicker 
-                    :model-value="dateFrom" 
-                    @update:model-value="(value) => emit('update:dateFrom', value)"
-                    label="Start Date"
-                    clearable
-                />
-            </VCol>
-
-            <!-- Date To -->
-            <VCol cols="12" md="4">
-                <AppDateTimePicker 
-                    :model-value="dateTo" 
-                    @update:model-value="(value) => emit('update:dateTo', value)"
-                    label="End Date"
-                    clearable
-                />
-            </VCol>
-
             <!-- Branch Filter -->
             <VCol cols="12" md="4">
                 <AppSelect 

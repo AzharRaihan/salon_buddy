@@ -14,7 +14,7 @@ const employees = ref([])
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
 const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber, formatNumberPrecision } = useCompanyFormatters()
-const paymentBalances = ref(new Map()) // Store balances for each payment method
+const paymentBalances = ref(new Map()) // Store balances for each payment accounts
 const isInitialLoad = ref(true)
 
 const form = ref({
@@ -75,7 +75,7 @@ const validateDate = (date) => {
 const validatePaymentMethod = (paymentMethods) => {
 
     if (!paymentMethods || paymentMethods.length == 0) {
-        paymentMethodError.value = t('At least one payment method is required')
+        paymentMethodError.value = t('At least one payment account is required')
         return false
     }
     paymentMethodError.value = ''
@@ -175,7 +175,7 @@ onMounted(async () => {
         employees.value = [...employeesResponse.data]
         paymentMethods.value = [...paymentMethodsResponse.data]
 
-        // Store payment method balances
+        // Store payment account balances
         paymentMethodsResponse.data.forEach(method => {
             paymentBalances.value.set(method.id, parseFloat(method.account_blanace) || 0)
         })
@@ -203,10 +203,10 @@ const addPaymentMethod = (methodId) => {
     const method = paymentMethods.value.find(m => m.id == methodId)
     if (!method) return
 
-    // Check if payment method already exists
+    // Check if payment account already exists
     const exists = form.value.payments.some(p => p.payment_method_id == method.id)
     if (exists) {
-        toast(t('Payment method already added'), { type: 'error' })
+        toast(t('Payment account already added'), { type: 'error' })
         return
     }
 
@@ -694,13 +694,13 @@ watch(() => form.value.payments, (newPayments) => {
                         </VRow>
                         <VRow>
 
-                            <!-- Payment Methods -->
+                            <!-- Payment accounts -->
                             <VCol cols="12" md="6" lg="4" class="ms-auto">
                                 <AppAutocomplete
-                                    :label="t('Add Payment Method')" :required="true"
+                                    :label="t('Add Payment Account')" :required="true"
                                     :items="paymentMethods"
                                     item-title="name"
-                                    :placeholder="t('Select Payment Method')"
+                                    :placeholder="t('Select Payment Account')"
                                     item-value="id"
                                     @update:model-value="addPaymentMethod"
                                     clearable

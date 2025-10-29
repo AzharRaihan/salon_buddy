@@ -38,7 +38,7 @@ const Date = computed(() => t('Date'))
 const Amount = computed(() => t('Amount'))
 const Note = computed(() => t('Note'))
 const Action = computed(() => t('Action'))
-const PaymentMethod = computed(() => t('Payment Method'))
+const PaymentMethod = computed(() => t('Payment Account'))
 
 // Data table Headers
 const headers = [
@@ -190,7 +190,7 @@ onMounted(async () => {
                     {{ item.serial_number }}
                 </template>
 
-                <!-- Payment Method -->
+                <!-- Payment Account -->
                 <template #item.payment_method_name="{ item }">
                     {{ item.payment_method_name }}
                 </template>

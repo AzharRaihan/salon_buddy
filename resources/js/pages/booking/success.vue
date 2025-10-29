@@ -181,7 +181,7 @@ definePage({
                     <strong>₹{{ booking.total_amount }}</strong>
                   </div>
                   <div class="summary-row">
-                    <span>Payment Method:</span>
+                    <span>Payment Account:</span>
                     <span class="text-capitalize">{{ booking.payment_method }}</span>
                   </div>
                   <div class="summary-row">

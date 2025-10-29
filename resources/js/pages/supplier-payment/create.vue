@@ -100,7 +100,7 @@ const validateSupplierId = async (supplierId) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (!paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required')
+        paymentMethodIdError.value = t('Payment account is required')
         return false
     }
     paymentMethodIdError.value = ''
@@ -181,7 +181,7 @@ const fetchSuppliers = async () => {
     }
 }
 
-// Fetch payment methods
+// Fetch payment accounts
 const fetchPaymentMethods = async () => {
     try {
         const res = await $api('/get-all-payment-methods')
@@ -193,8 +193,8 @@ const fetchPaymentMethods = async () => {
             }))
         ]
     } catch (err) {
-        console.error('Error fetching payment methods:', err)
-        toast(t('Error fetching payment methods'), {
+        console.error('Error fetching payment accounts:', err)
+        toast(t('Error fetching payment accounts'), {
             type: 'error'
         })
     }
@@ -379,12 +379,12 @@ const createSupplierPayment = async () => {
                                     </div>
                             </VCol>
                             
-                            <!-- Payment Method -->
+                            <!-- Payment Account -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.payment_method_id"
                                     :items="paymentMethods"
-                                    :label="t('Payment Method')" :required="true"
-                                    :placeholder="t('Select Payment Method')"
+                                    :label="t('Payment Account')" :required="true"
+                                    :placeholder="t('Select Payment Account')"
                                     :error-messages="paymentMethodIdError"
                                     @change="validatePaymentMethodId($event)"
                                     clearable

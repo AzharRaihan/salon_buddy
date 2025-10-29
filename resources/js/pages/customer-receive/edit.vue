@@ -11,7 +11,7 @@ const { t } = useI18n()
 const router = useRouter()
 const loadings = ref(false)
 const customers = ref([])
-const paymentMethods = ref([]) // Added payment methods ref
+const paymentMethods = ref([]) // Added payment accounts ref
 const branch_info = useCookie("branch_info").value || 0;
 const dueAmount = ref(0)
 
@@ -83,7 +83,7 @@ const validateCustomerId = (customerId) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (!paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required')
+        paymentMethodIdError.value = t('Payment account is required')
         return false
     }
     paymentMethodIdError.value = ''
@@ -137,7 +137,7 @@ const fetchCustomers = async () => {
     }
 }
 
-// Fetch payment methods
+// Fetch payment accounts
 const fetchPaymentMethods = async () => {
     try {
         const res = await $api('/get-all-payment-methods')
@@ -148,8 +148,8 @@ const fetchPaymentMethods = async () => {
             }))
         ]
     } catch (err) {
-        console.error('Error fetching payment methods:', err)
-        toast('Error fetching payment methods', {
+        console.error('Error fetching payment accounts:', err)
+        toast('Error fetching payment accounts', {
             type: 'error'
         })
     }
@@ -325,12 +325,12 @@ const updateCustomerReceive = async () => {
                                     </div>
                             </VCol>
 
-                            <!-- Payment Method -->
+                            <!-- Payment Account -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.payment_method_id"
                                     :items="paymentMethods"
-                                    :label="t('Payment Method')" :required="true"
-                                    :placeholder="t('Select Payment Method')"
+                                    :label="t('Payment Account')" :required="true"
+                                    :placeholder="t('Select Payment Account')"
                                     :error-messages="paymentMethodIdError"
                                     @change="validatePaymentMethodId($event)"
                                     clearable
@@ -338,8 +338,8 @@ const updateCustomerReceive = async () => {
                             </VCol>
 
                             <!-- Note -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.note" :label="t('Note')" type="text" 
+                            <VCol cols="12">
+                                <AppTextField v-model="form.note" :label="t('Note')" type="text" 
                                     :placeholder="t('Enter note')"
                                     :error-messages="noteError" 
                                     @input="validateNote($event.target.value)" />

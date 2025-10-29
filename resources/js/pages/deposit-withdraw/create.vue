@@ -84,7 +84,7 @@ const validateNote = (note) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (!paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required')
+        paymentMethodIdError.value = t('Payment account is required')
         return false
     }
     paymentMethodIdError.value = ''
@@ -117,7 +117,7 @@ const fetchDepositWithdrawReferenceNo = async () => {
 
 
 
-// Fetch payment methods
+// Fetch payment Account
 const fetchPaymentMethods = async () => {
     try {
         const res = await $api('/get-all-payment-methods')
@@ -129,8 +129,8 @@ const fetchPaymentMethods = async () => {
             }))
         ]
     } catch (err) {
-        console.error('Error fetching payment methods:', err)
-        toast('Error loading payment methods', {
+        console.error('Error fetching payment accounts:', err)
+        toast('Error loading payment accounts', {
             type: 'error'
         })
     }
@@ -149,7 +149,7 @@ watch(() => form.value.amount, (newAmount) => {
     }
 })
 
-// Watch for payment method changes
+// Watch for payment account changes
 watch(() => form.value.payment_method_id, (newMethodId) => {
     if (!newMethodId) {
         selectedAccountBalance.value = 0
@@ -351,12 +351,12 @@ const createDepositWithdraw = async () => {
                                     @input="validateAmount($event.target.value)" />
                             </VCol>
 
-                            <!-- Payment Method -->
+                            <!-- Payment Account -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.payment_method_id"
                                     :items="paymentMethods"
-                                    :label="t('Payment Method')" :required="true"
-                                    :placeholder="t('Select Payment Method')"
+                                    :label="t('Payment Account')" :required="true"
+                                    :placeholder="t('Select Payment Account')"
                                     :error-messages="paymentMethodIdError"
                                     @change="validatePaymentMethodId($event)"
                                     clearable

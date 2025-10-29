@@ -1740,6 +1740,7 @@ class ReportController extends Controller
         // Get all payment methods
         $paymentMethods = PaymentMethod::where('del_status', 'Live')
             ->where('company_id', $companyId)
+            ->where('account_type', '!=', 'Loyalty Point')
             ->select('id', 'name', 'current_balance')
             ->get();
 
@@ -1942,7 +1943,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         return $this->successResponse([
@@ -2174,7 +2175,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         return $this->successResponse([
@@ -2403,37 +2404,40 @@ class ReportController extends Controller
         $dateFrom = $request->get('date_from');
         $dateTo = $request->get('date_to');
 
+        // Payment method is required
+        if (!$paymentMethodId) {
+            return $this->errorResponse('Payment account is required', 422);
+        }
+
         $statements = [];
         $runningBalance = 0;
+        $openingBalance = 0;
 
-        // Opening Balance
-        if ($dateFrom) {
+        // Calculate opening balance (before date_from or all time if no date)
+        if($dateFrom) {
             $openingBalance = $this->calculateOpeningBalance($companyId, $branchId, $paymentMethodId, $dateFrom);
-            $statements[] = [
-                'date' => $dateFrom,
-                'title' => 'Opening Balance',
-                'debit' => $openingBalance >= 0 ? $openingBalance : 0,
-                'credit' => $openingBalance < 0 ? abs($openingBalance) : 0,
-                'balance' => $openingBalance,
-                'added_by' => 'System',
-                'added_date_time' => $dateFrom . ' 00:00:00',
-            ];
-            $runningBalance = $openingBalance;
+        } else {
+            $openingBalance = 0;
         }
+        $runningBalance = $openingBalance;
+
 
         // Get all transactions
         $transactions = $this->getAccountTransactions($companyId, $branchId, $paymentMethodId, $dateFrom, $dateTo);
 
+
         foreach ($transactions as $transaction) {
             $runningBalance += $transaction['debit'] - $transaction['credit'];
             $transaction['balance'] = $runningBalance;
+            $transaction['opening_balance'] = $openingBalance; // Add opening balance to all rows
             $statements[] = $transaction;
         }
 
-        // Calculate totals
+        // Calculate totals (excluding opening balance from debit/credit totals)
         $totalDebit = array_sum(array_column($statements, 'debit'));
         $totalCredit = array_sum(array_column($statements, 'credit'));
         $closingBalance = $runningBalance;
+
 
         return $this->successResponse([
             'statements' => $statements,
@@ -2441,7 +2445,7 @@ class ReportController extends Controller
             'summary' => [
                 'totalDebit' => $totalDebit,
                 'totalCredit' => $totalCredit,
-                'openingBalance' => $dateFrom ? $openingBalance : 0,
+                'openingBalance' => $openingBalance,
                 'closingBalance' => $closingBalance,
             ],
         ]);
@@ -2844,12 +2848,14 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get payment methods
         $paymentMethods = PaymentMethod::where('del_status', 'Live')
             ->where('company_id', $companyId)
+            ->where('account_type', '!=', 'Loyalty Point')
+            ->where('status', 'Enable')
             ->select('id', 'name')
             ->get();
 

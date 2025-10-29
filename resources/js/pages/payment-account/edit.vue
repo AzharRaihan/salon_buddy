@@ -223,7 +223,7 @@ const fetchPaymentMethod = async () => {
         imageSrc.value = res.data.payment_method_icon_url || defaultAvater
     } catch (err) {
         console.error(err)
-        toast(t('Error fetching payment method'), {
+        toast(t('Error fetching payment account'), {
             type: 'error'
         })
         router.push({ name: 'payment-account' })

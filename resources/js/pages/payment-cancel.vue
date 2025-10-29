@@ -65,7 +65,7 @@ onMounted(() => {
                   Your payment was cancelled. No charges have been made to your account.
                 </span>
                 <span v-else-if="paymentStatus === 'failed'">
-                  Your payment failed to process. Please try again or use a different payment method.
+                  Your payment failed to process. Please try again or use a different payment account.
                 </span>
                 <span v-else>
                   There was an issue processing your payment. Please try again.
@@ -94,11 +94,11 @@ onMounted(() => {
                   <ul class="list-unstyled text-start">
                     <li class="mb-2">
                       <VIcon icon="tabler-arrow-right" class="text-primary me-2" />
-                      Try the payment again with the same or different payment method
+                      Try the payment again with the same or different payment account
                     </li>
                     <li class="mb-2">
                       <VIcon icon="tabler-arrow-right" class="text-primary me-2" />
-                      Check your payment method details and try again
+                      Check your payment account details and try again
                     </li>
                     <li class="mb-2">
                       <VIcon icon="tabler-arrow-right" class="text-primary me-2" />

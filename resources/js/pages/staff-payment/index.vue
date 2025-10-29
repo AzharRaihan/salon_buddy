@@ -40,7 +40,7 @@ const Amount = computed(() => t('Amount'))
 const Employee = computed(() => t('Employee'))
 const Note = computed(() => t('Note'))
 const Action = computed(() => t('Action'))
-const PaymentMethod = computed(() => t('Payment Method'))
+const PaymentMethod = computed(() => t('Payment Account'))
 
 // Data table Headers
 const headers = [

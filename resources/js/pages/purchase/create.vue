@@ -93,7 +93,7 @@ const validatePaidAmount = (paidAmount) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (form.value.paid_amount > 0 && !paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required when paid amount is greater than 0')
+        paymentMethodIdError.value = t('Payment account is required when paid amount is greater than 0')
         return false
     }
     paymentMethodIdError.value = ''
@@ -284,7 +284,7 @@ const validateForm = () => {
     }
 
     if (form.value.paid_amount > 0 && !form.value.payment_method_id) {
-        toast(t('Payment method is required when paid amount is greater than 0'), { type: 'error' })
+        toast(t('Payment account is required when paid amount is greater than 0'), { type: 'error' })
         isValid = false
     }
     
@@ -579,8 +579,8 @@ const addSupplier = async () => {
                             </VCol>
 
                             <!-- Note -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.note" :label="$t('Note')" type="text"
+                            <VCol cols="12">
+                                <AppTextField v-model="form.note" :label="$t('Note')" type="text"
                                     :placeholder="$t('Enter note')" />
                             </VCol>
 
@@ -672,7 +672,7 @@ const addSupplier = async () => {
                                 <AppTextField class="mt-4" :model-value="formatNumberPrecision(form.due_amount)" :label="$t('Due Amount')" type="number"
                                     :placeholder="$t('Due amount')" readonly />
 
-                                <!-- Payment Method -->
+                                <!-- Payment account -->
                                 <AppAutocomplete class="mt-4" v-model="form.payment_method_id" 
                                     :label="form.paid_amount > 0 ? $t('Payment Account') : $t('Payment Account')" :required="form.paid_amount > 0 ? true : false"
                                     :placeholder="$t('Select Payment Account')" :items="paymentMethods" item-title="name" item-value="id"

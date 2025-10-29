@@ -55,13 +55,13 @@ const handleResetConfirm = async (confirmed) => {
 }
 
 /**
- * Navigate back to payment methods list
+ * Navigate back to payment account list
  */
 const goBack = () => {
     router.push({ name: 'payment-method' })
 }
 
-// Fetch payment methods on mount
+// Fetch payment account on mount
 onMounted(async () => {
     await fetchPaymentMethodsForSorting()
 })
@@ -82,7 +82,7 @@ onMounted(async () => {
                     >
                         <VIcon icon="tabler-arrow-left" />
                     </VBtn>
-                    <span>{{ t('Sort Payment Methods') }}</span>
+                    <span>{{ t('Sort Payment Accounts') }}</span>
                 </div>
 
                 <div class="d-flex gap-2">
@@ -113,7 +113,7 @@ onMounted(async () => {
                     <div>
                         <strong>{{ t('How to use:') }}</strong>
                         <ul class="mt-2">
-                            <li>{{ t('Drag and drop payment methods to reorder them') }}</li>
+                            <li>{{ t('Drag and drop payment account to reorder them') }}</li>
                             <li>{{ t('The order will be saved automatically after you drop an item') }}</li>
                             <li>{{ t('This order will be reflected in the POS and website') }}</li>
                         </ul>
@@ -142,7 +142,7 @@ onMounted(async () => {
                         class="mb-4"
                     />
                     <p class="text-h6 text-disabled">
-                        {{ t('No payment methods found') }}
+                        {{ t('No payment account found') }}
                     </p>
                     <VBtn
                         color="primary"
@@ -193,7 +193,7 @@ onMounted(async () => {
                                     </VChip>
                                 </div>
 
-                                <!-- Payment Method Icon -->
+                                <!-- Payment account Icon -->
                                 <div class="payment-method-icon">
                                     <VAvatar
                                         v-if="element.payment_method_icon"
@@ -216,7 +216,7 @@ onMounted(async () => {
                                     </VAvatar>
                                 </div>
 
-                                <!-- Payment Method Info -->
+                                <!-- Payment account Info -->
                                 <div class="flex-grow-1">
                                     <h6 class="text-h6 mb-1">
                                         {{ element.name }}

@@ -44,7 +44,7 @@ const exportHeaders = computed(() => [
     { title: 'Total Payable', key: 'total_payable', sortable: true },
     { title: 'Total Paid', key: 'total_paid', sortable: true },
     { title: 'Total Due', key: 'total_due', sortable: true },
-    { title: 'Payment Method', key: 'payment_method.name', sortable: false }
+    { title: 'Payment Account', key: 'payment_method.name', sortable: false }
 ])
 
 const handleResetFilters = () => {

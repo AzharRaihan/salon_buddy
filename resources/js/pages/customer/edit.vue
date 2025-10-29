@@ -370,8 +370,8 @@ const updateCustomer = async () => {
                             </VCol>
 
                             <!-- Address -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.address" :label="$t('Address')" type="text" :placeholder="$t('Enter Address')"
+                            <VCol cols="12">
+                                <AppTextField v-model="form.address" :label="$t('Address')" type="text" :placeholder="$t('Enter Address')"
                                     :error-messages="addressError" @input="validateAddress($event.target.value)" />
                             </VCol>
 

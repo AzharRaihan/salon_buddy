@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useBalanceSheetReport } from '@/composables/useBalanceSheetReport'
 import BalanceSheetReportFilters from '@/components/report/BalanceSheetReportFilters.vue'
-import BalanceSheetSummaryCards from '@/components/report/BalanceSheetSummaryCards.vue'
 import BalanceSheetReportTable from '@/components/report/BalanceSheetReportTable.vue'
 import ExportTableBalanceSheetReport from '@/components/ExportTableBalanceSheetReport.vue'
 
@@ -25,11 +24,31 @@ const {
     summary,
 } = useBalanceSheetReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Balance Sheet Report',
+    outletName: 'All Outlets',
+    address: 'N/A',
+    phone: 'N/A',
+    dateRange: 'All Time',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const handleResetFilters = () => {
@@ -51,15 +70,6 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <BalanceSheetSummaryCards
-                    :summary="summary"
-                />
-            </VCardText>
-        </VCard>
-
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
@@ -74,7 +84,7 @@ const handleResetFilters = () => {
                 :assets="assets"
                 :liabilities="liabilities"
                 filename="balance-sheet-report"
-                title="Balance Sheet Report"
+                :header-data="reportHeaderData"
                 :summary-data="summary"
             />
         </div>
@@ -85,8 +95,10 @@ const handleResetFilters = () => {
             :liabilities="liabilities"
             :date-from="dateFrom"
             :date-to="dateTo"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :is-loading="isLoading"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

@@ -10,8 +10,11 @@
                             <div class="text-body-1 text-medium-emphasis">
                                 Outlet: {{ reportHeaderData.outletName }}
                             </div>
-                            <div class="text-body-1 text-medium-emphasis">
+                            <div v-if="reportHeaderData.phone" class="text-body-1 text-medium-emphasis">
                                 Phone: {{ reportHeaderData.phone }}
+                            </div>
+                            <div v-if="reportHeaderData.address" class="text-body-1 text-medium-emphasis">
+                                Address: {{ reportHeaderData.address }}
                             </div>
                         </div>
                         <div>
@@ -67,7 +70,6 @@
                     <template #item.balance="{ item }">
                         <span 
                             class="font-weight-bold"
-                            :class="item.balance >= 0 ? 'text-success' : 'text-error'"
                         >
                             {{ formatAmount(item.balance) }}
                         </span>
@@ -99,7 +101,8 @@ import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
 import { useUserData } from '@/composables/useUserData'
 import { useCompanySettings } from '@/composables/useCompanySettings'
 
-const { formatDate, formatAmount } = useCompanyFormatters()
+
+const { formatDate, formatAmount, formatDateWithTime } = useCompanyFormatters()
 const { userData } = useUserData()
 const { companySettings } = useCompanySettings()
 
@@ -107,6 +110,10 @@ const props = defineProps({
     accounts: {
         type: Array,
         default: () => []
+    },
+    selectedBranch: {
+        type: Object,
+        default: null
     },
     selectedBranchName: {
         type: String,
@@ -126,22 +133,32 @@ const props = defineProps({
 const emit = defineEmits(['update:headerData'])
 
 // Get current date and time
-const currentDateTime = computed(() => formatDate(new Date().toISOString()))
+// date formate will come from formatDate and add time manually
+const currentDateTime = computed(() => {
+    const date = formatDateWithTime(new Date().toISOString())
+    return `${date}`
+})
 
 // Get current user name
 const currentUserName = computed(() => userData.value?.name || 'N/A')
 
-// Get company phone
-const companyPhone = computed(() => companySettings.value?.phone || 'N/A')
-
 // Report header data for exports
-const reportHeaderData = computed(() => ({
-    reportTitle: 'Account Balance Report',
-    outletName: props.selectedBranchName,
-    phone: companyPhone.value,
-    generatedOn: currentDateTime.value,
-    generatedBy: currentUserName.value
-}))
+const reportHeaderData = computed(() => {
+    const headerData = {
+        reportTitle: 'Account Balance Report',
+        outletName: props.selectedBranchName,
+        generatedOn: currentDateTime.value,
+        generatedBy: currentUserName.value
+    }
+    
+    // Only include phone and address if a specific branch is selected
+    if (props.selectedBranch) {
+        headerData.phone = props.selectedBranch.phone || 'N/A'
+        headerData.address = props.selectedBranch.address || 'N/A'
+    }
+    
+    return headerData
+})
 
 // Emit header data whenever it changes
 watch(reportHeaderData, (newVal) => {

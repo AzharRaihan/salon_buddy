@@ -426,17 +426,6 @@ const createBranch = async () => {
                                 />
                             </VCol>
 
-                            <!-- Address -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea
-                                    v-model="form.address"
-                                    :label="$t('Address')" :required="true"
-                                    type="text"
-                                    :placeholder="$t('Enter address')"
-                                    :error-messages="addressError"
-                                />
-                            </VCol>
-
                             <!-- Status -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete
@@ -448,6 +437,19 @@ const createBranch = async () => {
                                     clearable
                                 />
                             </VCol>
+
+                            <!-- Address -->
+                            <VCol cols="12">
+                                <AppTextField
+                                    v-model="form.address"
+                                    :label="$t('Address')" :required="true"
+                                    type="text"
+                                    :placeholder="$t('Enter address')"
+                                    :error-messages="addressError"
+                                />
+                            </VCol>
+
+                            
 
                             <!-- Start Day -->
                             <VCol cols="12" md="6" lg="4">

@@ -45,6 +45,19 @@ export function useAccountStatementReport() {
     }
 
     const fetchAccountStatementReport = async () => {
+        // Don't fetch if payment method is not selected
+        if (!paymentMethodId.value) {
+            statements.value = []
+            totalRecords.value = 0
+            summary.value = {
+                totalDebit: 0,
+                totalCredit: 0,
+                openingBalance: 0,
+                closingBalance: 0
+            }
+            return
+        }
+
         isLoading.value = true
         try {
             const queryParams = {
@@ -90,7 +103,7 @@ export function useAccountStatementReport() {
     // Initialize data
     onMounted(async () => {
         await fetchFilterOptions()
-        fetchAccountStatementReport()
+        // Don't fetch on mount - wait for payment method to be selected
     })
 
     return {

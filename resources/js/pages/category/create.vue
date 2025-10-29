@@ -291,12 +291,7 @@ const createCategory = async () => {
                                     :error-messages="nameError" @input="validateName($event.target.value)" />
                             </VCol>
 
-                            <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description" :label="$t('Description')" type="text"
-                                    :placeholder="$t('Enter Description')" :error-messages="descriptionError" 
-                                    @input="validateDescription($event.target.value)" />
-                            </VCol>
+                            
 
                             <!-- Status -->
                             <VCol cols="12" md="6" lg="4">
@@ -312,6 +307,13 @@ const createCategory = async () => {
                                     @update:modelValue="validateStatus"
                                     clearable
                                 />
+                            </VCol>
+
+                            <!-- Description -->
+                            <VCol cols="12">
+                                <AppTextField v-model="form.description" :label="$t('Description')" type="text"
+                                    :placeholder="$t('Enter Description')" :error-messages="descriptionError" 
+                                    @input="validateDescription($event.target.value)" />
                             </VCol>
                            
 

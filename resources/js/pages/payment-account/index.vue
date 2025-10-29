@@ -122,14 +122,14 @@ const handleDelete = async (confirmed) => {
         selectedPaymentMethodId.value = null
         isConfirmDialogOpen.value = false
         await fetchPaymentMethods()
-        toast(t('Payment method deleted successfully'), {
+        toast(t('Payment account deleted successfully'), {
             "type": "success",
         });
     } catch (error) {
         isConfirmDialogOpen.value = false
         selectedPaymentMethodId.value = null // Fixed: Changed selectedExpenseId to selectedPaymentMethodId
-        console.error('Error deleting payment method:', error) // Fixed: Changed error message
-        toast(t('Failed to delete payment method'), { // Fixed: Changed error message
+        console.error('Error deleting payment account:', error) // Fixed: Changed error message
+        toast(t('Failed to delete payment account'), { // Fixed: Changed error message
             "type": "error",
         });
     }
@@ -158,7 +158,7 @@ onMounted(async () => {
             <VCardText>
                 <div class="d-flex justify-space-between flex-wrap gap-y-4">
                     <AppTextField v-model="searchQuery" style="max-inline-size: 280px; min-inline-size: 280px;"
-                        :placeholder="$t('Search Payment Method')" /> <!-- Fixed: Changed placeholder -->
+                        :placeholder="$t('Search Payment Account')" /> <!-- Fixed: Changed placeholder -->
                     <div class="d-flex flex-row gap-4 align-center flex-wrap">
                         <VBtn 
                             prepend-icon="tabler-arrows-sort" 
@@ -205,7 +205,7 @@ onMounted(async () => {
                 <template #no-data>
                     <div class="d-flex align-center justify-center pa-4">
                         <VIcon icon="tabler-alert-circle" class="me-2" />
-                        {{ $t('No payment methods found') }} <!-- Fixed: Changed message -->
+                        {{ $t('No payment accounts found') }} <!-- Fixed: Changed message -->
                     </div>
                 </template>
 
@@ -237,9 +237,9 @@ onMounted(async () => {
         </VCard>
 
         <ConfirmDialog v-model:is-dialog-visible="isConfirmDialogOpen"
-            :confirmation-question="$t('Are you sure you want to delete this payment method?')" :confirm-title="$t('Deleted!')"
-            :confirm-msg="$t('Payment method has been deleted successfully.')" :cancel-title="$t('Cancelled')"
-            :cancel-msg="$t('Payment Method Deletion Cancelled!')" @confirm="handleDelete" /> <!-- Fixed: Changed dialog text -->
+            :confirmation-question="$t('Are you sure you want to delete this payment account?')" :confirm-title="$t('Deleted!')"
+            :confirm-msg="$t('Payment account has been deleted successfully.')" :cancel-title="$t('Cancelled')"
+            :cancel-msg="$t('Payment Account Deletion Cancelled!')" @confirm="handleDelete" /> <!-- Fixed: Changed dialog text -->
     </div>
 </template>
 

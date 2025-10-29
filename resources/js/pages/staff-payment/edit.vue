@@ -24,6 +24,7 @@ const form = ref({
     old_amount: '',
     note: '',
     payment_method_id: null,
+    old_payment_method_id: null,
     employee_id: null,
     branch_id: branch_info.id
 })
@@ -63,7 +64,7 @@ const validateAmount = (amount) => {
         return false
     }
 
-    if(Number(form.value.old_amount) >= Number(amount)) {
+    if(Number(form.value.old_amount) >= Number(amount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         amountError.value = ''
         return true
     }
@@ -91,7 +92,7 @@ const validateNote = (note) => {
 
 const validatePaymentMethodId = (paymentMethodId) => {
     if (!paymentMethodId) {
-        paymentMethodIdError.value = t('Payment method is required')
+        paymentMethodIdError.value = t('Payment account is required')
         return false
     }
     paymentMethodIdError.value = ''
@@ -121,6 +122,7 @@ const fetchStaffPaymentData = async () => {
             old_amount: staffPayment.amount,
             note: staffPayment.note ?? '',
             payment_method_id: staffPayment.payment_method?.id,
+            old_payment_method_id: staffPayment.payment_method?.id,
             employee_id: staffPayment.employee?.id,
             branch_id: branch_info.id
         }
@@ -133,7 +135,7 @@ const fetchStaffPaymentData = async () => {
 }
 
 
-// Fetch payment methods
+// Fetch payment accounts
 const fetchPaymentMethods = async () => {
     try {
         const res = await $api('/get-all-payment-methods')
@@ -145,8 +147,8 @@ const fetchPaymentMethods = async () => {
             }))
         ]
     } catch (err) {
-        console.error('Error fetching payment methods:', err)
-        toast('Error loading payment methods', {
+        console.error('Error fetching payment accounts:', err)
+        toast('Error loading payment accounts', {
             type: 'error'
         })
     }
@@ -174,7 +176,7 @@ const fetchUsers = async () => {
 watch(() => form.value.amount, (newAmount) => {
     if (isInitialLoad.value) return
 
-    if(Number(form.value.old_amount) >= Number(newAmount)) {
+    if(Number(form.value.old_amount) >= Number(newAmount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         amountError.value = ''
         return true
     }
@@ -190,7 +192,7 @@ watch(() => form.value.amount, (newAmount) => {
     }
 })
 
-// Watch for payment method changes
+// Watch for payment accounts changes
 watch(() => form.value.payment_method_id, (newMethodId) => {
     if (!newMethodId) {
         selectedAccountBalance.value = 0
@@ -208,7 +210,7 @@ watch(() => form.value.payment_method_id, (newMethodId) => {
     const bal = method.account_balance ?? 0
     selectedAccountBalance.value = bal ? parseFloat(bal) : 0
 
-    if(Number(form.value.old_amount) >= Number(form.value.amount)) {
+    if(Number(form.value.old_amount) >= Number(form.value.amount) && Number(form.value.old_payment_method_id) == Number(form.value.payment_method_id)) {
         amountError.value = ''
         return true
     }
@@ -374,12 +376,12 @@ const updateStaffPayment = async () => {
                                     @input="validateAmount($event.target.value)" />
                             </VCol>
 
-                            <!-- Payment Method -->
+                            <!-- Payment accounts -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.payment_method_id"
                                     :items="paymentMethods"
-                                    :label="t('Payment Method')" :required="true"
-                                    :placeholder="t('Select Payment Method')"
+                                    :label="t('Payment Account')" :required="true"
+                                    :placeholder="t('Select Payment Account')"
                                     :error-messages="paymentMethodIdError"
                                     @change="validatePaymentMethodId($event)"
                                     clearable

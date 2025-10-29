@@ -384,16 +384,18 @@ const resetForm = () => {
                                     :placeholder="$t('Enter email')" :error-messages="emailError" @input="validateEmail($event.target.value)" />
                             </VCol>
 
-                            <!-- Address -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.address" :label="$t('Address')" :required="true" type="text"
-                                    :placeholder="$t('Enter address')" :error-messages="addressError" @input="validateAddress($event.target.value)" />
-                            </VCol>
+                            
 
                             <!-- Status -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.active_status" :items="['Active', 'Inactive']" :label="$t('Status')" :required="true" :placeholder="$t('Select Status')" :error-messages="activeStatusError" @update:model-value="validateActiveStatus" clearable />
                             </VCol> 
+
+                            <!-- Address -->
+                            <VCol cols="12">
+                                <AppTextField v-model="form.address" :label="$t('Address')" :required="true" type="text"
+                                    :placeholder="$t('Enter address')" :error-messages="addressError" @input="validateAddress($event.target.value)" />
+                            </VCol>
 
                             <!-- Start Day -->
                             <VCol cols="12" md="6" lg="4">
