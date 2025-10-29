@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAccountBalanceReport } from '@/composables/useAccountBalanceReport'
 import AccountBalanceReportFilters from '@/components/report/AccountBalanceReportFilters.vue'
 import AccountBalanceSummaryCards from '@/components/report/AccountBalanceSummaryCards.vue'
@@ -22,6 +22,20 @@ const {
     totalAccounts,
     summary,
 } = useAccountBalanceReport()
+
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Account Balance Report',
+    outletName: 'All Outlets',
+    phone: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
 
 // Computed properties
 const selectedBranchName = computed(() => {
@@ -67,7 +81,7 @@ const handleResetFilters = () => {
                 :data="accounts" 
                 :headers="exportHeaders" 
                 filename="account-balance-report"
-                title="Account Balance Report"
+                :header-data="reportHeaderData"
                 :summary-data="summary"
             />
         </div>
@@ -78,6 +92,7 @@ const handleResetFilters = () => {
             :export-headers="exportHeaders"
             :selected-branch-name="selectedBranchName"
             :is-loading="isLoading"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>
