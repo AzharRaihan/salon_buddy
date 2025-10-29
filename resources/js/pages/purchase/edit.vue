@@ -19,6 +19,8 @@ const branch_info = useCookie("branch_info").value || 0;
 const previewModal = ref(false)
 const previewUrl = ref('')
 const isImage = ref(false)
+const selectedAccountBalance = ref(0)
+const isInitialLoad = ref(true)
 
 
 const form = ref({
@@ -28,6 +30,7 @@ const form = ref({
     date: '',
     grand_total: 0,
     paid_amount: 0,
+    old_paid_amount: 0,
     due_amount: 0,
     attachment: null,
     attachment_url: null,
@@ -85,6 +88,20 @@ const validatePaidAmount = (paidAmount) => {
         paidAmountError.value = t('Paid amount cannot exceed grand total')
         return false
     }
+
+    if(Number(form.value.old_paid_amount) >= Number(paidAmount)) {
+        paidAmountError.value = ''
+        return true
+    }
+
+    if (form.value.payment_method_id && paidAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(paidAmount) > bal) {
+            paidAmountError.value = t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(bal)}, Previous Paid Amount: ${formatNumberPrecision(form.value.old_paid_amount)}`)
+            return false
+        }
+    }
+
     paidAmountError.value = ''
     return true
 }
@@ -135,12 +152,61 @@ const validateItem = (item) => {
     return isValid
 }
 
-// Watch for changes in paid_amount and grand_total
+
 watch([() => form.value.paid_amount, () => form.value.grand_total], ([newPaidAmount, newGrandTotal]) => {
-    if (validatePaidAmount(newPaidAmount)) {
-        form.value.due_amount = parseFloat(newGrandTotal) - parseFloat(newPaidAmount)
+
+    if(Number(form.value.old_paid_amount) >= Number(newPaidAmount)) {
+        paidAmountError.value = ''
+        return true
+    }
+
+    if (!isInitialLoad.value && form.value.payment_method_id && newPaidAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(newPaidAmount) > bal) {
+            paidAmountError.value = t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(bal)}, Previous Paid Amount: ${formatNumberPrecision(form.value.old_paid_amount)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(bal)}, Previous Paid Amount: ${formatNumberPrecision(form.value.old_paid_amount)}`), { type: 'error' })
+        } else {
+            paidAmountError.value = ''
+        }
+    }
+    form.value.due_amount = parseFloat(newGrandTotal) - parseFloat(newPaidAmount)
+})
+
+watch(() => form.value.payment_method_id, (newMethodId) => {
+    if (!newMethodId) {
+        selectedAccountBalance.value = 0
+        if (!isInitialLoad.value) paidAmountError.value = ''
+        return
+    }
+    const method = paymentMethods.value.find(m => m.id == newMethodId)
+    if (!method) {
+        selectedAccountBalance.value = 0
+        if (!isInitialLoad.value) paidAmountError.value = ''
+        return
+    }
+
+    if(Number(form.value.old_paid_amount) >= Number(form.value.paid_amount)) {
+        paidAmountError.value = ''
+        return true
+    }
+    
+
+    const bal = method.account_blanace
+    // coerce to number when possible
+    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
+    
+    // Validate paid amount if already entered (but not on initial load)
+    if (!isInitialLoad.value && form.value.paid_amount > 0) {
+        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.paid_amount) > currentBalance) {
+            paidAmountError.value = t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(currentBalance)}, Previous Paid Amount: ${formatNumberPrecision(form.value.old_paid_amount)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(currentBalance)}, Previous Paid Amount: ${formatNumberPrecision(form.value.old_paid_amount)}`), { type: 'error' })
+        } else {
+            paidAmountError.value = ''
+        }
     }
 })
+
 
 watch(previewModal, (isOpen) => {
     if (!isOpen && previewUrl.value) {
@@ -197,10 +263,11 @@ onMounted(async () => {
             date: purchase.date,
             grand_total: parseFloat(purchase.grand_total),
             paid_amount: parseFloat(purchase.paid_amount),
+            old_paid_amount: parseFloat(purchase.paid_amount),
             due_amount: parseFloat(purchase.due_amount),
             attachment: purchase.attachment,
             attachment_url: purchase.attachment_url,
-            note: purchase.note || null,
+            note: purchase.note ?? '',
             payment_method_id: purchase.payment_method?.id,
             branch_id: branch_info.id,
             items: purchase.purchase_details?.map(item => ({
@@ -214,6 +281,11 @@ onMounted(async () => {
         suppliers.value = [...suppliersResponse.data]
         items.value = [...itemsResponse.data]
         paymentMethods.value = [...paymentMethodsResponse.data]
+
+        // Set initial load to false after data is loaded
+        setTimeout(() => {
+            isInitialLoad.value = false
+        }, 100)
 
     } catch (error) {
         console.error('Error fetching data:', error)

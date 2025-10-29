@@ -15,6 +15,7 @@ const employees = ref([])
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
 const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber, formatNumberPrecision } = useCompanyFormatters()
+const paymentBalances = ref(new Map()) // Store balances for each payment method
 
 const form = ref({
     year: new Date().getFullYear(),
@@ -79,6 +80,17 @@ const validatePaymentMethod = (paymentMethods) => {
     paymentMethodError.value = ''
     return true
 }
+
+const validatePaymentAmount = (payment) => {
+    if (!payment.payment_method_id || !payment.amount) return true
+    
+    const balance = paymentBalances.value.get(payment.payment_method_id) || 0
+    if (parseFloat(payment.amount) > balance) {
+        toast(t(`Insufficient balance in ${payment.name}. Available balance: ${formatAmount(balance)}`), { type: 'error' })
+        return false
+    }
+    return true
+}
     
 const validateItem = (item) => {
     let isValid = true
@@ -105,6 +117,11 @@ onMounted(async () => {
         ])
         employees.value = [...employeesResponse.data]
         paymentMethods.value = [...paymentMethodsResponse.data]
+
+        // Store payment method balances
+        paymentMethodsResponse.data.forEach(method => {
+            paymentBalances.value.set(method.id, parseFloat(method.account_blanace) || 0)
+        })
 
         // Initialize form items with all employees
         form.value.items = employees.value.map(employee => ({
@@ -238,8 +255,11 @@ const validateForm = () => {
 
     form.value.payments.forEach(payment => {
         if (!payment.amount || parseFloat(payment.amount) <= 0) {
-        toast(`${payment.name} ${t("can't be 0 or empty")}`, { type: 'error' })
-        isValid = false
+            toast(`${payment.name} ${t("can't be 0 or empty")}`, { type: 'error' })
+            isValid = false
+        } else {
+            // Validate payment amount against balance
+            if (!validatePaymentAmount(payment)) isValid = false
         }
     })
     
@@ -358,6 +378,18 @@ watch(() => form.value.month, async (newMonth) => {
     await fetchTipsAndAdvanceForAllEmployees()
   }
 })
+
+// Watch for payment amount changes to validate against balance
+watch(() => form.value.payments, (newPayments) => {
+    newPayments.forEach(payment => {
+        if (payment.amount > 0 && payment.payment_method_id) {
+            const balance = paymentBalances.value.get(payment.payment_method_id) || 0
+            if (parseFloat(payment.amount) > balance) {
+                toast(t(`Insufficient balance in ${payment.name}. Available balance: ${formatAmount(balance)}`), { type: 'error' })
+            }
+        }
+    })
+}, { deep: true })
 
 </script>
 

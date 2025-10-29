@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n()
 const router = useRouter()
 const loadings = ref(false)
+const selectedAccountBalance = ref(null)
 
 const form = ref({
     name: '',
@@ -23,6 +24,9 @@ const phoneError = ref('')
 const emailError = ref('')
 const addressError = ref('')
 const descriptionError = ref('')
+
+
+
 
 const validateName = (name) => {
     if (!name) {
@@ -87,6 +91,28 @@ const validateDescription = (description) => {
         return false
     }
     descriptionError.value = ''
+    return true
+}
+
+const validateAmount = (amount) => {
+    if (amount < 0) {
+        amountError.value = t('Paid amount cannot be negative')
+        return false
+    }
+    if (amount > form.value.grand_total) {
+        amountError.value = t('Paid amount cannot exceed grand total')
+        return false
+    }
+
+    if (selectedAccountBalance.value !== null && selectedAccountBalance.value !== undefined) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(amount) > bal) {
+            amountError.value = t(`Insufficient balance. You can't pay more than ${formatNumberPrecision(bal)}`)
+            return false
+        }
+    }
+
+    amountError.value = ''
     return true
 }
 

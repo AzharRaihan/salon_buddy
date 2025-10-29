@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
@@ -14,6 +14,9 @@ const suppliers = ref([])
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
 const paymentAmount = ref(0)
+const selectedAccountBalance = ref(0)
+
+
 
 const form = ref({
     reference_no: '',
@@ -60,6 +63,15 @@ const validateAmount = (amount) => {
         amountError.value = t('Amount must be a positive number')
         return false
     }
+
+    if (form.value.payment_method_id && amount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(amount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
+            return false
+        }
+    }
+
     amountError.value = ''
     return true
 }
@@ -108,6 +120,49 @@ const fetchReferenceNo = async () => {
     }
 }
 
+watch([() => form.value.amount], ([newAmount]) => {
+    if (form.value.payment_method_id && newAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(newAmount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
+watch(() => form.value.payment_method_id, (newMethodId) => {
+    if (!newMethodId) {
+        selectedAccountBalance.value = 0
+        amountError.value = ''
+        return
+    }
+
+    // our paymentMethods items use { title, value, account_balance }
+    const method = paymentMethods.value.find(m => m.value == newMethodId)
+    if (!method) {
+        selectedAccountBalance.value = 0
+        amountError.value = ''
+        return
+    }
+
+    const bal = method.account_balance ?? 0
+    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
+    
+    // Validate amount if already entered
+    if (form.value.amount > 0) {
+        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.amount) > currentBalance) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
+
 // Fetch supplier list
 const fetchSuppliers = async () => {
     try {
@@ -133,7 +188,8 @@ const fetchPaymentMethods = async () => {
         paymentMethods.value = [
             ...res.data.map(method => ({
                 title: method.name,
-                value: method.id
+                value: method.id,
+                account_balance: method.account_blanace
             }))
         ]
     } catch (err) {
@@ -178,6 +234,7 @@ const resetForm = () => {
         supplier_id: null,
         payment_method_id: null
     }
+    selectedAccountBalance.value = 0
     referenceNoError.value = ''
     dateError.value = ''
     amountError.value = ''

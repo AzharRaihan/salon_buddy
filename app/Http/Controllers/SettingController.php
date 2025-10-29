@@ -867,7 +867,7 @@ class SettingController extends Controller
                     ->get();
 
         if($listEmployees->isEmpty()){
-            return $this->errorResponse('No employees found');
+            return $this->successResponse([], 'No employees found');
         }
         
         foreach($listEmployees as $employee){

@@ -5,7 +5,6 @@ import { ref, onMounted, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
-
 const { formatNumberPrecision } = useCompanyFormatters()
 
 const { t } = useI18n()
@@ -15,6 +14,7 @@ const suppliers = ref([])
 const items = ref([])
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
+const selectedAccountBalance = ref(0)
 
 const form = ref({
     reference_no: '',
@@ -79,6 +79,14 @@ const validatePaidAmount = (paidAmount) => {
         return false
     }
 
+    if (form.value.payment_method_id && paidAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(paidAmount) > bal) {
+            paidAmountError.value = t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(bal)}`)
+            return false
+        }
+    }
+
     paidAmountError.value = ''
     return true
 }
@@ -113,10 +121,46 @@ const validateItem = (item) => {
     return isValid
 }
 
-// Watch for changes in paid_amount and grand_total
 watch([() => form.value.paid_amount, () => form.value.grand_total], ([newPaidAmount, newGrandTotal]) => {
-    if (validatePaidAmount(newPaidAmount)) {
-        form.value.due_amount = parseFloat(newGrandTotal) - parseFloat(newPaidAmount)
+    if (form.value.payment_method_id && newPaidAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(newPaidAmount) > bal) {
+            paidAmountError.value = t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(bal)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(bal)}`), { type: 'error' })
+        } else {
+            paidAmountError.value = ''
+        }
+    }
+    form.value.due_amount = parseFloat(newGrandTotal) - parseFloat(newPaidAmount)
+})
+
+
+watch(() => form.value.payment_method_id, (newMethodId) => {
+    if (!newMethodId) {
+        selectedAccountBalance.value = 0
+        paidAmountError.value = ''
+        return
+    }
+    const method = paymentMethods.value.find(m => m.id == newMethodId)
+    if (!method) {
+        selectedAccountBalance.value = 0
+        paidAmountError.value = ''
+        return
+    }
+
+    const bal = method.account_blanace
+    // coerce to number when possible
+    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
+    
+    // Validate paid amount if already entered
+    if (form.value.paid_amount > 0) {
+        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.paid_amount) > currentBalance) {
+            paidAmountError.value = t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(currentBalance)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatNumberPrecision(currentBalance)}`), { type: 'error' })
+        } else {
+            paidAmountError.value = ''
+        }
     }
 })
 
@@ -630,8 +674,8 @@ const addSupplier = async () => {
 
                                 <!-- Payment Method -->
                                 <AppAutocomplete class="mt-4" v-model="form.payment_method_id" 
-                                    :label="form.paid_amount > 0 ? $t('Payment Method') : $t('Payment Method')" :required="form.paid_amount > 0 ? true : false"
-                                    :placeholder="$t('Select Payment Method')" :items="paymentMethods" item-title="name" item-value="id"
+                                    :label="form.paid_amount > 0 ? $t('Payment Account') : $t('Payment Account')" :required="form.paid_amount > 0 ? true : false"
+                                    :placeholder="$t('Select Payment Account')" :items="paymentMethods" item-title="name" item-value="id"
                                     :error-messages="paymentMethodIdError" @update:model-value="validatePaymentMethodId"
                                     clearable
                                     />

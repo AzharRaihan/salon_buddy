@@ -175,6 +175,7 @@ declare module 'vue-router/auto-routes' {
     'supplier-payment': RouteRecordInfo<'supplier-payment', '/supplier-payment', Record<never, never>, Record<never, never>>,
     'supplier-payment-create': RouteRecordInfo<'supplier-payment-create', '/supplier-payment/create', Record<never, never>, Record<never, never>>,
     'supplier-payment-edit': RouteRecordInfo<'supplier-payment-edit', '/supplier-payment/edit', Record<never, never>, Record<never, never>>,
+    'supplier-payment-edit-old': RouteRecordInfo<'supplier-payment-edit-old', '/supplier-payment/edit_old', Record<never, never>, Record<never, never>>,
     'team-details': RouteRecordInfo<'team-details', '/team-details', Record<never, never>, Record<never, never>>,
     'team-members': RouteRecordInfo<'team-members', '/team-members', Record<never, never>, Record<never, never>>,
     'terms-and-conditions': RouteRecordInfo<'terms-and-conditions', '/terms-and-conditions', Record<never, never>, Record<never, never>>,

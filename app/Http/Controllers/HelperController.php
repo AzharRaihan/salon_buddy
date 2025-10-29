@@ -294,12 +294,17 @@ class HelperController extends Controller
     }
     public function getAllPaymentMethods()
     {
+        $reportController = new ReportController();
         $paymentMethods = PaymentMethod::where('company_id', Auth::user()->company_id)
                     ->where('status', 'Enable')
                     ->where('account_type', '!=', 'Loyalty Point')
                     ->where('del_status', 'Live')
                     ->orderBy('sort_id', 'ASC')
                     ->get();
+
+        foreach ($paymentMethods as $account) {
+            $account->account_blanace = (float)$account->current_balance + (float)$reportController->calculatePaymentMethodBalanceOnly($account->id, Auth::user()->company_id, '');
+        }
         return $this->successResponse($paymentMethods, 'Payment methods fetched successfully');
     }
     public function getAllPaymentMethodsPos()

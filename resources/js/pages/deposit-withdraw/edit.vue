@@ -1,22 +1,26 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
+import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 
-
+const { formatAmount } = useCompanyFormatters()
 const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const loadings = ref(false)
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
+const selectedAccountBalance = ref(0)
+const isInitialLoad = ref(true)
 
 const form = ref({
     reference_no: '',
     date: '',
     amount: '',
+    old_amount: '',
     note: '',
     payment_method_id: null,
     type: 'Deposit',
@@ -57,6 +61,21 @@ const validateAmount = (amount) => {
         amountError.value = t('Amount must be a positive number')
         return false
     }
+
+    if(Number(form.value.old_amount) >= Number(amount)) {
+        amountError.value = ''
+        return true
+    }
+    
+    // Only validate balance for Withdraw type
+    if (form.value.type == 'Withdraw' && form.value.payment_method_id && amount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(amount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`)
+            return false
+        }
+    }
+    
     amountError.value = ''
     return true
 }
@@ -98,7 +117,8 @@ const fetchDepositWithdrawData = async () => {
             reference_no: depositWithdraw.reference_no,
             date: depositWithdraw.date,
             amount: depositWithdraw.amount,
-            note: depositWithdraw.note,
+            old_amount: depositWithdraw.amount,
+            note: depositWithdraw.note ?? '',
             payment_method_id: depositWithdraw.payment_method?.id,
             type: depositWithdraw.type,
             branch_id: branch_info.id
@@ -118,7 +138,8 @@ const fetchPaymentMethods = async () => {
         paymentMethods.value = [
             ...res.data.map(method => ({
                 title: method.name,
-                value: method.id
+                value: method.id,
+                account_balance: method.account_blanace
             }))
         ]
     } catch (err) {
@@ -129,9 +150,87 @@ const fetchPaymentMethods = async () => {
     }
 }
 
-onMounted(() => {
-    fetchDepositWithdrawData()
-    fetchPaymentMethods()
+// Watch for amount changes
+watch(() => form.value.amount, (newAmount) => {
+    if (isInitialLoad.value) return
+
+    if(Number(form.value.old_amount) >= Number(newAmount)) {
+        amountError.value = ''
+        return true
+    }
+    if (form.value.type == 'Withdraw' && form.value.payment_method_id && newAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(newAmount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
+// Watch for payment method changes
+watch(() => form.value.payment_method_id, (newMethodId) => {
+    if (!newMethodId) {
+        selectedAccountBalance.value = 0
+        if (!isInitialLoad.value) amountError.value = ''
+        return
+    }
+
+    const method = paymentMethods.value.find(m => m.value == newMethodId)
+    if (!method) {
+        selectedAccountBalance.value = 0
+        if (!isInitialLoad.value) amountError.value = ''
+        return
+    }
+
+    const bal = method.account_balance ?? 0
+    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
+
+    if(Number(form.value.old_amount) >= Number(form.value.amount)) {
+        amountError.value = ''
+        return true
+    }
+    
+    // Validate amount if already entered and type is Withdraw (but not on initial load)
+    if (!isInitialLoad.value && form.value.type == 'Withdraw' && form.value.amount > 0) {
+        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.amount) > currentBalance) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
+// Watch for type changes
+watch(() => form.value.type, (newType) => {
+    if (isInitialLoad.value) return
+    
+    // Clear amount error when switching between Deposit and Withdraw
+    if (newType === 'Deposit') {
+        amountError.value = ''
+    } else if (newType == 'Withdraw' && form.value.payment_method_id && form.value.amount > 0) {
+        // Re-validate when switching to Withdraw
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.amount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Withdraw Amount: ${formatAmount(form.value.old_amount)}`), { type: 'error' })
+        }
+    }
+})
+
+onMounted(async () => {
+    await Promise.all([
+        fetchDepositWithdrawData(),
+        fetchPaymentMethods()
+    ])
+    
+    // Set initial load to false after data is loaded
+    setTimeout(() => {
+        isInitialLoad.value = false
+    }, 100)
 })
 
 const resetForm = () => {

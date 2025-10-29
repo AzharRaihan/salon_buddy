@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
@@ -14,11 +14,14 @@ const suppliers = ref([])
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
 const paymentAmount = ref(0)
+const selectedAccountBalance = ref(0)
+const isInitialLoad = ref(true)
 
 const form = ref({
     reference_no: '',
     date: '',
     amount: '',
+    old_amount: '',
     note: '',
     supplier_id: null,
     payment_method_id: null,
@@ -59,6 +62,20 @@ const validateAmount = (amount) => {
         amountError.value = t('Amount must be a positive number')
         return false
     }
+
+    if(Number(form.value.old_amount) >= Number(amount)) {
+        amountError.value = ''
+        return true
+    }
+
+    if (form.value.payment_method_id && amount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(amount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Paid Amount: ${formatAmount(form.value.old_amount)}`)
+            return false
+        }
+    }
+
     amountError.value = ''
     return true
 }
@@ -90,6 +107,60 @@ const validatePaymentMethodId = (paymentMethodId) => {
     return true
 }
 
+watch([() => form.value.amount], ([newAmount]) => {
+    if (isInitialLoad.value) return
+
+    if(Number(form.value.old_amount) >= Number(newAmount)) {
+        amountError.value = ''
+        return
+    }
+    
+    if (form.value.payment_method_id && newAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(newAmount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}, Previous Paid Amount: ${formatAmount(form.value.old_amount)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
+watch(() => form.value.payment_method_id, (newMethodId) => {
+    if (!newMethodId) {
+        selectedAccountBalance.value = 0
+        if (!isInitialLoad.value) amountError.value = ''
+        return
+    }
+
+    // our paymentMethods items use { title, value, account_balance }
+    const method = paymentMethods.value.find(m => m.value == newMethodId)
+    if (!method) {
+        selectedAccountBalance.value = 0
+        if (!isInitialLoad.value) amountError.value = ''
+        return
+    }
+
+    const bal = method.account_balance ?? 0
+    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
+
+    if(Number(form.value.old_amount) >= Number(form.value.amount)) {
+        amountError.value = ''
+        return
+    }
+    
+    // Validate amount if already entered (but not on initial load)
+    if (!isInitialLoad.value && form.value.amount > 0) {
+        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.amount) > currentBalance) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}, Previous Paid Amount: ${formatAmount(form.value.old_amount)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}, Previous Paid Amount: ${formatAmount(form.value.old_amount)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
 // Fetch supplier payment data
 const fetchSupplierPayment = async () => {
     try {
@@ -113,11 +184,13 @@ const fetchSupplierPayment = async () => {
             reference_no: data.reference_no,
             date: formattedDate,
             amount: data.amount,
-            note: data.note || '',
+            old_amount: data.amount,
+            note: data.note ?? '',
             supplier_id: data.supplier?.id,
             payment_method_id: data.payment_method?.id,
             branch_id: branch_info.id
         }
+        
     } catch (err) {
         if (err.errors) {
             // Show each validation error as a toast
@@ -162,7 +235,8 @@ const fetchPaymentMethods = async () => {
         paymentMethods.value = [
             ...res.data.map(method => ({
                 title: method.name,
-                value: method.id
+                value: method.id,
+                account_balance: method.account_blanace
             }))
         ]
     } catch (err) {
@@ -187,6 +261,8 @@ const fetchSupplierPaymentAmount = async (supplierId) => {
         paymentAmount.value = 0
     }
 }
+
+
 watch(() => form.value.supplier_id, (newVal) => {
     fetchSupplierPaymentAmount(newVal)
 })
@@ -197,6 +273,11 @@ onMounted(async () => {
         fetchSuppliers(),
         fetchPaymentMethods()
     ])
+    
+    // Set initial load to false after data is loaded
+    setTimeout(() => {
+        isInitialLoad.value = false
+    }, 100)
 })
 
 const resetForm = () => {

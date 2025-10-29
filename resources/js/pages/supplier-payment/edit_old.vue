@@ -1,27 +1,28 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import { ref, onMounted, watch } from 'vue';
 import AppDateTimePicker from '@core/components/date-time-picker/DemoDateTimePickerHumanFriendly.vue';
 import { useI18n } from 'vue-i18n';
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
-
-const { formatAmount } = useCompanyFormatters()
+const { fetchCompanySettings, formatDate, formatAmount, getSerialNumber } = useCompanyFormatters()
 const { t } = useI18n()
 const router = useRouter()
+const route = useRoute()
 const loadings = ref(false)
+const suppliers = ref([])
 const paymentMethods = ref([])
 const branch_info = useCookie("branch_info").value || 0;
+const paymentAmount = ref(0)
 const selectedAccountBalance = ref(0)
-
 
 const form = ref({
     reference_no: '',
     date: '',
     amount: '',
     note: '',
+    supplier_id: null,
     payment_method_id: null,
-    type: 'Deposit',
     branch_id: branch_info.id
 })
 
@@ -29,8 +30,8 @@ const referenceNoError = ref('')
 const dateError = ref('')
 const amountError = ref('')
 const noteError = ref('')
+const supplierIdError = ref('')
 const paymentMethodIdError = ref('')
-const typeError = ref('')
 
 const validateReferenceNo = (referenceNo) => {
     if (!referenceNo) {
@@ -59,16 +60,18 @@ const validateAmount = (amount) => {
         amountError.value = t('Amount must be a positive number')
         return false
     }
-    
-    // Only validate balance for Withdraw type
-    if (form.value.type === 'Withdraw' && form.value.payment_method_id && amount > 0) {
-        const bal = parseFloat(selectedAccountBalance.value) || 0
+
+    if (form.value.payment_method_id && amount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) + parseFloat(form.value.amount) || 0
+
+        console.log(bal)
+        console.log(amount)
         if (parseFloat(amount) > bal) {
             amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
             return false
         }
     }
-    
+
     amountError.value = ''
     return true
 }
@@ -82,6 +85,15 @@ const validateNote = (note) => {
     return true
 }
 
+const validateSupplierId = (supplierId) => {
+    if (!supplierId) {
+        supplierIdError.value = t('Supplier is required')
+        return false
+    }
+    supplierIdError.value = ''
+    return true
+}
+
 const validatePaymentMethodId = (paymentMethodId) => {
     if (!paymentMethodId) {
         paymentMethodIdError.value = t('Payment method is required')
@@ -91,31 +103,113 @@ const validatePaymentMethodId = (paymentMethodId) => {
     return true
 }
 
-const validateType = (type) => {
-    if (!type) {
-        typeError.value = t('Type is required')
-        return false
+watch([() => form.value.amount], ([newAmount]) => {
+    if (form.value.payment_method_id && newAmount > 0) {
+        const bal = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(newAmount) > bal) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
     }
-    typeError.value = ''
-    return true
+})
+
+watch(() => form.value.payment_method_id, (newMethodId) => {
+    if (!newMethodId) {
+        selectedAccountBalance.value = 0
+        amountError.value = ''
+        return
+    }
+
+    // our paymentMethods items use { title, value, account_balance }
+    const method = paymentMethods.value.find(m => m.value == newMethodId)
+    if (!method) {
+        selectedAccountBalance.value = 0
+        amountError.value = ''
+        return
+    }
+
+    const bal = method.account_balance ?? 0
+    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
+    selectedAccountBalance.value += parseFloat(form.value.amount) || 0
+    
+    // Validate amount if already entered
+    if (form.value.amount > 0) {
+        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
+        if (parseFloat(form.value.amount) > currentBalance) {
+            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}`)
+            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}`), { type: 'error' })
+        } else {
+            amountError.value = ''
+        }
+    }
+})
+
+// Fetch supplier payment data
+const fetchSupplierPayment = async () => {
+    try {
+        const res = await $api(`/supplier-payments/${route.query.id}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            }
+        })
+        const data = res.data
+        
+        // Convert date from YYYY-MM-DD to Month DD, YYYY format
+        const dateObj = new Date(data.date)
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric', 
+            year: 'numeric'
+        })
+
+        form.value = {
+            reference_no: data.reference_no,
+            date: formattedDate,
+            amount: data.amount,
+            note: data.note || '',
+            supplier_id: data.supplier?.id,
+            payment_method_id: data.payment_method?.id,
+            branch_id: branch_info.id
+        }
+    } catch (err) {
+        if (err.errors) {
+            // Show each validation error as a toast
+            for (const [field, messages] of Object.entries(err.errors)) {
+                messages.forEach(msg => {
+                    toast(msg, { type: 'error' })
+                })
+            }
+        } else {
+            // Show general error if no field-specific errors
+            toast(err.message, {
+                type: 'error',
+            })
+        }
+        loadings.value = false
+        return
+    }
 }
 
-
-
-// Fetch deposit withdraw reference no on mount
-const fetchDepositWithdrawReferenceNo = async () => {
+// Fetch supplier list
+const fetchSuppliers = async () => {
     try {
-        const res = await $api('/generate-deposit-withdraw-reference-no')
-        form.value.reference_no = res.data
+        const res = await $api('/get-all-suppliers')
+        suppliers.value = [
+            ...res.data.map(supplier => ({
+                title: supplier.phone ? supplier.name + ' (' +  supplier.phone + ')' : supplier.name,
+                value: supplier.id
+            }))
+        ]
     } catch (err) {
-        console.error('Error fetching deposit withdraw reference no:', err)
-        toast('Error generating deposit withdraw reference no', {
+        console.error('Error fetching suppliers:', err)
+        toast(t('Error fetching suppliers'), {
             type: 'error'
         })
     }
 }
-
-
 
 // Fetch payment methods
 const fetchPaymentMethods = async () => {
@@ -130,91 +224,42 @@ const fetchPaymentMethods = async () => {
         ]
     } catch (err) {
         console.error('Error fetching payment methods:', err)
-        toast('Error loading payment methods', {
+        toast(t('Error fetching payment methods'), {
             type: 'error'
         })
     }
 }
 
-// Watch for amount changes
-watch(() => form.value.amount, (newAmount) => {
-    if (form.value.type === 'Withdraw' && form.value.payment_method_id && newAmount > 0) {
-        const bal = parseFloat(selectedAccountBalance.value) || 0
-        if (parseFloat(newAmount) > bal) {
-            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
-            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`), { type: 'error' })
-        } else {
-            amountError.value = ''
-        }
-    }
-})
-
-// Watch for payment method changes
-watch(() => form.value.payment_method_id, (newMethodId) => {
-    if (!newMethodId) {
-        selectedAccountBalance.value = 0
-        amountError.value = ''
+const fetchSupplierPaymentAmount = async (supplierId) => {
+    if (!supplierId) {
+        paymentAmount.value = 0
         return
     }
-
-    const method = paymentMethods.value.find(m => m.value == newMethodId)
-    if (!method) {
-        selectedAccountBalance.value = 0
-        amountError.value = ''
-        return
+    try {
+        const res = await $api(`/supplier-payment/${supplierId}`)
+        paymentAmount.value = res.data || 0
+    } catch (err) {
+        console.error('Error fetching due amount:', err)
+        toast('Error fetching supplier payment', { type: 'error' })
+        paymentAmount.value = 0
     }
+}
 
-    const bal = method.account_balance ?? 0
-    selectedAccountBalance.value = bal ? parseFloat(bal) : 0
-    
-    // Validate amount if already entered and type is Withdraw
-    if (form.value.type === 'Withdraw' && form.value.amount > 0) {
-        const currentBalance = parseFloat(selectedAccountBalance.value) || 0
-        if (parseFloat(form.value.amount) > currentBalance) {
-            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}`)
-            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(currentBalance)}`), { type: 'error' })
-        } else {
-            amountError.value = ''
-        }
-    }
+
+watch(() => form.value.supplier_id, (newVal) => {
+    fetchSupplierPaymentAmount(newVal)
 })
 
-// Watch for type changes
-watch(() => form.value.type, (newType) => {
-    // Clear amount error when switching between Deposit and Withdraw
-    if (newType === 'Deposit') {
-        amountError.value = ''
-    } else if (newType === 'Withdraw' && form.value.payment_method_id && form.value.amount > 0) {
-        // Re-validate when switching to Withdraw
-        const bal = parseFloat(selectedAccountBalance.value) || 0
-        if (parseFloat(form.value.amount) > bal) {
-            amountError.value = t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`)
-            toast(t(`Insufficient balance. Remaining balance is: ${formatAmount(bal)}`), { type: 'error' })
-        }
-    }
-})
-
-onMounted(() => {
-    fetchDepositWithdrawReferenceNo()
-    fetchPaymentMethods()
+onMounted(async () => {
+    await Promise.all([
+        fetchSupplierPayment(),
+        fetchSuppliers(),
+        fetchPaymentMethods()
+    ])
 })
 
 const resetForm = () => {
-    const currentRefNo = form.value.reference_no
-    form.value = {
-        reference_no: currentRefNo,
-        date: '',
-        amount: '',
-        note: '',
-        payment_method_id: null,
-        type: 'Deposit',
-    }
-    referenceNoError.value = ''
-    dateError.value = ''
-    amountError.value = ''
-    noteError.value = ''
-    paymentMethodIdError.value = ''
-    typeError.value = ''
+    router.push({ name: 'supplier-payment' })
 }
 
 const validateForm = () => {
@@ -222,14 +267,14 @@ const validateForm = () => {
     const isDateValid = validateDate(form.value.date)
     const isAmountValid = validateAmount(form.value.amount)
     const isNoteValid = validateNote(form.value.note)
+    const isSupplierIdValid = validateSupplierId(form.value.supplier_id)
     const isPaymentMethodIdValid = validatePaymentMethodId(form.value.payment_method_id)
-    const isTypeValid = validateType(form.value.type)
 
     return isReferenceNoValid && isDateValid && isAmountValid && isNoteValid && 
-           isPaymentMethodIdValid && isTypeValid
+           isSupplierIdValid && isPaymentMethodIdValid
 }
 
-const createDepositWithdraw = async () => {
+const updateSupplierPayment = async () => {
     loadings.value = true
     if (!validateForm()) {
         loadings.value = false
@@ -241,8 +286,9 @@ const createDepositWithdraw = async () => {
         Object.keys(form.value).forEach(key => {
             formData.append(key, form.value[key])
         })
+        formData.append('_method', 'PUT')
 
-        const res = await $api('/deposit-withdraws', {
+        const res = await $api(`/supplier-payments/${route.query.id}`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -271,24 +317,14 @@ const createDepositWithdraw = async () => {
             type: "success",
         })
         loadings.value = false
-        router.push({ name: 'deposit-withdraw' })
+        router.push({ name: 'supplier-payment' })
     }
     catch (err) {
-        if (err.errors) {
-            // Show each validation error as a toast
-            for (const [field, messages] of Object.entries(err.errors)) {
-                messages.forEach(msg => {
-                    toast(msg, { type: 'error' })
-                })
-            }
-        } else {
-            // Show general error if no field-specific errors
-            toast(err.message, {
-                type: 'error',
-            })
-        }
+        console.error(err)
         loadings.value = false
-        return
+        toast(t('Error updating supplier payment'), {
+            type: 'error'
+        })
     }
 }
 </script>
@@ -296,9 +332,9 @@ const createDepositWithdraw = async () => {
 <template>
     <VRow>
         <VCol cols="12">
-            <VCard :title="t('Add Deposit Withdraw')">
+            <VCard :title="t('Edit Supplier Payment')">
                 <VCardText>
-                    <VForm class="mt-3" @submit.prevent="createDepositWithdraw">
+                    <VForm class="mt-3" @submit.prevent="updateSupplierPayment">
                         <VRow>
                             <!-- Reference No -->
                             <VCol cols="12" md="6" lg="4">
@@ -307,6 +343,18 @@ const createDepositWithdraw = async () => {
                                     :error-messages="referenceNoError" 
                                     @input="validateReferenceNo($event.target.value)"
                                     readonly
+                                    />
+                            </VCol>
+
+                            <!-- Supplier -->
+                            <VCol cols="12" md="6" lg="4">
+                                <AppAutocomplete v-model="form.supplier_id" 
+                                    :items="suppliers"
+                                    :label="t('Supplier')" :required="true" 
+                                    :placeholder="t('Select Supplier')"
+                                    :error-messages="supplierIdError"
+                                    @change="validateSupplierId($event)"
+                                    clearable
                                     />
                             </VCol>
 
@@ -326,29 +374,18 @@ const createDepositWithdraw = async () => {
                                 />
                             </VCol>
 
-                            <!-- Type -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppAutocomplete v-model="form.type"
-                                    :items="[
-                                        { title: 'Deposit', value: 'Deposit' },
-                                        { title: 'Withdraw', value: 'Withdraw' }
-                                    ]"
-                                    :label="t('Type')" :required="true"
-                                    :placeholder="t('Select Type')"
-                                    :error-messages="typeError"
-                                    @update:model-value="validateType"
-                                    clearable
-                                    />
-                            </VCol>
-
-
-
                             <!-- Amount -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppTextField v-model="form.amount" :label="t('Amount')" :required="true" type="number" 
                                     :placeholder="t('Enter Amount')"
-                                    :error-messages="amountError" 
+                                :error-messages="amountError" 
                                     @input="validateAmount($event.target.value)" />
+                                    <div class="mt-2" v-if="paymentAmount < 0">
+                                        <span class="text-success">{{ t('Advance Paid by Supplier') + ' : ' + formatAmount(Math.abs(paymentAmount)) }}</span>
+                                    </div>
+                                    <div class="mt-2" v-if="paymentAmount > 0">
+                                        <span class="text-error">{{ t('Payment to Supplier') + ' : ' + formatAmount(paymentAmount) }}</span>
+                                    </div>
                             </VCol>
 
                             <!-- Payment Method -->
@@ -371,20 +408,15 @@ const createDepositWithdraw = async () => {
                                     @input="validateNote($event.target.value)" />
                             </VCol>
 
-                            
                             <!-- Form Actions -->
                             <VCol cols="12" class="d-flex flex-wrap gap-4">
                                 <VBtn type="submit" :loading="loadings" :disabled="loadings">
                                     <VIcon start icon="tabler-checkbox" />
-                                    {{ t('Submit') }}
+                                    {{ t('Update') }}
                                 </VBtn>
-                                <VBtn type="button" @click="router.push({ name: 'deposit-withdraw' })" color="primary" variant="tonal">
+                                <VBtn color="primary" variant="tonal" @click="router.push({ name: 'supplier-payment' })">
                                     <VIcon start icon="tabler-arrow-back" />
                                     {{ t('Back') }}
-                                </VBtn>
-                                <VBtn color="error" variant="tonal" type="reset" @click.prevent="resetForm">
-                                    <VIcon start icon="tabler-refresh" />
-                                    {{ t('Reset') }}
                                 </VBtn>
                             </VCol>
                         </VRow>

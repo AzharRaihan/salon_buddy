@@ -1774,7 +1774,6 @@ class ReportController extends Controller
     {
         $balance = 0;
 
-        // Sales income (Debit)
         $salesQuery = Sale::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1783,7 +1782,6 @@ class ReportController extends Controller
         }
         $balance += $salesQuery->sum('total_paid');
 
-        // Customer receives (Debit)
         $customerReceivesQuery = CustomerReceive::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1792,7 +1790,6 @@ class ReportController extends Controller
         }
         $balance += $customerReceivesQuery->sum('amount');
 
-        // Deposits (Debit)
         $depositsQuery = DepositWithdraw::where('type', 'Deposit')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1801,7 +1798,6 @@ class ReportController extends Controller
         }
         $balance += $depositsQuery->sum('amount');
 
-        // Purchases expense (Credit)
         $purchasesQuery = Purchase::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1810,7 +1806,6 @@ class ReportController extends Controller
         }
         $balance -= $purchasesQuery->sum('paid_amount');
 
-        // Supplier payments (Credit)
         $supplierPaymentsQuery = SupplierPayment::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1819,7 +1814,6 @@ class ReportController extends Controller
         }
         $balance -= $supplierPaymentsQuery->sum('amount');
 
-        // Expenses (Credit)
         $expensesQuery = Expense::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1828,7 +1822,6 @@ class ReportController extends Controller
         }
         $balance -= $expensesQuery->sum('amount');
 
-        // Staff payments (Credit)
         $staffPaymentsQuery = StaffPayment::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1837,7 +1830,6 @@ class ReportController extends Controller
         }
         $balance -= $staffPaymentsQuery->sum('amount');
 
-        // Withdraws (Credit)
         $withdrawsQuery = DepositWithdraw::where('type', 'Withdraw')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1846,7 +1838,6 @@ class ReportController extends Controller
         }
         $balance -= $withdrawsQuery->sum('amount');
 
-        // Salary payments (Credit)
         $salaryPaymentsQuery = SalaryPayment::where('del_status', 'Live')
             ->where('company_id', $companyId)
             ->where('payment_method_id', $paymentMethodId);
@@ -1855,6 +1846,87 @@ class ReportController extends Controller
         }
         $balance -= $salaryPaymentsQuery->sum('amount');
 
+
+        return $balance;
+    }
+    /**
+     * Calculate balance for a specific payment method
+     */
+    public function calculatePaymentMethodBalanceOnly($paymentMethodId, $companyId, $branchId = null)
+    {
+        $balance = 0;
+
+        $salesQuery = Sale::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $salesQuery->where('branch_id', $branchId);
+        }
+        $balance += $salesQuery->sum('total_paid');
+
+        $customerReceivesQuery = CustomerReceive::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $customerReceivesQuery->where('branch_id', $branchId);
+        }
+        $balance += $customerReceivesQuery->sum('amount');
+
+        $depositsQuery = DepositWithdraw::where('type', 'Deposit')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $depositsQuery->where('branch_id', $branchId);
+        }
+        $balance += $depositsQuery->sum('amount');
+
+        $purchasesQuery = Purchase::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $purchasesQuery->where('branch_id', $branchId);
+        }
+        $balance -= $purchasesQuery->sum('paid_amount');
+
+        $supplierPaymentsQuery = SupplierPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $supplierPaymentsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $supplierPaymentsQuery->sum('amount');
+
+        $expensesQuery = Expense::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        $balance -= $expensesQuery->sum('amount');
+
+        $staffPaymentsQuery = StaffPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $staffPaymentsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $staffPaymentsQuery->sum('amount');
+
+        $withdrawsQuery = DepositWithdraw::where('type', 'Withdraw')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $withdrawsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $withdrawsQuery->sum('amount');
+
+        $salaryPaymentsQuery = SalaryPayment::where('del_status', 'Live')
+            ->where('company_id', $companyId)
+            ->where('payment_method_id', $paymentMethodId);
+        if ($branchId) {
+            $salaryPaymentsQuery->where('branch_id', $branchId);
+        }
+        $balance -= $salaryPaymentsQuery->sum('amount');
 
 
         return $balance;
