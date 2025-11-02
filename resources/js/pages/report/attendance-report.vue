@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAttendanceReport } from '@/composables/useAttendanceReport'
 import AttendanceReportFilters from '@/components/report/AttendanceReportFilters.vue'
 import AttendanceReportTable from '@/components/report/AttendanceReportTable.vue'
@@ -24,11 +24,30 @@ const {
     summary,
 } = useAttendanceReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Attendance Report',
+    employeeName: 'N/A',
+    employeePhone: null,
+    dateRange: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedEmployee = computed(() => {
+    if (!employeeId.value) return null
+    return employees.value.find(e => e.id == employeeId.value) || null
+})
+
 const selectedEmployeeName = computed(() => {
     if (!employeeId.value) return 'All Employees'
-    const employee = employees.value.find(e => e.id == employeeId.value)
-    return employee?.name || 'All Employees'
+    return selectedEmployee.value?.name || 'All Employees'
 })
 
 // Export headers for ExportTable component
@@ -76,6 +95,7 @@ const handleResetFilters = () => {
                 :headers="exportHeaders" 
                 filename="attendance-report"
                 title="Attendance Report"
+                :header-data="reportHeaderData"
                 :summary-data="summary"
             />
         </div>
@@ -86,8 +106,10 @@ const handleResetFilters = () => {
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-employee-name="selectedEmployeeName"
+            :selected-employee="selectedEmployee"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

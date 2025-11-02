@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useExpenseReport } from '@/composables/useExpenseReport'
 import ExpenseReportFilters from '@/components/report/ExpenseReportFilters.vue'
-import ExpenseSummaryCards from '@/components/report/ExpenseSummaryCards.vue'
 import ExpenseReportTable from '@/components/report/ExpenseReportTable.vue'
 import ExportTableExpenseReport from '@/components/ExportTableExpenseReport.vue'
 
@@ -28,11 +27,34 @@ const {
     summary,
 } = useExpenseReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Expense Report',
+    outletName: 'All Outlets',
+    phone: null,
+    address: null,
+    responsiblePersonName: null,
+    responsiblePersonPhone: null,
+    categoryName: null,
+    dateRange: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedCategoryName = computed(() => {
@@ -41,10 +63,14 @@ const selectedCategoryName = computed(() => {
     return category?.name || 'All Categories'
 })
 
+const selectedEmployee = computed(() => {
+    if (!employeeId.value) return null
+    return employees.value.find(e => e.id == employeeId.value) || null
+})
+
 const selectedEmployeeName = computed(() => {
     if (!employeeId.value) return 'All Employees'
-    const employee = employees.value.find(e => e.id == employeeId.value)
-    return employee?.name || 'All Employees'
+    return selectedEmployee.value?.name || 'All Employees'
 })
 
 // Export headers for ExportTable component
@@ -83,16 +109,6 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <ExpenseSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalExpenses"
-                />
-            </VCardText>
-        </VCard>
-
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
@@ -107,6 +123,7 @@ const handleResetFilters = () => {
                 :data="expenses" 
                 :headers="exportHeaders" 
                 :summary-data="summary"
+                :header-data="reportHeaderData"
                 filename="expense-report"
                 title="Expense Report"
             />
@@ -117,11 +134,14 @@ const handleResetFilters = () => {
             :expenses="expenses"
             :date-from="dateFrom"
             :date-to="dateTo"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :selected-category-name="selectedCategoryName"
+            :selected-employee="selectedEmployee"
             :selected-employee-name="selectedEmployeeName"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

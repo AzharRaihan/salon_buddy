@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useSalaryReport } from '@/composables/useSalaryReport'
 import SalaryReportFilters from '@/components/report/SalaryReportFilters.vue'
-import SalarySummaryCards from '@/components/report/SalarySummaryCards.vue'
 import SalaryReportTable from '@/components/report/SalaryReportTable.vue'
 import ExportTableSalaryReport from '@/components/ExportTableSalaryReport.vue'
 
@@ -28,11 +27,31 @@ const {
 
 
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Salary Report',
+    outletName: 'All Outlets',
+    phone: null,
+    address: null,
+    dateRange: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedEmployeeName = computed(() => {
@@ -72,15 +91,7 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <!-- <VCard class="mb-4">
-            <VCardText>
-                <SalarySummaryCards
-                    :summary="summary"
-                    :total-filtered="totalSalaries"
-                />
-            </VCardText>
-        </VCard> -->
+
 
          <!-- Action Buttons -->
          <div class="table-action action mb-4 d-flex justify-end gap-4">
@@ -97,6 +108,7 @@ const handleResetFilters = () => {
                 :headers="exportHeaders" 
                 filename="salary-report"
                 title="Salary Report"
+                :header-data="reportHeaderData"
                 :summary-data="totalSalaries"
             />
         </div>
@@ -108,9 +120,11 @@ const handleResetFilters = () => {
             :export-headers="exportHeaders"
             :date-from="dateFrom"
             :date-to="dateTo"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :selected-employee-name="selectedEmployeeName"
             :is-loading="isLoading"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

@@ -128,7 +128,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get expense categories
@@ -430,7 +430,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get employees
@@ -1530,13 +1530,13 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get employees
         $employees = User::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'name', 'phone')
+            ->select('id', 'name', 'phone', 'email')
             ->get();
 
         return $this->successResponse([
