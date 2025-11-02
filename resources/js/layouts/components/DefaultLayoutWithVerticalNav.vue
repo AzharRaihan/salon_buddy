@@ -80,6 +80,33 @@ const hasBranchInfo = computed(() => {
   return true
 })
 
+
+async function handleCheckInOut() {
+  try {
+
+    const response = await $api('/attendance/check', {
+      method: 'POST',
+      body: {
+        user_id: userData.value.id,
+        company_id: userData.value.company_id,
+      },
+    })
+
+    const { status, message } = response
+
+    if (status === 'checked_in') {
+      toast.success(message)
+    } else if (status === 'checked_out') {
+      toast.success(message)
+    } else {
+      toast.info(message)
+    }
+  } catch (error) {
+    console.error(error)
+    toast.error('Something went wrong!')
+  }
+}
+
 </script>
 
 <style scoped>
@@ -112,7 +139,9 @@ const hasBranchInfo = computed(() => {
         <IconBtn id="vertical-nav-toggle-btn" class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
           <VIcon size="26" icon="tabler-menu-2" />
         </IconBtn>
+
         <NavSearchBar class="ms-lg-n3" />
+
         <VSpacer />
 
         <!-- Fix: Show outlet-name only if branchInfo is valid -->
@@ -127,6 +156,12 @@ const hasBranchInfo = computed(() => {
             {{ t('POS') }}
           </VBtn>
         </template>
+
+        <!-- Check In & Check Out -->
+        <IconBtn color="rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))" @click="handleCheckInOut">
+          <VIcon icon="tabler-clock" />
+        </IconBtn>
+
 
         <NavBarI18n v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig" />

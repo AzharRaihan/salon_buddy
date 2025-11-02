@@ -109,35 +109,7 @@
                         {{ item.added_date_time }}
                     </template>
 
-                    <!-- Summary Row as Data Table Footer (matches Account Balance/Statement) -->
-                    <template #body.append>
-                        <tr>
-                            <td class="text-h6 font-weight-bold">
-                                <!-- Empty for SN column -->
-                            </td>
-                            <td class="text-h6 font-weight-bold">
-                                <!-- Empty for Date column -->
-                            </td>
-                            <td class="text-h6 font-weight-bold">
-                                <!-- Empty for Reference No column -->
-                            </td>
-                            <td class="text-h6 font-weight-bold">
-                                <!-- Empty for Type column -->
-                            </td>
-                            <td class="text-h6 font-weight-bold text-end">
-                                Total Amount:
-                            </td>
-                            <td class="text-h6 font-weight-bold">
-                                 {{ formatAmount(calculateTotal('amount')) }}
-                            </td>
-                            <td class="text-h6 font-weight-bold">
-                                <!-- Empty for Added By column -->
-                            </td>
-                            <td class="text-h6 font-weight-bold">
-                                <!-- Empty for Added Date Time column -->
-                            </td>
-                        </tr>
-                    </template>
+                    
                 </VDataTable>
             </VCardText>
         </VCard>

@@ -1410,8 +1410,6 @@
   "Earning": "Earning",
   "This Month": "This Month",
   "Popular Products": "Popular Products",
-
-
   "duration": "Duration",	
   "staff": "Staff",
   "price": "Price",
@@ -1429,6 +1427,8 @@
   "Select Generation Date": "Select Generation Date",
   "Select Enable In Website": "Select Enable In Website",
   "Opening Balance": "Opening Balance",
+  "Hourly Rate For Overtime": "Hourly Rate For Overtime",
+  "Enter Hourly Rate For Overtime": "Enter Hourly Rate For Overtime",
 
 
 

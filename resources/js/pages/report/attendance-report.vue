@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useAttendanceReport } from '@/composables/useAttendanceReport'
 import AttendanceReportFilters from '@/components/report/AttendanceReportFilters.vue'
-import AttendanceSummaryCards from '@/components/report/AttendanceSummaryCards.vue'
 import AttendanceReportTable from '@/components/report/AttendanceReportTable.vue'
 import ExportTableAttendanceReport from '@/components/ExportTableAttendanceReport.vue'
 
@@ -39,7 +38,6 @@ const exportHeaders = computed(() => [
     { title: 'In Time', key: 'in_time' },
     { title: 'Out Time', key: 'out_time' },
     { title: 'Total Time', key: 'total_time' },
-    { title: 'Status', key: 'status' },
     { title: 'Note', key: 'note' },
 ])
 
@@ -59,16 +57,6 @@ const handleResetFilters = () => {
                     v-model:date-to="dateTo"
                     v-model:employee-id="employeeId"
                     :employees="employees"
-                />
-            </VCardText>
-        </VCard>
-
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <AttendanceSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalAttendances"
                 />
             </VCardText>
         </VCard>

@@ -8,28 +8,25 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  confirmTitle: {
-    type: String,
-    required: true,
-  },
-  confirmMsg: {
-    type: String,
-    required: true,
-  },
-  cancelTitle: {
-    type: String,
-    required: true,
-  },
-  cancelMsg: {
-    type: String,
-    required: true,
-  },
+  // confirmTitle: {
+  //   type: String,
+  //   required: true,
+  // },
+  // confirmMsg: {
+  //   type: String,
+  //   required: true,
+  // },
+  // cancelTitle: {
+  //   type: String,
+  //   required: true,
+  // },
+  // cancelMsg: {
+  //   type: String,
+  //   required: true,
+  // },
 })
 
-const emit = defineEmits([
-  'update:isDialogVisible',
-  'confirm',
-])
+const emit = defineEmits(['update:isDialogVisible', 'confirm'])
 
 const unsubscribed = ref(false)
 const cancelled = ref(false)
@@ -41,12 +38,10 @@ const updateModelValue = val => {
 const onConfirmation = () => {
   emit('confirm', true)
   updateModelValue(false)
-  unsubscribed.value = true
 }
 
 const onCancel = () => {
   emit('update:isDialogVisible', false)
-  cancelled.value = true
 }
 </script>
 

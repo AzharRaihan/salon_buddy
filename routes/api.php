@@ -177,6 +177,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
     
     Route::apiResource('attendances', AttendanceController::class);
+    Route::post('attendance/check', [AttendanceController::class, 'check']);
     Route::apiResource('promotions', PromotionController::class);
     Route::apiResource('purchases', PurchaseController::class);
     Route::apiResource('damages', DamageController::class);

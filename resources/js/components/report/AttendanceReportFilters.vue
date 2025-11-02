@@ -2,6 +2,20 @@
     <div class="attendance-report-filters">
         <!-- Filter Row -->
         <VRow class="mb-4">
+
+            <!-- Branch Filter -->
+            <VCol cols="12" md="4">
+                <AppSelect 
+                    :model-value="employeeId" 
+                    @update:model-value="(value) => emit('update:employeeId', value)"
+                    :items="[{ id: '', name: t('Select Employee') }, ...employees]"
+                    :item-title="(item) => `${item.name}  ${ item.phone ? `(${item.phone})` : ''}`"
+                    item-value="id"
+                    label="Filter by Employee"
+                    clearable
+                />
+            </VCol>
+
             <!-- Date From -->
             <VCol cols="12" md="4">
                 <AppDateTimePicker 
@@ -18,19 +32,6 @@
                     :model-value="dateTo" 
                     @update:model-value="(value) => emit('update:dateTo', value)"
                     label="End Date"
-                    clearable
-                />
-            </VCol>
-            
-            <!-- Employee Filter -->
-            <VCol cols="12" md="4">
-                <AppSelect 
-                    :model-value="employeeId" 
-                    @update:model-value="(value) => emit('update:employeeId', value)"
-                    :items="[{ id: '', name: t('Select Employee') }, ...employees]"
-                    :item-title="(item) => `${item.name}  ${ item.phone ? `(${item.phone})` : ''}`"
-                    item-value="id"
-                    label="Filter by Employee"
                     clearable
                 />
             </VCol>

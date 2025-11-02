@@ -254,7 +254,7 @@ const validateRole = (role) => {
 }
 
 const validateBranch = (branch) => {
-    if (!branch || branch.length == 0) {
+    if (!branch || branch.length == 0 && form.value.will_login == 'Yes') {
         branchError.value = 'At least one branch is required'
         return false
     }
@@ -650,22 +650,9 @@ const updateUser = async () => {
                             
                             <!-- Overtime Hour -->
                             <VCol cols="12" md="6" lg="4">
-                                <AppTextField v-model="form.overtime_hour_rate" :label="t('Overtime Hour Rate')" type="number" :placeholder="t('Enter Overtime Hour Rate')" />
+                                <AppTextField v-model="form.overtime_hour_rate" :label="t('Hourly Rate For Overtime')" type="number" :placeholder="t('Enter Hourly Rate For Overtime')" />
                             </VCol>
 
-                            <!-- Branch -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppAutocomplete v-model="form.branch_id"
-                                    :items="branches"
-                                    :label="t('Branch')"
-                                    :required="true"
-                                    :placeholder="t('Select branches')"
-                                    :error-messages="branchError"
-                                    @change="validateBranch($event)"
-                                    chips
-                                    multiple
-                                    closable-chips />
-                            </VCol>
 
                             <!-- Service -->
                             <VCol cols="12" md="6" lg="4">
@@ -795,6 +782,21 @@ const updateUser = async () => {
                                         :error-messages="passwordConfirmationError"
                                         @input="validatePasswordConfirmation($event.target.value)" />
                                 </VCol>
+
+                                <!-- Branch -->
+                                <VCol cols="12" md="6" lg="4">
+                                    <AppAutocomplete v-model="form.branch_id"
+                                        :items="branches"
+                                        :label="t('Branch')"
+                                        :required="true"
+                                        :placeholder="t('Select branches')"
+                                        :error-messages="branchError"
+                                        @change="validateBranch($event)"
+                                        chips
+                                        multiple
+                                        closable-chips />
+                                </VCol>
+
                             </template>
                         </VRow>
 

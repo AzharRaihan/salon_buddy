@@ -187,6 +187,9 @@ class ReportController extends Controller
             $query->orderBy('date', 'desc');
         }
 
+        $query->where('out_time', '!=', null);
+
+
         $attendances = $query->get();
 
         // Calculate summary statistics

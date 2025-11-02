@@ -233,7 +233,7 @@ const createAttendance = async () => {
 <template>
     <VRow>
         <VCol cols="12">
-            <VCard :title="$t('Create Attendance')">
+            <VCard :title="$t('Add Attendance')">
                 <VCardText>
                     <VForm class="mt-3" @submit.prevent="createAttendance">
                         <VRow>

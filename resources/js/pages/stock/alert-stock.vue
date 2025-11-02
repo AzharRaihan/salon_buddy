@@ -139,6 +139,17 @@ onMounted(async () => {
 })
 
 
+const exportItems = computed(() => {
+  return (stockData.value?.items || []).map((item, index) => ({
+    serial_number: getSerialNumber(index, totalItems.value, page.value, itemsPerPage.value),
+    name: `${item.name || ''} (${item.code || '-'})`,
+    category: item.category?.name || '-',
+    stock: `${item.stock} ${item.unit?.name || ''}`,
+    last_three_purchase_avg: formatAmount(item.last_three_purchase_avg) || formatAmount(0),
+    total_price: formatAmount((item.last_three_purchase_avg || 0) * (item.stock || 0)),
+  }))
+})
+
 </script>
 
 <template>
@@ -204,7 +215,7 @@ onMounted(async () => {
                         <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 
                         <ExportTable 
-                            :data="items" 
+                            :data="exportItems" 
                             :headers="exportHeaders" 
                             filename="alert-stock-report"
                             :title="$t('List Alert Stock')"

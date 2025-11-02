@@ -80,7 +80,6 @@ class UserController extends Controller
             'salary' => 'nullable|numeric|min:0',
             'commission' => 'nullable|numeric|min:0',
             'overtime_hour_rate' => 'nullable|numeric|min:0',
-            'branch_id' => 'required|array',
             'service_id' => 'required|array',
             'will_login' => 'required|string|in:Yes,No',
             'designation' => 'required|string|max:55',
@@ -98,6 +97,9 @@ class UserController extends Controller
 
         if ($request->will_login === 'Yes') {
             $validationRules['password'] = 'required|string|min:6|confirmed';
+        }
+        if ($request->will_login === 'Yes') {
+            $validationRules['branch_id'] = 'required|array';
         }
 
         $validator = Validator::make($data, $validationRules);
@@ -195,7 +197,6 @@ class UserController extends Controller
             'salary' => 'nullable|numeric|min:0',
             'commission' => 'nullable|numeric|min:0',
             'overtime_hour_rate' => 'nullable|numeric|min:0',
-            'branch_id' => 'required|array',
             'service_id' => 'required|array',
             'will_login' => 'required|string|in:Yes,No',
             'designation' => 'required|string|max:55',
@@ -213,6 +214,9 @@ class UserController extends Controller
 
         if ($request->will_login === 'Yes' && $user->password === null) {
             $validationRules['password'] = 'required|string|min:6|confirmed';
+        }
+        if ($request->will_login === 'Yes') {
+            $validationRules['branch_id'] = 'required|array';
         }
 
         $validator = Validator::make($data, $validationRules);

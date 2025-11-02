@@ -46,8 +46,8 @@ export default [
     children: [
       { title: "Stock", to: { name: "stock-stock" }, permission: ["stock-stock"] },
       { title: "Alert Stock", to: { name: "stock-alert-stock" }, permission: ["stock-alert"] },
-      { title: "Add Product Usage", to: { name: "product-usages-create" }, permission: ["product-usages"] },
-      { title: "Product Usages", to: { name: "product-usages" }, permission: ["product-usages"] },
+      { title: "Add Product Usage", to: { name: "product-usages-create" }, permission: ["product_usages-create"] },
+      { title: "Product Usages", to: { name: "product-usages" }, permission: ["product_usages-list"] },
     ],
   },
   { heading: 'Sales & Customers' },

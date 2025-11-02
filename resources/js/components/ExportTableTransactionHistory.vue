@@ -93,33 +93,6 @@ const formatDataForExport = () => {
     exportData.push(row)
   })
 
-  // Add summary row (matches Account Balance/Statement template)
-  if (props.summaryData) {
-    const summaryRow = {}
-    props.headers.forEach(header => {
-      if (header.key === 'sn') {
-        summaryRow[header.title] = ''
-      } else if (header.key === 'date') {
-        summaryRow[header.title] = ''
-      } else if (header.key === 'reference_no') {
-        summaryRow[header.title] = ''
-      } else if (header.key === 'type') {
-        summaryRow[header.title] = ''
-      } else if (header.key === 'payment_account') {
-        summaryRow[header.title] = ''
-      } else if (header.key === 'amount') {
-        summaryRow[header.title] = `Total Amount: ${props.summaryData?.totalAmount || 0}`
-      } else if (header.key === 'added_by') {
-        summaryRow[header.title] = ''
-      } else if (header.key === 'added_date_time') {
-        summaryRow[header.title] = ''
-      } else {
-        summaryRow[header.title] = ''
-      }
-    })
-    exportData.push(summaryRow)
-  }
-
   return { headers: exportHeaders, data: exportData }
 }
 

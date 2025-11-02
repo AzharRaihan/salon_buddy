@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -155,4 +156,63 @@ class AttendanceController extends Controller
         $attendance->save();
         return $this->successResponse($attendance, 'Attendance deleted successfully');
     }
+
+
+
+
+
+    public function check(Request $request)
+    {
+        $userId = $request->user_id;
+        $companyId = $request->company_id;
+
+        $now = Carbon::now();
+        $today = $now->toDateString();
+
+        // Get last record
+        $lastRecord = Attendance::where('user_id', $userId)
+            ->where('del_status', 'Live')
+            ->latest('id')
+            ->first();
+
+        if ($lastRecord && $lastRecord->in_time && !$lastRecord->out_time) {
+            // --- CHECK OUT ---
+            $outTime = $now->format('h:i A');
+
+            // Convert in_time (string like 12:00 PM) to Carbon for diff
+            $inTimeCarbon = Carbon::createFromFormat('h:i A', $lastRecord->in_time);
+            $diffInMinutes = $inTimeCarbon->diffInMinutes($now);
+
+            // Format total time as H:i (e.g. 0:05)
+            $hours = floor($diffInMinutes / 60);
+            $minutes = $diffInMinutes % 60;
+            $totalTime = sprintf('%d:%02d', $hours, $minutes);
+
+            $lastRecord->out_time = $outTime;
+            $lastRecord->total_time = $totalTime;
+            $lastRecord->save();
+
+            return response()->json([
+                'status' => 'checked_out',
+                'message' => 'Checked out successfully!',
+                'data' => $lastRecord,
+            ]);
+        } else {
+            // --- CHECK IN ---
+            $attendance = new Attendance();
+            $attendance->date = $today;
+            $attendance->in_time = $now->format('h:i A'); // e.g. 12:00 PM
+            $attendance->user_id = $userId;
+            $attendance->company_id = $companyId;
+            $attendance->del_status = 'Live';
+            $attendance->save();
+
+            return response()->json([
+                'status' => 'checked_in',
+                'message' => 'Checked in successfully!',
+                'data' => $attendance,
+            ]);
+        }
+    }
+
 }

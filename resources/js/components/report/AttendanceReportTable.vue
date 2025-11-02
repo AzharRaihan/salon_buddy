@@ -73,20 +73,9 @@
 
                     <!-- Total time -->
                     <template #item.total_time="{ item }">
-                        <span class="font-weight-medium text-success">
-                            {{ formatTotalTime(item.total_time) }} h
+                        <span class="font-weight-medium">
+                            {{ formatTotalTime(item.total_time) }} Minutes
                         </span>
-                    </template>
-
-                    <!-- Status -->
-                    <template #item.status="{ item }">
-                        <VChip 
-                            :color="getAttendanceStatus(item).color" 
-                            variant="tonal" 
-                            size="small"
-                        >
-                            {{ getAttendanceStatus(item).text }}
-                        </VChip>
                     </template>
 
                     <!-- Note truncation -->
@@ -97,34 +86,21 @@
                     </template>
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th colspan="5">
-                                        Summary
-                                    </th>
-                                    <th>
-                                        Total Time
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="5">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
-                                        {{ (calculateTotal('total_time')) }} h
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Total:
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ (calculateTotalTime('total_time')) }} Minutes <br>
+                                {{ (calculateTotalTime('total_time') / 60).toFixed(2) }} Hours
+                            </td>
+                            <td></td>
+                        </tr>
                     </template>
-
                 </VDataTable>
             </VCardText>
         </VCard>
@@ -187,10 +163,17 @@ const getAttendanceStatus = (item) => {
     return { text: 'Present', color: 'success' }
 }
 
-const calculateTotal = (field) => {
-    return props.attendances.reduce((sum, item) => {
-        return sum + (parseFloat(item[field]) || 0)
-    }, 0)
+
+// Time like 00:00:49 now calculate based on this format
+const calculateTotalTime = (field) => {
+    let totalTime = 0
+    props.attendances.forEach(item => {
+        const timeParts = item[field].split(':')
+        const hours = parseInt(timeParts[0])
+        const minutes = parseInt(timeParts[1])
+        totalTime += hours * 60 + minutes
+    })
+    return totalTime
 }
 
 </script>
