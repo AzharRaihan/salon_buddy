@@ -339,8 +339,8 @@ onMounted(() => {
                             </VCol>
 
                             <!-- Address -->
-                            <VCol cols="12" md="4">
-                                <AppTextarea v-model="form.address" :required="true" :label="t('Address')" :error-messages="errors.address"
+                            <VCol cols="12">
+                                <AppTextField v-model="form.address" :required="true" :label="t('Address')" :error-messages="errors.address"
                                     :placeholder="t('Enter address')" />
                             </VCol>
 

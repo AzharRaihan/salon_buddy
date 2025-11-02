@@ -152,13 +152,6 @@ const updateFaq = async () => {
                                     :error-messages="titleError" @input="validateTitle($event.target.value)" :required="true" />
                             </VCol>
 
-                            <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description" :label="t('FAQ Answer')" type="text"
-                                    :placeholder="t('Enter FAQ Answer')" :error-messages="descriptionError" 
-                                    @input="validateDescription($event.target.value)" :required="true" />
-                            </VCol>
-
                             <!-- Status -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete
@@ -174,6 +167,13 @@ const updateFaq = async () => {
                                     clearable
                                     :required="true"
                                 />
+                            </VCol>
+
+                            <!-- Description -->
+                            <VCol cols="12">
+                                <AppTextarea v-model="form.description" :label="t('FAQ Answer')" type="text"
+                                    :placeholder="t('Enter FAQ Answer')" :error-messages="descriptionError" 
+                                    @input="validateDescription($event.target.value)" :required="true" />
                             </VCol>
 
                             <!-- Form Actions -->

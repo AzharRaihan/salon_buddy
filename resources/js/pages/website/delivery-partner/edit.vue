@@ -142,8 +142,8 @@ const updateDeliveryPartner = async () => {
                             </VCol>
 
                             <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description" :label="$t('Description')" type="text"
+                            <VCol cols="12" md="12" lg="8">
+                                <AppTextField v-model="form.description" :label="$t('Description')" type="text"
                                     :placeholder="$t('Enter Description')" :error-messages="descriptionError" 
                                     @input="validateDescription($event.target.value)" />
                             </VCol>

@@ -546,7 +546,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                 </div>
 
                                                 <VRow>
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="(item.salary_amount)"
                                                             :label="t('Salary Amount')"
@@ -558,7 +558,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.overtime_rate"
                                                             :label="t('Overtime Rate')"
@@ -570,7 +570,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.overtime_hour"
                                                             :label="t('Overtime Hour')"
@@ -582,7 +582,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.additional_amount"
                                                             :label="t('Additional Amount')"
@@ -594,7 +594,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.deduction_amount"
                                                             :label="t('Deduction Amount')"
@@ -606,7 +606,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.absent_day"
                                                             :label="t('Absent Days')"
@@ -618,7 +618,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.absent_day_amount"
                                                             :label="t('Absent Amount')"
@@ -630,7 +630,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.tips"
                                                             :label="t('Tips')"
@@ -643,7 +643,7 @@ watch(() => form.value.payments, (newPayments) => {
                                                         />
                                                     </VCol>
 
-                                                    <VCol cols="6" sm="4" md="3" lg="2">
+                                                    <VCol cols="6" sm="4" md="3">
                                                         <AppTextField
                                                             v-model="item.advance_taken"
                                                             :label="t('Advance Taken')"

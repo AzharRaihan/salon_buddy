@@ -313,8 +313,8 @@ const updatePortfolio = async () => {
                             </VCol>
 
                             <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description" :label="$t('Description')" type="text" :required="true"
+                            <VCol cols="12" md="6" lg="8">
+                                <AppTextField v-model="form.description" :label="$t('Description')" type="text" :required="true"
                                     :placeholder="$t('Enter Description')" :error-messages="descriptionError" 
                                     @input="validateDescription($event.target.value)" />
                             </VCol>

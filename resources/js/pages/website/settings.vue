@@ -582,8 +582,8 @@ const resetForm = () => {
                             </VCol>
 
                             <!-- Address -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea
+                            <VCol cols="12">
+                                <AppTextField
                                     v-model="form.address"
                                     :label="t('Address')"
                                     :placeholder="t('Enter full address')"

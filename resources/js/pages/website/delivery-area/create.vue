@@ -141,8 +141,8 @@ const createDeliveryArea = async () => {
                             </VCol>
 
                             <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.note" :label="$t('Note')" type="text"
+                            <VCol cols="12">
+                                <AppTextField v-model="form.note" :label="$t('Note')" type="text"
                                     :placeholder="$t('Enter Note')" :error-messages="noteError" 
                                     @input="validateNote($event.target.value)" />
                             </VCol>

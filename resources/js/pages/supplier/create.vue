@@ -243,14 +243,17 @@ const createSupplier = async () => {
                                 <AppTextField v-model="form.email" :label="t('Email')" type="email" :placeholder="t('Enter email')" :error-messages="emailError" />
                             </VCol>
 
+                        </VRow>
+                        <VRow>
+
                             <!-- Address -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.address" :label="t('Address')" type="text" :placeholder="t('Enter Address')" :error-messages="addressError" />
+                            <VCol cols="12" md="6">
+                                <AppTextField v-model="form.address" :label="t('Address')" type="text" :placeholder="t('Enter Address')" :error-messages="addressError" />
                             </VCol>
 
                             <!-- Description -->
-                            <VCol cols="12" md="6" lg="4">
-                                <AppTextarea v-model="form.description" :label="t('Description')" type="text" 
+                            <VCol cols="12" md="6">
+                                <AppTextField v-model="form.description" :label="t('Description')" type="text" 
                                     :placeholder="t('Enter Description')" :error-messages="descriptionError" />
                             </VCol>
 
