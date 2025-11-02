@@ -6,6 +6,9 @@ import { toast } from 'vue3-toastify';
 import { useUserData } from '@/composables/useUserData';
 import { computed } from 'vue';
 import { filterNavItems } from '@/utils/permissions';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
@@ -118,13 +121,12 @@ const hasBranchInfo = computed(() => {
           {{ branchInfo.branch_name }}
         </div>
 
-        <button class="pos-icon" v-if="posAccess" @click="handlePosClick">
-          <VChip label color="primary"
-            class="text-capitalize">
+        <template v-if="posAccess">
+          <VBtn color="primary" variant="tonal" class="pos-icon" :to="{ name: 'pos' }" target="_blank">
             <VIcon icon="tabler-basket-bolt" />
-            POS
-          </VChip>
-        </button>
+            {{ t('POS') }}
+          </VBtn>
+        </template>
 
         <NavBarI18n v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig" />

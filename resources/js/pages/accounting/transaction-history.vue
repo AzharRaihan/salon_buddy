@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useTransactionHistory } from '@/composables/useTransactionHistory'
 import TransactionHistoryReportFilters from '@/components/report/TransactionHistoryReportFilters.vue'
-import TransactionHistorySummaryCards from '@/components/report/TransactionHistorySummaryCards.vue'
 import TransactionHistoryReportTable from '@/components/report/TransactionHistoryReportTable.vue'
 import ExportTableTransactionHistory from '@/components/ExportTableTransactionHistory.vue'
 
@@ -27,11 +26,32 @@ const {
     summary,
 } = useTransactionHistory()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Transaction History Report',
+    outletName: 'All Outlets',
+    dateRange: 'All Time',
+    address: 'N/A',
+    phone: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A',
+    paymentAccountName: 'All Payment Accounts'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedPaymentMethodName = computed(() => {
@@ -72,17 +92,8 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard v-if="paymentMethodId && transactions.length > 0" class="mb-4">
-            <VCardText>
-                <TransactionHistorySummaryCards
-                    :summary="summary"
-                />
-            </VCardText>
-        </VCard>
-
         <!-- Action Buttons -->
-        <div v-if="paymentMethodId && transactions.length > 0" class="table-action action mb-4 d-flex justify-end gap-4">
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
                 prepend-icon="tabler-refresh" 
                 variant="outlined" 
@@ -95,7 +106,7 @@ const handleResetFilters = () => {
                 :data="transactions" 
                 :headers="exportHeaders" 
                 filename="transaction-history-report"
-                title="Transaction History Report"
+                :header-data="reportHeaderData"
                 :summary-data="summary"
             />
         </div>
@@ -106,9 +117,11 @@ const handleResetFilters = () => {
             :export-headers="exportHeaders"
             :date-from="dateFrom"
             :date-to="dateTo"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :selected-payment-method-name="selectedPaymentMethodName"
             :is-loading="isLoading"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

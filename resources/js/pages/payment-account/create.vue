@@ -361,7 +361,7 @@ const checkAccountType = async (accountType) => {
                             <!-- Account Type -->
                             <VCol cols="12" md="6" lg="4">
                                 <AppAutocomplete v-model="form.account_type"
-                                    :label="$t('Type')" :required="true"
+                                    :label="$t('Account Type')" :required="true"
                                     :items="[
                                         'Cash',
                                         'Bank',
@@ -371,7 +371,7 @@ const checkAccountType = async (accountType) => {
                                         'PayStack',
                                         'Paytm'
                                     ]"
-                                    :placeholder="$t('Select type')"
+                                    :placeholder="$t('Select account type')"
                                     :error-messages="accountTypeError"
                                     @input="validateAccountType($event)"
                                     clearable

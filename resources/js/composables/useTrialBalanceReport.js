@@ -15,12 +15,6 @@ export function useTrialBalanceReport() {
 
     // Filter states
     const branchId = ref('')
-    
-    const today = new Date()
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(today.getDate() - 7)
-    const dateFrom = ref('')
-    const dateTo = ref('')
 
     // Filter options
     const branches = ref([])
@@ -45,8 +39,6 @@ export function useTrialBalanceReport() {
         try {
             const queryParams = {
                 branch_id: branchId.value,
-                date_from: dateFrom.value,
-                date_to: dateTo.value,
             }
 
             const response = await $api('/trial-balance-report', {
@@ -70,14 +62,12 @@ export function useTrialBalanceReport() {
 
     const resetFilters = () => {
         branchId.value = ''
-        dateFrom.value = ''
-        dateTo.value = ''
         fetchTrialBalanceReport()
     }
 
    
     // Watch for changes in filters
-    watch([branchId, dateFrom, dateTo], () => {
+    watch([branchId], () => {
         fetchTrialBalanceReport()
     })
 
@@ -92,8 +82,6 @@ export function useTrialBalanceReport() {
         trialBalanceData,
         isLoading,
         branchId,
-        dateFrom,
-        dateTo,
         branches,
         
         // Methods

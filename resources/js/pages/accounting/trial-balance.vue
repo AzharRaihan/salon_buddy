@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useTrialBalanceReport } from '@/composables/useTrialBalanceReport'
 import TrialBalanceReportFilters from '@/components/report/TrialBalanceReportFilters.vue'
-import TrialBalanceSummaryCards from '@/components/report/TrialBalanceSummaryCards.vue'
 import TrialBalanceReportTable from '@/components/report/TrialBalanceReportTable.vue'
 import ExportTableTrialBalanceReport from '@/components/ExportTableTrialBalanceReport.vue'
 
@@ -12,8 +11,6 @@ const {
     trialBalanceData,
     isLoading,
     branchId,
-    dateFrom,
-    dateTo,
     branches,
     
     // Methods
@@ -25,11 +22,30 @@ const {
     summary,
 } = useTrialBalanceReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Trial Balance Report',
+    outletName: 'All Outlets',
+    address: 'N/A',
+    phone: 'N/A',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const exportHeaders = computed(() => [
@@ -50,19 +66,8 @@ const handleResetFilters = () => {
         <VCard class="mb-4">
             <VCardText>
                 <TrialBalanceReportFilters
-                    v-model:date-from="dateFrom"
-                    v-model:date-to="dateTo"
                     v-model:branch-id="branchId"
                     :branches="branches"
-                />
-            </VCardText>
-        </VCard>
-
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <TrialBalanceSummaryCards
-                    :summary="summary"
                 />
             </VCardText>
         </VCard>
@@ -81,7 +86,7 @@ const handleResetFilters = () => {
                 :data="trialBalance" 
                 :headers="exportHeaders" 
                 filename="trial-balance-report"
-                title="Trial Balance Report"
+                :header-data="reportHeaderData"
                 :summary-data="summary"
             />
         </div>
@@ -90,10 +95,10 @@ const handleResetFilters = () => {
         <TrialBalanceReportTable
             :trial-balance="trialBalance"
             :export-headers="exportHeaders"
-            :date-from="dateFrom"
-            :date-to="dateTo"
+            :selected-branch="selectedBranch"
             :selected-branch-name="selectedBranchName"
             :is-loading="isLoading"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

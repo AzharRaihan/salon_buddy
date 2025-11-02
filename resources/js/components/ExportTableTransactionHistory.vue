@@ -1,204 +1,311 @@
-<script setup>
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import * as XLSX from 'xlsx'
-import { jsPDF } from 'jspdf'
-import 'jspdf-autotable'
-import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-
-const { t } = useI18n()
-const { formatAmount } = useCompanyFormatters()
-
-// Props
-const props = defineProps({
-  data: {
-    type: Array,
-    required: true,
-  },
-  headers: {
-    type: Array,
-    required: true,
-  },
-  filename: {
-    type: String,
-    default: 'transaction-history-report',
-  },
-  title: {
-    type: String,
-    default: 'Transaction History Report',
-  },
-  summaryData: {
-    type: Object,
-    default: () => ({}),
-  },
-})
-
-// State
-const isExportMenuOpen = ref(false)
-
-// Get company name from cookie
-const getCompanyName = () => {
-  const companySettings = useCookie('company_settings').value
-  return companySettings?.company_name || 'Company Name'
-}
-
-// Export to Excel
-const exportToExcel = () => {
-  if (!props.data || props.data.length === 0) {
-    return
-  }
-
-  // Prepare data for Excel
-  const excelData = props.data.map(item => {
-    const row = {}
-    props.headers.forEach(header => {
-      const value = item[header.key]
-      // Format amount if it's the amount field
-      if (header.key === 'amount') {
-        row[header.title] = typeof value === 'number' ? value : value
-      } else {
-        row[header.title] = value
-      }
-    })
-    return row
-  })
-
-  // Add summary rows
-  if (props.summaryData) {
-    excelData.push({}) // Empty row
-    excelData.push({
-      [props.headers[0].title]: 'Summary',
-    })
-    excelData.push({
-      [props.headers[0].title]: 'Total Transactions',
-      [props.headers[1].title]: props.summaryData.totalTransactions || 0,
-    })
-    excelData.push({
-      [props.headers[0].title]: 'Total Amount',
-      [props.headers[1].title]: props.summaryData.totalAmount || 0,
-    })
-  }
-
-  // Create workbook and worksheet
-  const ws = XLSX.utils.json_to_sheet(excelData)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Transaction History')
-
-  // Save file
-  XLSX.writeFile(wb, `${props.filename}.xlsx`)
-  isExportMenuOpen.value = false
-}
-
-// Export to PDF
-const exportToPDF = () => {
-  if (!props.data || props.data.length === 0) {
-    return
-  }
-
-  const doc = new jsPDF()
-  const companyName = getCompanyName()
-
-  // Add title
-  doc.setFontSize(18)
-  doc.text(companyName, 14, 15)
-  doc.setFontSize(14)
-  doc.text(props.title, 14, 25)
-
-  // Prepare table data
-  const tableData = props.data.map(item => {
-    return props.headers.map(header => {
-      const value = item[header.key]
-      if (header.key === 'amount') {
-        return typeof value === 'number' ? formatAmount(value) : value
-      }
-      return value || ''
-    })
-  })
-
-  // Add table
-  doc.autoTable({
-    head: [props.headers.map(h => h.title)],
-    body: tableData,
-    startY: 30,
-    theme: 'grid',
-    styles: {
-      fontSize: 8,
-      cellPadding: 2,
-    },
-    headStyles: {
-      fillColor: [66, 139, 202],
-      textColor: 255,
-      fontStyle: 'bold',
-    },
-  })
-
-  // Add summary
-  if (props.summaryData) {
-    const finalY = doc.lastAutoTable.finalY + 10
-    doc.setFontSize(10)
-    doc.setFont(undefined, 'bold')
-    doc.text('Summary:', 14, finalY)
-    doc.setFont(undefined, 'normal')
-    doc.text(`Total Transactions: ${props.summaryData.totalTransactions || 0}`, 14, finalY + 7)
-    doc.text(`Total Amount: ${formatAmount(props.summaryData.totalAmount || 0)}`, 14, finalY + 14)
-  }
-
-  // Save PDF
-  doc.save(`${props.filename}.pdf`)
-  isExportMenuOpen.value = false
-}
-
-// Print
-const printReport = () => {
-  window.print()
-  isExportMenuOpen.value = false
-}
-</script>
-
 <template>
-  <VMenu
-    v-model="isExportMenuOpen"
-    :close-on-content-click="false"
-  >
-    <template #activator="{ props: menuProps }">
-      <VBtn
-        v-bind="menuProps"
-        prepend-icon="tabler-download"
-        variant="outlined"
-        color="primary"
+  <VMenu>
+    <template #activator="{ props }">
+      <VBtn 
+        v-bind="props"
+        variant="tonal" 
+        color="secondary" 
+        prepend-icon="tabler-upload"
+        :loading="isExporting"
       >
-        {{ t('Export') }}
+        Export
+        <VIcon icon="tabler-chevron-down" class="ml-1" />
       </VBtn>
     </template>
 
     <VList>
       <VListItem
-        @click="exportToExcel"
-      >
-        <template #prepend>
-          <VIcon icon="tabler-file-spreadsheet" />
-        </template>
-        <VListItemTitle>{{ t('Export to Excel') }}</VListItemTitle>
-      </VListItem>
-
-      <VListItem
+        prepend-icon="tabler-file-type-pdf"
+        title="Export as PDF"
         @click="exportToPDF"
-      >
-        <template #prepend>
-          <VIcon icon="tabler-file-type-pdf" />
-        </template>
-        <VListItemTitle>{{ t('Export to PDF') }}</VListItemTitle>
-      </VListItem>
-
+      />
       <VListItem
-        @click="printReport"
-      >
-        <template #prepend>
-          <VIcon icon="tabler-printer" />
-        </template>
-        <VListItemTitle>{{ t('Print') }}</VListItemTitle>
-      </VListItem>
+        prepend-icon="tabler-file-type-csv"
+        title="Export as CSV"
+        @click="exportToCSV"
+      />
+      <VListItem
+        prepend-icon="tabler-file-spreadsheet"
+        title="Export as Excel"
+        @click="exportToExcel"
+      />
     </VList>
   </VMenu>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+import { toast } from 'vue3-toastify'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
+
+const { formatAmount } = useCompanyFormatters()
+
+const props = defineProps({
+  data: {
+    type: Array,
+    required: true,
+    default: () => []
+  },
+  headers: {
+    type: Array,
+    required: true,
+    default: () => []
+  },
+  filename: {
+    type: String,
+    default: 'transaction-history-report'
+  },
+  headerData: {
+    type: Object,
+    default: () => ({
+      reportTitle: 'Transaction History Report',
+      outletName: 'All Outlets',
+      dateRange: 'All Time',
+      phone: null,
+      address: null,
+      generatedOn: '',
+      generatedBy: 'N/A',
+      paymentAccountName: 'All Payment Accounts'
+    })
+  },
+  summaryData: {
+    type: Object,
+    default: null
+  }
+})
+
+const isExporting = ref(false)
+
+// Helper function to format data for export
+const formatDataForExport = () => {
+  const exportHeaders = props.headers.map(header => header.title)
+  const exportData = []
+
+  // Add all transaction rows
+  props.data.forEach((item) => {
+    const row = {}
+    props.headers.forEach(header => {
+      let value = item[header.key] || ''
+      row[header.title] = value
+    })
+    exportData.push(row)
+  })
+
+  // Add summary row (matches Account Balance/Statement template)
+  if (props.summaryData) {
+    const summaryRow = {}
+    props.headers.forEach(header => {
+      if (header.key === 'sn') {
+        summaryRow[header.title] = ''
+      } else if (header.key === 'date') {
+        summaryRow[header.title] = ''
+      } else if (header.key === 'reference_no') {
+        summaryRow[header.title] = ''
+      } else if (header.key === 'type') {
+        summaryRow[header.title] = ''
+      } else if (header.key === 'payment_account') {
+        summaryRow[header.title] = ''
+      } else if (header.key === 'amount') {
+        summaryRow[header.title] = `Total Amount: ${props.summaryData?.totalAmount || 0}`
+      } else if (header.key === 'added_by') {
+        summaryRow[header.title] = ''
+      } else if (header.key === 'added_date_time') {
+        summaryRow[header.title] = ''
+      } else {
+        summaryRow[header.title] = ''
+      }
+    })
+    exportData.push(summaryRow)
+  }
+
+  return { headers: exportHeaders, data: exportData }
+}
+
+// Export to CSV
+const exportToCSV = () => {
+  try {
+    isExporting.value = true
+    const { headers, data } = formatDataForExport()
+
+    // Create header info rows (matches Account Statement template)
+    const headerInfo = [
+      props.headerData.reportTitle,
+      '',
+      `Outlet: ${props.headerData.outletName}`
+    ]
+    
+    // Add phone and address only if they exist (specific branch selected)
+    if (props.headerData.phone) {
+      headerInfo.push(`Phone: ${props.headerData.phone}`)
+    }
+    if (props.headerData.address) {
+      headerInfo.push(`Address: ${props.headerData.address}`)
+    }
+    
+    headerInfo.push(
+      `Date Range: ${props.headerData.dateRange}`,
+      `Generated On: ${props.headerData.generatedOn}`,
+      `Generated By: ${props.headerData.generatedBy}`,
+      `Payment Account: ${props.headerData.paymentAccountName}`,
+      '',
+      ''
+    )
+
+    const csvContent = [
+      ...headerInfo,
+      headers.join(','),
+      ...data.map(row => 
+        headers.map(header => {
+          const value = row[header] || ''
+          return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+            ? `"${value.replace(/"/g, '""')}"`
+            : value
+        }).join(',')
+      )
+    ].join('\n')
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${props.filename}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    toast('CSV exported successfully', { type: 'success' })
+  } catch (error) {
+    console.error('Error exporting CSV:', error)
+    toast('Failed to export CSV', { type: 'error' })
+  } finally {
+    isExporting.value = false
+  }
+}
+
+// Export to Excel
+const exportToExcel = async () => {
+  try {
+    isExporting.value = true
+    const XLSX = await import('xlsx')
+    const { headers, data } = formatDataForExport()
+    
+    // Create header info rows (matches Account Statement template)
+    const headerInfo = [
+      [props.headerData.reportTitle],
+      [],
+      ['Outlet:', props.headerData.outletName]
+    ]
+    
+    // Add phone and address only if they exist (specific branch selected)
+    if (props.headerData.phone) {
+      headerInfo.push(['Phone:', props.headerData.phone])
+    }
+    if (props.headerData.address) {
+      headerInfo.push(['Address:', props.headerData.address])
+    }
+    
+    headerInfo.push(
+      ['Date Range:', props.headerData.dateRange],
+      ['Generated On:', props.headerData.generatedOn],
+      ['Generated By:', props.headerData.generatedBy],
+      ['Payment Account:', props.headerData.paymentAccountName],
+      []
+    )
+    
+    // Create worksheet with header info
+    const ws = XLSX.utils.aoa_to_sheet(headerInfo)
+    
+    // Add table headers and data
+    XLSX.utils.sheet_add_json(ws, data, { 
+      origin: `A${headerInfo.length + 1}`,
+      skipHeader: false 
+    })
+    
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+    XLSX.writeFile(wb, `${props.filename}.xlsx`)
+    toast('Excel file exported successfully', { type: 'success' })
+  } catch (error) {
+    console.error('Error exporting Excel:', error)
+    toast('Failed to export Excel file', { type: 'error' })
+  } finally {
+    isExporting.value = false
+  }
+}
+
+// Export to PDF
+const exportToPDF = () => {
+  try {
+    isExporting.value = true
+    const { headers, data } = formatDataForExport()
+    const doc = new jsPDF('l') // Landscape for wider table
+    const pageWidth = doc.internal.pageSize.getWidth()
+    
+    let currentY = 15
+    
+    // Report Title
+    doc.setFontSize(16)
+    doc.setFont(undefined, 'bold')
+    doc.text(props.headerData.reportTitle, pageWidth / 2, currentY, { align: 'center' })
+    currentY += 10
+    
+    // Outlet Info (Left Side)
+    doc.setFontSize(10)
+    doc.setFont(undefined, 'normal')
+    doc.text(`Outlet: ${props.headerData.outletName}`, 14, currentY)
+    
+    // Track the right side Y position
+    const rightStartY = currentY
+    currentY += 6
+    
+    // Add phone and address only if they exist (specific branch selected)
+    if (props.headerData.phone) {
+      doc.text(`Phone: ${props.headerData.phone}`, 14, currentY)
+      currentY += 6
+    }
+    if (props.headerData.address) {
+      doc.text(`Address: ${props.headerData.address}`, 14, currentY)
+      currentY += 6
+    }
+    
+    // Generated Info (Right Side)
+    let rightY = rightStartY
+    doc.text(`Date Range: ${props.headerData.dateRange}`, pageWidth - 14, rightY, { align: 'right' })
+    rightY += 6
+    doc.text(`Generated On: ${props.headerData.generatedOn}`, pageWidth - 14, rightY, { align: 'right' })
+    rightY += 6
+    doc.text(`Generated By: ${props.headerData.generatedBy}`, pageWidth - 14, rightY, { align: 'right' })
+    rightY += 6
+    doc.text(`Payment Account: ${props.headerData.paymentAccountName}`, pageWidth - 14, rightY, { align: 'right' })
+    
+    currentY = Math.max(currentY, rightY) + 4
+    
+    // Add table
+    autoTable(doc, {
+      head: [headers],
+      body: data.map(row => headers.map(header => row[header] || '')),
+      startY: currentY,
+      styles: {
+        fontSize: 7,
+        cellPadding: 2
+      },
+      headStyles: {
+        fillColor: [66, 139, 202],
+        textColor: 255,
+        fontStyle: 'bold'
+      }
+    })
+    
+    doc.save(`${props.filename}.pdf`)
+    toast('PDF exported successfully', { type: 'success' })
+  } catch (error) {
+    console.error('Error exporting PDF:', error)
+    toast('Failed to export PDF', { type: 'error' })
+  } finally {
+    isExporting.value = false
+  }
+}
+</script>

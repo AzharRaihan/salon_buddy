@@ -2385,7 +2385,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         return $this->successResponse([

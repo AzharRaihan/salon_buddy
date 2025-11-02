@@ -187,7 +187,7 @@ onMounted(async () => {
                             clearable
                             />
                     </VCol>
-                    <VCol cols="12" sm="6" md="4" lg="3" class="mt-6">
+                    <VCol cols="12" sm="6" md="4" lg="3" class="mt-5">
                         <VBtn color="primary" variant="tonal" @click="resetFilters">
                             <VIcon icon="tabler-refresh" class="me-2" />
                             {{ t('Reset') }}

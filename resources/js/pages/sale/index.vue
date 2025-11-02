@@ -7,6 +7,7 @@ import { useCompanyFormatters } from '@/composables/useCompanyFormatters';
 import ExportTable from '@/components/ExportTable.vue';
 import BillModal from '@/components/pos/modals/BillModal.vue'
 
+
 // Computed headers for export (converts computed refs to strings)
 const exportHeaders = computed(() => {
     return headers.map(header => ({
@@ -181,7 +182,7 @@ const showPrintModal = async (saleId) => {
                     <AppTextField v-model="searchQuery" style="max-inline-size: 280px; min-inline-size: 280px;"
                         :placeholder="t('Search Sale')" />
                     <div class="d-flex flex-row gap-4 align-center flex-wrap">
-                        <VBtn prepend-icon="tabler-plus" :to="{ name: 'pos' }">
+                        <VBtn prepend-icon="tabler-plus" :to="{ name: 'pos' }" target="_blank">
                             {{ t('POS') }}
                         </VBtn>
                         <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
