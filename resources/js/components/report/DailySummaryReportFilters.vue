@@ -25,25 +25,6 @@
                     />
             </VCol>
         </VRow>
-
-        <!-- Action Buttons -->
-        <div class="action">
-            <VBtn 
-                prepend-icon="tabler-refresh" 
-                variant="outlined" 
-                @click="handleResetFilters"
-            >
-                Reset Filters
-            </VBtn>
-            <!-- <VBtn 
-                prepend-icon="tabler-upload" 
-                variant="tonal" 
-                color="secondary"
-                @click="handleExport"
-            >
-                Export
-            </VBtn> -->
-        </div>
     </div>
 </template>
 
