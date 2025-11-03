@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useStaffPayoutReport } from '@/composables/useStaffPayoutReport'
 import StaffPayoutReportFilters from '@/components/report/StaffPayoutReportFilters.vue'
-import StaffPayoutSummaryCards from '@/components/report/StaffPayoutSummaryCards.vue'
 import StaffPayoutReportTable from '@/components/report/StaffPayoutReportTable.vue'
 import ExportTableStaffPayoutReport from '@/components/ExportTableStaffPayoutReport.vue'
 
@@ -70,16 +69,6 @@ const handleResetFilters = () => {
                     v-model:employee-id="employeeId"
                     :branches="branches"
                     :employees="employees"
-                />
-            </VCardText>
-        </VCard>
-
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <StaffPayoutSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalPayouts"
                 />
             </VCardText>
         </VCard>

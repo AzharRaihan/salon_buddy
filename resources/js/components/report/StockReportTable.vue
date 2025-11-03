@@ -101,38 +101,22 @@
 
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th colspan="4">
-                                        Summary
-                                    </th>
-                                    <th>
-                                        Total Stock QTY
-                                    </th>
-                                    <th>
-                                        Total Stock Value
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="4">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ calculateTotal('stock') }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal2('last_purchase_price')) }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Summary
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ calculateTotal('stock') }}
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold">
+                            {{ formatAmount(calculateTotal2('last_purchase_price')) }}
+                            </td>
+                        </tr>
                     </template>
                 </VDataTable>
             </VCardText>

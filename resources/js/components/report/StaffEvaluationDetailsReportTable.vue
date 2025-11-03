@@ -72,7 +72,7 @@
 
                     <!-- Rating Number -->
                     <template #[`item.rating_number`]="{ item }">
-                        <span class="font-weight-medium text-primary">
+                        <span class="font-weight-medium">
                             {{ item.rating }}
                         </span>
                     </template>
@@ -99,38 +99,21 @@
                     </template>
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th colspan="3">
-                                        Summary
-                                    </th>
-                                    <th>
-                                        Total Ratings
-                                    </th>
-                                    <th colspan="2">
-                                        Average Rating
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="3">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ evaluationDetails.length }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="2">
-                                        {{ calculateAvgRating() }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+                        <tr>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Summary
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ evaluationDetails.length }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ calculateAvgRating() }}
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     </template>
                 </VDataTable>
             </VCardText>
@@ -140,7 +123,10 @@
 
 <script setup>
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate } = useCompanyFormatters()
+const { formatDate, fetchCompanySettings } = useCompanyFormatters()
+onMounted(async () => {
+    await fetchCompanySettings()
+})
 
 const props = defineProps({
     evaluationDetails: {

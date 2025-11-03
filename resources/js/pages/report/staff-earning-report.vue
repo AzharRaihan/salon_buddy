@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useStaffEarningReport } from '@/composables/useStaffEarningReport'
 import StaffEarningReportFilters from '@/components/report/StaffEarningReportFilters.vue'
-import StaffEarningSummaryCards from '@/components/report/StaffEarningSummaryCards.vue'
 import StaffEarningReportTable from '@/components/report/StaffEarningReportTable.vue'
 import ExportTableStaffEarningReport from '@/components/ExportTableStaffEarningReport.vue'
 
@@ -74,15 +73,6 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <StaffEarningSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalEarnings"
-                />
-            </VCardText>
-        </VCard>
 
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">

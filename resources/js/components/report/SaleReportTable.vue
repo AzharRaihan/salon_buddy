@@ -50,7 +50,7 @@
                     </template>
 
                     <!-- Date formatting -->
-                    <template #item.date="{ item }">
+                    <template #item.order_date="{ item }">
                         <span class="font-weight-medium">
                             {{ formatDate(item.order_date) }}
                         </span>
@@ -83,21 +83,21 @@
 
                     <!-- Total payable -->
                     <template #item.total_payable="{ item }">
-                        <span class="font-weight-medium text-primary">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.total_payable) }}
                         </span>
                     </template>
 
                     <!-- Total paid -->
                     <template #item.total_paid="{ item }">
-                        <span class="font-weight-medium text-success">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.total_paid) }}
                         </span>
                     </template>
 
                     <!-- Total due -->
                     <template #item.total_due="{ item }">
-                        <span class="font-weight-medium text-warning">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.total_due) }}
                         </span>
                     </template>
@@ -110,45 +110,26 @@
                     </template>
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th colspan="5">
-                                        Summary
-                                    </th>
-                                    <th>
-                                        Total Payable
-                                    </th>
-                                    <th>
-                                        Total Paid
-                                    </th>
-                                    <th>
-                                        Total Due
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="5">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
-                                        {{ formatAmount(calculateTotal('total_payable')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-success">
-                                        {{ formatAmount(calculateTotal('total_paid')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-warning">
-                                        {{ formatAmount(calculateTotal('total_due')) }}
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Total Summary
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('total_payable')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('total_paid')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('total_due')) }}
+                            </td>
+                            <td></td>
+                        </tr>
                     </template>
                 </VDataTable>
             </VCardText>
@@ -157,9 +138,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate, formatAmount } = useCompanyFormatters()
+const { formatDate, formatAmount, fetchCompanySettings } = useCompanyFormatters()
+onMounted(async () => {
+    await fetchCompanySettings()
+})
 const getOrderStatusColor = (status) => {
     switch (status) {
         case 'Completed':
@@ -217,6 +201,9 @@ const calculateTotal = (field) => {
         return sum + (parseFloat(item[field]) || 0)
     }, 0)
 }
+
+
+
 </script>
 
 <style lang="scss" scoped>

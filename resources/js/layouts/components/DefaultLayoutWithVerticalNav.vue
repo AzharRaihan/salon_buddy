@@ -151,7 +151,7 @@ async function handleCheckInOut() {
         </div>
 
         <template v-if="posAccess">
-          <VBtn color="primary" variant="tonal" class="pos-icon" :to="{ name: 'pos' }" target="_blank">
+          <VBtn color="primary" variant="tonal" class="pos-icon" target="_blank" @click="handlePosClick">
             <VIcon icon="tabler-basket-bolt" />
             {{ t('POS') }}
           </VBtn>

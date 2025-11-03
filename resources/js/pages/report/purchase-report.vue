@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { usePurchaseReport } from '@/composables/usePurchaseReport'
 import PurchaseReportFilters from '@/components/report/PurchaseReportFilters.vue'
-import PurchaseSummaryCards from '@/components/report/PurchaseSummaryCards.vue'
 import PurchaseReportTable from '@/components/report/PurchaseReportTable.vue'
 import ExportTablePurchaseReport from '@/components/ExportTablePurchaseReport.vue'
 
@@ -76,15 +75,6 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <PurchaseSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalPurchases"
-                />
-            </VCardText>
-        </VCard>
 
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">

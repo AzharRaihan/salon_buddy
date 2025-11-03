@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useEmployeeCommissionReport } from '@/composables/useEmployeeCommissionReport'
 import EmployeeCommissionReportFilters from '@/components/report/EmployeeCommissionReportFilters.vue'
-import EmployeeCommissionSummaryCards from '@/components/report/EmployeeCommissionSummaryCards.vue'
 import EmployeeCommissionReportTable from '@/components/report/EmployeeCommissionReportTable.vue'
 import ExportTableEmployeeCommissionReport from '@/components/ExportTableEmployeeCommissionReport.vue'
 
@@ -76,18 +75,9 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <EmployeeCommissionSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalCommissions"
-                />
-            </VCardText>
-        </VCard>
 
         <!-- Action Buttons -->
-        <div class="table-action action">
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
                 prepend-icon="tabler-refresh" 
                 variant="outlined" 
@@ -126,13 +116,5 @@ const handleResetFilters = () => {
     &:hover {
         color: rgba(var(--v-theme-primary), 0.8);
     }
-}
-
-.table-action {
-    display: flex;
-    justify-content: end;
-    gap: 10px;
-    padding-right: 24px;
-    padding-bottom: 24px;
 }
 </style>

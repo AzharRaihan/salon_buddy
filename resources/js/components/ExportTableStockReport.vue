@@ -100,12 +100,11 @@ const formatDataForExport = () => {
 
   // Add summary row if summaryData is provided
   if (props.summaryData) {
-    console.log(props.summaryData)
     const summaryRow = {}
     props.headers.forEach(header => {
       if (header.key !== 'actions') {
-        if (header.key === 'serial_number' || header.key === 'name' || header.key === 'category.name') {
-          summaryRow[header.title] = header.key === 'serial_number' ? 'TOTAL SUMMARY' : ''
+        if (header.key === 'category.name') {
+          summaryRow[header.title] = 'Summary:'
         } else if (header.key === 'stock') {
           summaryRow[header.title] = props.summaryData?.total_stock || 0
         } else if (header.key === 'total_price') {

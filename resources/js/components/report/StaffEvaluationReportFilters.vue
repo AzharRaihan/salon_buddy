@@ -2,6 +2,35 @@
     <div class="staff-evaluation-report-filters">
         <!-- Filter Row -->
         <VRow class="mb-4">
+
+            <!-- Employee Filter -->
+            <VCol cols="12" :md="hideBranch ? 4 : 3">
+                <AppAutocomplete 
+                    :model-value="employeeId" 
+                    :required="employeeRequired ? true : false"
+                    @update:model-value="(value) => emit('update:employeeId', value)"
+                    :items="[{ id: '', name: t('Select Employee') }, ...employees]"
+                    :item-title="item => `${item.name} ${item.phone ? `(${item.phone})` : ''}`"
+                    item-value="id"
+                    label="Select Employee"
+                    :rules="employeeRequired ? [v => !!v || 'Employee is required'] : []"
+                    clearable
+                />
+            </VCol>
+
+            <!-- Branch Filter -->
+            <VCol v-if="!hideBranch" cols="12" md="3">
+                <AppSelect 
+                    :model-value="branchId" 
+                    @update:model-value="(value) => emit('update:branchId', value)"
+                    :items="[{ id: '', name: t('Select Branch') }, ...branches]"
+                    item-title="name"
+                    item-value="id"
+                    label="Filter by Outlet"
+                    clearable
+                />
+            </VCol>
+
             <!-- Date From -->
             <VCol cols="12" :md="hideBranch ? 4 : 3">
                 <AppDateTimePicker 
@@ -21,34 +50,8 @@
                     clearable
                 />
             </VCol>
-
-            <!-- Branch Filter -->
-            <VCol v-if="!hideBranch" cols="12" md="3">
-                <AppSelect 
-                    :model-value="branchId" 
-                    @update:model-value="(value) => emit('update:branchId', value)"
-                    :items="[{ id: '', name: t('Select Branch') }, ...branches]"
-                    item-title="name"
-                    item-value="id"
-                    label="Filter by Outlet"
-                    clearable
-                />
-            </VCol>
             
-            <!-- Employee Filter -->
-            <VCol cols="12" :md="hideBranch ? 4 : 3">
-                <AppAutocomplete 
-                    :model-value="employeeId" 
-                    :required="employeeRequired ? true : false"
-                    @update:model-value="(value) => emit('update:employeeId', value)"
-                    :items="[{ id: '', name: t('Select Employee') }, ...employees]"
-                    :item-title="item => `${item.name} ${item.phone ? `(${item.phone})` : ''}`"
-                    item-value="id"
-                    label="Select Employee"
-                    :rules="employeeRequired ? [v => !!v || 'Employee is required'] : []"
-                    clearable
-                />
-            </VCol>
+            
         </VRow>
     </div>
 </template>

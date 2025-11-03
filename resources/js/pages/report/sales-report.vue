@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useSaleReport } from '@/composables/useSaleReport'
 import SaleReportFilters from '@/components/report/SaleReportFilters.vue'
-import SaleSummaryCards from '@/components/report/SaleSummaryCards.vue'
 import SaleReportTable from '@/components/report/SaleReportTable.vue'
 import ExportTableSalesReport from '@/components/ExportTableSalesReport.vue'
 
@@ -64,16 +63,6 @@ const handleResetFilters = () => {
                     v-model:customer-id="customerId"
                     :branches="branches"
                     :customers="customers"
-                />
-            </VCardText>
-        </VCard>
-        
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <SaleSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalSales"
                 />
             </VCardText>
         </VCard>

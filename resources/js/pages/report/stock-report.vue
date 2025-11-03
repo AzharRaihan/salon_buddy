@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStockReport } from '@/composables/useStockReport'
 import StockReportFilters from '@/components/report/StockReportFilters.vue'
-import StockSummaryCards from '@/components/report/StockSummaryCards.vue'
 import StockReportTable from '@/components/report/StockReportTable.vue'
 import ExportTableStockReport from '@/components/ExportTableStockReport.vue'
 
@@ -78,16 +77,6 @@ const handleResetFilters = () => {
                     :suppliers="suppliers"
                     :items="items"
                     :categories="categories"
-                />
-            </VCardText>
-        </VCard>
-
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <StockSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalItems"
                 />
             </VCardText>
         </VCard>

@@ -72,21 +72,21 @@
 
                     <!-- Grand total -->
                     <template #item.grand_total="{ item }">
-                        <span class="font-weight-medium text-primary">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.grand_total) }}
                         </span>
                     </template>
 
                     <!-- Paid amount -->
                     <template #item.paid_amount="{ item }">
-                        <span class="font-weight-medium text-success">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.paid_amount) }}
                         </span>
                     </template>
 
                     <!-- Due amount -->
                     <template #item.due_amount="{ item }">
-                        <span class="font-weight-medium text-warning">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.due_amount) }}
                         </span>
                     </template>
@@ -104,56 +104,27 @@
                     </template>
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Summary
-                                    </th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th>
-                                        Grand Total
-                                    </th>
-                                    <th>
-                                        Paid Amount
-                                    </th>
-                                    <th>
-                                        Due Amount
-                                    </th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatAmount(calculateTotal('grand_total')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-success">
-                                        {{ formatAmount(calculateTotal('paid_amount')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-warning">
-                                        {{ formatAmount(calculateTotal('due_amount')) }}
-                                    </td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Total Summary
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('grand_total')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('paid_amount')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('due_amount')) }}
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
                     </template>
-
                 </VDataTable>
             </VCardText>
         </VCard>
@@ -163,7 +134,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate, formatAmount } = useCompanyFormatters()
+const { formatDate, formatAmount, fetchCompanySettings } = useCompanyFormatters()
+onMounted(async () => {
+    await fetchCompanySettings()
+})
 
 const props = defineProps({
     purchases: {

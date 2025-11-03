@@ -104,7 +104,7 @@ const formatDataForExport = () => {
     props.headers.forEach(header => {
       if (header.key !== 'actions' && header.key !== 'rating') {
         if (header.key === 'employee.name') {
-          summaryRow[header.title] = 'TOTAL SUMMARY'
+          summaryRow[header.title] = 'Summary:'
         } else if (header.key === 'total_ratings') {
           summaryRow[header.title] = props.summaryData?.totalRatings || 0
         } else if (header.key === 'avg_rating') {

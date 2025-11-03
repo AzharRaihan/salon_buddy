@@ -27,7 +27,7 @@ export function useCompanyFormatters() {
   // Format date based on company settings
   const formatDate = (dateString, settings = null) => {
     if (!dateString) return ''
-    
+
     const settingsToUse = settings || companySettings.value
     if (!settingsToUse?.date_format) {
       // Default format if no company settings
@@ -38,7 +38,8 @@ export function useCompanyFormatters() {
     if (isNaN(date.getTime())) return ''
 
     const format = settingsToUse.date_format
-    
+
+
     // Convert PHP date format to JavaScript
     const formatMap = {
       'Y': date.getFullYear(),

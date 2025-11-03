@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useStaffEvaluationReport } from '@/composables/useStaffEvaluationReport'
 import StaffEvaluationReportFilters from '@/components/report/StaffEvaluationReportFilters.vue'
-import StaffEvaluationSummaryCards from '@/components/report/StaffEvaluationSummaryCards.vue'
 import StaffEvaluationReportTable from '@/components/report/StaffEvaluationReportTable.vue'
 import ExportTableStaffEvaluationReport from '@/components/ExportTableStaffEvaluationReport.vue'
 
@@ -72,15 +71,7 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Summary Cards -->
-        <VCard class="mb-4">
-            <VCardText>
-                <StaffEvaluationSummaryCards
-                    :summary="summary"
-                    :total-filtered="totalEvaluations"
-                />
-            </VCardText>
-        </VCard>
+
 
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">

@@ -67,21 +67,21 @@
 
                     <!-- Subtotal -->
                     <template #item.subtotal="{ item }">
-                        <span class="font-weight-medium text-success">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.subtotal) }}
                         </span>
                     </template>
 
                     <!-- Commission Rate -->
                     <template #item.commission_rate="{ item }">
-                        <span class="font-weight-medium text-info">
+                        <span class="font-weight-medium">
                             {{ item.commission_rate }}%
                         </span>
                     </template>
 
                     <!-- Commission Amount -->
                     <template #item.commission_amount="{ item }">
-                        <span class="font-weight-medium text-primary">
+                        <span class="font-weight-medium">
                             {{ formatAmount(item.commission_amount) }}
                         </span>
                     </template>
@@ -99,44 +99,25 @@
 
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th colspan="3">
-                                        Summary
-                                    </th>
-                                    <th>
-                                        Subtotal
-                                    </th>
-                                    <th>
-                                        Commission Rate
-                                    </th>
-                                    <th>
-                                        Commission Amount
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="3">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
-                                        {{ formatAmount(calculateTotal('subtotal')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
-                                        {{ formatAmount(calculateTotal('commission_rate')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary" colspan="1">
-                                        {{ formatAmount(calculateTotal('commission_rate')) }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Summary
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('subtotal')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ (calculateTotal('commission_rate')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatAmount(calculateTotal('commission_amount')) }}
+                            </td>
+                            <td></td>
+                        </tr>
                     </template>
 
                 </VDataTable>
@@ -147,7 +128,10 @@
 
 <script setup>
 import { useCompanyFormatters } from '@/composables/useCompanyFormatters'
-const { formatDate, formatAmount } = useCompanyFormatters()
+const { formatDate, formatAmount, fetchCompanySettings } = useCompanyFormatters()
+onMounted(async () => {
+    await fetchCompanySettings()
+})
 
 const props = defineProps({
     commissions: {

@@ -61,7 +61,7 @@
 
                     <!-- Average Rating -->
                     <template #[`item.avg_rating`]="{ item }">
-                        <span class="font-weight-medium text-primary">
+                        <span class="font-weight-medium">
                             {{ item.avg_rating }}
                         </span>
                     </template>
@@ -81,44 +81,20 @@
                     </template>
 
                     <!-- Summary Row -->
-                    <template #bottom>
-                        <VTable>
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Summary
-                                    </th>
-                                    <th>
-                                        Total Ratings
-                                    </th>
-                                    <th>
-                                        Average Rating
-                                    </th>
-                                    <th>
-                                        
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="summary-row">
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        <span class="d-flex align-center">
-                                            <VIcon icon="tabler-calculator" class="me-2" />
-                                            Total Summary
-                                        </span>
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ formatNumber(calculateTotal('total_ratings')) }}
-                                    </td>
-                                    <td class="text-h6 font-weight-bold text-primary">
-                                        {{ calculateAvgRating() }}
-                                    </td>
-                                    <td>
-                                        
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </VTable>
+                    <template #body.append>
+
+                        <tr>
+                            <td class="text-h6 font-weight-bold text-end">
+                                Summary
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ formatNumber(calculateTotal('total_ratings')) }}
+                            </td>
+                            <td class="text-h6 font-weight-bold">
+                                {{ calculateAvgRating() }}
+                            </td>
+                            <td></td>
+                        </tr>
                     </template>
                 </VDataTable>
             </VCardText>

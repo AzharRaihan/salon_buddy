@@ -103,8 +103,8 @@ const formatDataForExport = () => {
     const summaryRow = {}
     props.headers.forEach(header => {
       if (header.key !== 'actions') {
-        if (header.key === 'reference_no' || header.key === 'order_date' || header.key === 'customer.name' || header.key === 'order_from' || header.key === 'order_status') {
-          summaryRow[header.title] = header.key === 'reference_no' ? 'TOTAL SUMMARY' : ''
+        if (header.key === 'order_status') {
+          summaryRow[header.title] = 'Summary:'
         } else if (header.key === 'total_payable') {
           summaryRow[header.title] = props.summaryData.totalRevenue || 0
         } else if (header.key === 'total_paid') {
