@@ -75,8 +75,8 @@ export function useStaffPayoutReport() {
     const resetFilters = () => {
         branchId.value = ''
         employeeId.value = ''
-        dateFrom.value = today.toISOString().split('T')[0]
-        dateTo.value = today.toISOString().split('T')[0]
+        dateFrom.value = ''
+        dateTo.value = ''
         fetchPayoutReport()
     }
 

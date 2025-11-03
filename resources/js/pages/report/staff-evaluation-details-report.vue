@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStaffEvaluationDetailsReport } from '@/composables/useStaffEvaluationDetailsReport'
 import StaffEvaluationReportFilters from '@/components/report/StaffEvaluationReportFilters.vue'
 import StaffEvaluationDetailsReportTable from '@/components/report/StaffEvaluationDetailsReportTable.vue'
@@ -26,11 +26,30 @@ const {
     summary,
 } = useStaffEvaluationDetailsReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Staff Evaluation Details Report',
+    employeeName: 'All Employees',
+    employeePhone: null,
+    dateRange: 'All Time',
+    generatedOn: '',
+    generatedBy: 'N/A'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedEmployee = computed(() => {
+    if (!employeeId.value) return null
+    return employees.value.find(e => e.id == employeeId.value) || null
+})
+
 const selectedEmployeeName = computed(() => {
     if (!employeeId.value) return 'All Employees'
-    const employee = employees.value.find(e => e.id == employeeId.value)
-    return employee?.name || 'All Employees'
+    return selectedEmployee.value?.name || 'All Employees'
 })
 
 // Export headers for ExportTable component
@@ -47,12 +66,48 @@ const handleResetFilters = () => {
     resetFilters()
 }   
 
+const isFilterOptionsOpen = ref(false)
+
+const toggleFilterOptions = () => {
+  isFilterOptionsOpen.value = !isFilterOptionsOpen.value
+}
+
 </script>
 
 <template>
     <div>
+    
+        <!-- Action Buttons -->
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
+            <VBtn 
+                :prepend-icon="isFilterOptionsOpen ? 'tabler-filter-off' : 'tabler-filter'" 
+                variant="outlined"
+                @click="toggleFilterOptions"
+            >
+                {{ isFilterOptionsOpen ? 'Hide Filters' : 'Filters' }}
+            </VBtn>
+
+            <VBtn 
+                prepend-icon="tabler-refresh" 
+                variant="outlined" 
+                color="error"
+                @click="handleResetFilters"
+            >
+                Reset Filters
+            </VBtn>
+
+            <ExportTableStaffEvaluationDetailsReport 
+                :data="evaluationDetails" 
+                :headers="exportHeaders" 
+                :summary-data="summary"
+                :header-data="reportHeaderData"
+                filename="staff-evaluation-details-report"
+                title="Staff Evaluation Details Report"
+            />
+        </div>
+
         <!-- Filter Section -->
-        <VCard class="mb-4">
+        <VCard class="mb-4" v-if="isFilterOptionsOpen">
             <VCardText>
                 <StaffEvaluationReportFilters
                     v-model:date-from="dateFrom"
@@ -65,34 +120,16 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-
-        <!-- Action Buttons -->
-        <div class="table-action action mb-4 d-flex justify-end gap-4">
-            <VBtn 
-                prepend-icon="tabler-refresh" 
-                variant="outlined" 
-                @click="handleResetFilters"
-            >
-                Reset Filters
-            </VBtn>
-
-            <ExportTableStaffEvaluationDetailsReport 
-                :data="evaluationDetails" 
-                :headers="exportHeaders" 
-                :summary-data="summary"
-                filename="staff-evaluation-details-report"
-                title="Staff Evaluation Details Report"
-            />
-        </div>
-
         <!-- Staff Evaluation Details Report Table -->
         <StaffEvaluationDetailsReportTable
             :evaluation-details="evaluationDetails"
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-employee-name="selectedEmployeeName"
+            :selected-employee="selectedEmployee"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

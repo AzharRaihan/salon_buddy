@@ -1,10 +1,11 @@
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 
 export function useSaleReport() {
     // State
     const saleData = ref(null)
     const isLoading = ref(false)
+
     const sales = ref([])
     const totalSales = ref(0)
     const summary = ref({
@@ -26,8 +27,7 @@ export function useSaleReport() {
     const today = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(today.getDate() - 7)
-
-    const dateFrom = ref(today.toISOString().split('T')[0])
+    const dateFrom = ref(sevenDaysAgo.toISOString().split('T')[0])
     const dateTo = ref(today.toISOString().split('T')[0])
 
     const fetchFilterOptions = async () => {
@@ -77,11 +77,8 @@ export function useSaleReport() {
     const resetFilters = () => {
         branchId.value = ''
         customerId.value = ''
-        const today = new Date()
-        const sevenDaysAgo = new Date()
-        sevenDaysAgo.setDate(today.getDate() - 7)
-        dateFrom.value = today.toISOString().split('T')[0]
-        dateTo.value   = today.toISOString().split('T')[0]
+        dateFrom.value = ''
+        dateTo.value = ''
         fetchSaleReport()
     }
 

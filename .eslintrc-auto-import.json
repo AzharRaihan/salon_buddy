@@ -472,6 +472,7 @@
     "useBalanceSheetReport": true,
     "useTrialBalanceReport": true,
     "useAccountStatementReport": true,
-    "usePaymentMethodSort": true
+    "usePaymentMethodSort": true,
+    "resetFiltersuseSaleReport": true
   }
 }

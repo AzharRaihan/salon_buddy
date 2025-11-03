@@ -155,6 +155,7 @@ declare global {
   const removeHoverEffect: typeof import('./resources/js/utils/animations.js')['removeHoverEffect']
   const removeUserData: typeof import('./resources/js/utils/storage.js')['removeUserData']
   const requiredValidator: typeof import('./resources/js/@core/utils/validators.js')['requiredValidator']
+  const resetFiltersuseSaleReport: typeof import('./resources/js/composables/useSaleReport.js')['resetFiltersuseSaleReport']
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']

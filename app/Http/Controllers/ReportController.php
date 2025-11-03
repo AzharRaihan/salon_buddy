@@ -329,7 +329,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get suppliers
@@ -455,7 +455,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get customers
@@ -769,7 +769,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
         // Get employees (users with commission)
         $employees = User::where('company_id', $companyId)
@@ -815,7 +815,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
         // Get employees (users with commission)
         $employees = User::where('company_id', $companyId)
@@ -924,7 +924,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
             
         // Get employees (users with commission)
@@ -1002,7 +1002,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
             
         // Get employees
@@ -1101,7 +1101,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         return $this->successResponse([
@@ -1281,7 +1281,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         return $this->successResponse([
@@ -1717,7 +1717,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
             
         // Get employees
@@ -3167,7 +3167,7 @@ class ReportController extends Controller
         // Get branches
         $branches = Branch::where('del_status', 'Live')
             ->where('company_id', $companyId)
-            ->select('id', 'branch_name as name')
+            ->select('id', 'branch_name as name', 'phone', 'address')
             ->get();
 
         // Get payment methods

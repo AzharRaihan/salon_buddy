@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStaffEvaluationReport } from '@/composables/useStaffEvaluationReport'
 import StaffEvaluationReportFilters from '@/components/report/StaffEvaluationReportFilters.vue'
 import StaffEvaluationReportTable from '@/components/report/StaffEvaluationReportTable.vue'
@@ -28,11 +28,32 @@ const {
     summary,
 } = useStaffEvaluationReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Staff Evaluation Report',
+    outletName: 'All Outlets',
+    address: 'N/A',
+    phone: 'N/A',
+    dateRange: 'All Time',
+    generatedOn: '',
+    generatedBy: 'N/A',
+    employeeName: 'All Employees'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedEmployeeName = computed(() => {
@@ -40,6 +61,22 @@ const selectedEmployeeName = computed(() => {
     const employee = employees.value.find(e => e.id == employeeId.value)
     return employee?.name || 'All Employees'
 })
+
+// employee phone
+const selectedEmployeePhone = computed(() => {
+    if (!employeeId.value) return 'N/A'
+    const employee = employees.value.find(e => e.id == employeeId.value)
+    return employee?.phone || 'N/A'
+})
+
+// employee address
+const selectedEmployeeAddress = computed(() => {
+    if (!employeeId.value) return 'N/A'
+    const employee = employees.value.find(e => e.id == employeeId.value)
+    return employee?.address || 'N/A'
+}) 
+
+
 
 // Export headers for ExportTable component
 const exportHeaders = computed(() => [
@@ -53,12 +90,49 @@ const handleResetFilters = () => {
     resetFilters()
 }   
 
+const isFilterOptionsOpen = ref(false)
+
+const toggleFilterOptions = () => {
+  isFilterOptionsOpen.value = !isFilterOptionsOpen.value
+}
+
 </script>
 
 <template>
     <div>
+        
+
+        <!-- Action Buttons -->
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
+            <VBtn 
+                :prepend-icon="isFilterOptionsOpen ? 'tabler-filter-off' : 'tabler-filter'" 
+                variant="outlined"
+                @click="toggleFilterOptions"
+            >
+                {{ isFilterOptionsOpen ? 'Hide Filters' : 'Filters' }}
+            </VBtn>
+
+            <VBtn 
+                prepend-icon="tabler-refresh" 
+                variant="outlined" 
+                color="error"
+                @click="handleResetFilters"
+            >
+                Reset Filters
+            </VBtn>
+
+            <ExportTableStaffEvaluationReport 
+                :data="evaluations" 
+                :headers="exportHeaders" 
+                :summary-data="summary"
+                :header-data="reportHeaderData"
+                filename="staff-evaluation-report"
+                title="Staff Evaluation Report"
+            />
+        </div>
+
         <!-- Filter Section -->
-        <VCard class="mb-4">
+        <VCard class="mb-4" v-if="isFilterOptionsOpen">
             <VCardText>
                 <StaffEvaluationReportFilters
                     v-model:date-from="dateFrom"
@@ -71,36 +145,19 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-
-
-        <!-- Action Buttons -->
-        <div class="table-action action mb-4 d-flex justify-end gap-4">
-            <VBtn 
-                prepend-icon="tabler-refresh" 
-                variant="outlined" 
-                @click="handleResetFilters"
-            >
-                Reset Filters
-            </VBtn>
-
-            <ExportTableStaffEvaluationReport 
-                :data="evaluations" 
-                :headers="exportHeaders" 
-                :summary-data="summary"
-                filename="staff-evaluation-report"
-                title="Staff Evaluation Report"
-            />
-        </div>
-
         <!-- Staff Evaluation Report Table -->
         <StaffEvaluationReportTable
             :evaluations="evaluations"
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-branch-name="selectedBranchName"
+            :selected-branch="selectedBranch"
             :selected-employee-name="selectedEmployeeName"
+            :selected-employee-phone="selectedEmployeePhone"
+            :selected-employee-address="selectedEmployeeAddress"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

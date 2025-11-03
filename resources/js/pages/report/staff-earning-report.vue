@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStaffEarningReport } from '@/composables/useStaffEarningReport'
 import StaffEarningReportFilters from '@/components/report/StaffEarningReportFilters.vue'
 import StaffEarningReportTable from '@/components/report/StaffEarningReportTable.vue'
@@ -28,11 +28,32 @@ const {
     summary,
 } = useStaffEarningReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Staff Earning Report',
+    outletName: 'All Outlets',
+    address: 'N/A',
+    phone: 'N/A',
+    dateRange: 'All Time',
+    generatedOn: '',
+    generatedBy: 'N/A',
+    employeeName: 'All Employees'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedEmployeeName = computed(() => {
@@ -55,12 +76,48 @@ const handleResetFilters = () => {
     resetFilters()
 }   
 
+const isFilterOptionsOpen = ref(false)
+
+const toggleFilterOptions = () => {
+  isFilterOptionsOpen.value = !isFilterOptionsOpen.value
+}
+
 </script>
 
 <template>
     <div>
+        
+        <!-- Action Buttons -->
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
+            <VBtn 
+                :prepend-icon="isFilterOptionsOpen ? 'tabler-filter-off' : 'tabler-filter'" 
+                variant="outlined"
+                @click="toggleFilterOptions"
+            >
+                {{ isFilterOptionsOpen ? 'Hide Filters' : 'Filters' }}
+            </VBtn>
+
+            <VBtn 
+                prepend-icon="tabler-refresh" 
+                variant="outlined" 
+                color="error"
+                @click="handleResetFilters"
+            >
+                Reset Filters
+            </VBtn>
+
+            <ExportTableStaffEarningReport 
+                :data="earnings" 
+                :headers="exportHeaders" 
+                :summary-data="summary"
+                :header-data="reportHeaderData"
+                filename="staff-earning-report"
+                title="Staff Earning Report"
+            />
+        </div>
+
         <!-- Filter Section -->
-        <VCard class="mb-4">
+        <VCard class="mb-4" v-if="isFilterOptionsOpen">
             <VCardText>
                 <StaffEarningReportFilters
                     v-model:date-from="dateFrom"
@@ -73,35 +130,17 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-
-        <!-- Action Buttons -->
-        <div class="table-action action mb-4 d-flex justify-end gap-4">
-            <VBtn 
-                prepend-icon="tabler-refresh" 
-                variant="outlined" 
-                @click="handleResetFilters"
-            >
-                Reset Filters
-            </VBtn>
-
-            <ExportTableStaffEarningReport 
-                :data="earnings" 
-                :headers="exportHeaders" 
-                :summary-data="summary"
-                filename="staff-earning-report"
-                title="Staff Earning Report"
-            />
-        </div>
-
         <!-- Staff Earning Report Table -->
         <StaffEarningReportTable
             :earnings="earnings"
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-branch-name="selectedBranchName"
+            :selected-branch="selectedBranch"
             :selected-employee-name="selectedEmployeeName"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

@@ -82,29 +82,31 @@ const handleResetFilters = () => {
 }
 
 
+const isFilterOptionsOpen = ref(false)
+
+const toggleFilterOptions = () => {
+  isFilterOptionsOpen.value = !isFilterOptionsOpen.value
+}
+
 </script>
 
 <template>
     <div>
-        <!-- Filter Section -->
-        <VCard class="mb-4">
-            <VCardText>
-                <DamageReportFilters
-                    v-model:date-from="dateFrom"
-                    v-model:date-to="dateTo"
-                    v-model:branch-id="branchId"
-                    v-model:employee-id="employeeId"
-                    :branches="branches"
-                    :employees="employees"
-                />
-            </VCardText>
-        </VCard>
-
+        
         <!-- Action Buttons -->
         <div class="table-action action mb-4 d-flex justify-end gap-4">
             <VBtn 
+                :prepend-icon="isFilterOptionsOpen ? 'tabler-filter-off' : 'tabler-filter'" 
+                variant="outlined"
+                @click="toggleFilterOptions"
+            >
+                {{ isFilterOptionsOpen ? 'Hide Filters' : 'Filters' }}
+            </VBtn>
+
+            <VBtn 
                 prepend-icon="tabler-refresh" 
                 variant="outlined" 
+                color="error"
                 @click="handleResetFilters"
             >
                 Reset Filters
@@ -119,6 +121,20 @@ const handleResetFilters = () => {
                 title="Damage Report"
             />
         </div>
+
+        <!-- Filter Section -->
+        <VCard class="mb-4" v-if="isFilterOptionsOpen">
+            <VCardText>
+                <DamageReportFilters
+                    v-model:date-from="dateFrom"
+                    v-model:date-to="dateTo"
+                    v-model:branch-id="branchId"
+                    v-model:employee-id="employeeId"
+                    :branches="branches"
+                    :employees="employees"
+                />
+            </VCardText>
+        </VCard>
 
         <!-- Damage Report Table -->
         <DamageReportTable

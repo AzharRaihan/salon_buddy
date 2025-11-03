@@ -76,8 +76,8 @@ export function usePurchaseReport() {
     const resetFilters = () => {
         branchId.value = ''
         supplierId.value = ''
-        dateFrom.value = today.toISOString().split('T')[0]
-        dateTo.value = today.toISOString().split('T')[0]
+        dateFrom.value = ''
+        dateTo.value = ''
         fetchPurchaseReport()
     }
 

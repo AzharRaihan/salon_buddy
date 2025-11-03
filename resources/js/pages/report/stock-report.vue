@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStockReport } from '@/composables/useStockReport'
 import StockReportFilters from '@/components/report/StockReportFilters.vue'
@@ -28,6 +28,21 @@ const {
     summary,
 
 } = useStockReport()
+
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: t('Stock Report'),
+    itemName: null,
+    categoryName: null,
+    generatedOn: '',
+    generatedBy: 'N/A',
+    supplierName: 'All Suppliers'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
 
 // Computed properties
 const selectedSupplierName = computed(() => {
@@ -63,12 +78,49 @@ const handleResetFilters = () => {
     resetFilters()
 }
 
+const isFilterOptionsOpen = ref(false)
+
+const toggleFilterOptions = () => {
+  isFilterOptionsOpen.value = !isFilterOptionsOpen.value
+}
+
 </script>
 
 <template>
     <div>
+
+        <!-- Action Buttons -->
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
+            <VBtn 
+                :prepend-icon="isFilterOptionsOpen ? 'tabler-filter-off' : 'tabler-filter'" 
+                variant="outlined"
+                @click="toggleFilterOptions"
+            >
+                {{ isFilterOptionsOpen ? 'Hide Filters' : 'Filters' }}
+            </VBtn>
+
+            <VBtn 
+                prepend-icon="tabler-refresh" 
+                variant="outlined" 
+                color="error"
+                @click="handleResetFilters"
+            >
+                Reset Filters
+            </VBtn>
+
+            <ExportTableStockReport
+                :data="stocks" 
+                :headers="exportHeaders" 
+                filename="stock-report"
+                :title="t('Stock Report')"
+                :header-data="reportHeaderData"
+                :summary-data="summary"
+            />
+        </div>
+
+
         <!-- Filter Section -->
-        <VCard class="mb-4">
+        <VCard class="mb-4" v-if="isFilterOptionsOpen">
             <VCardText>
                 <StockReportFilters
                     v-model:supplier-id="supplierId"
@@ -81,24 +133,7 @@ const handleResetFilters = () => {
             </VCardText>
         </VCard>
 
-        <!-- Action Buttons -->
-        <div class="table-action action mb-4 d-flex justify-end gap-4">
-            <VBtn 
-                prepend-icon="tabler-refresh" 
-                variant="outlined" 
-                @click="handleResetFilters"
-            >
-                Reset Filters
-            </VBtn>
-
-            <ExportTableStockReport
-                :data="stocks" 
-                :headers="exportHeaders" 
-                filename="stock-report"
-                :title="t('Stock Report')"
-                :summary-data="summary"
-            />
-        </div>
+        
 
         <!-- Stock Report Table -->
         <StockReportTable
@@ -106,8 +141,11 @@ const handleResetFilters = () => {
             :selected-supplier-name="selectedSupplierName"
             :selected-item-name="selectedItemName"
             :selected-category-name="selectedCategoryName"
+            :item-id="itemId"
+            :category-id="categoryId"
             :is-loading="isLoading"
             :export-headers="exportHeaders"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

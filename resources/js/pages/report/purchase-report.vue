@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { usePurchaseReport } from '@/composables/usePurchaseReport'
 import PurchaseReportFilters from '@/components/report/PurchaseReportFilters.vue'
 import PurchaseReportTable from '@/components/report/PurchaseReportTable.vue'
@@ -26,11 +26,32 @@ const {
     summary,
 } = usePurchaseReport()
 
+// Ref to store report header data from table component
+const reportHeaderData = ref({
+    reportTitle: 'Purchase Report',
+    outletName: 'All Outlets',
+    address: 'N/A',
+    phone: 'N/A',
+    dateRange: 'All Time',
+    generatedOn: '',
+    generatedBy: 'N/A',
+    supplierName: 'All Suppliers'
+})
+
+// Handle header data updates from table component
+const handleHeaderDataUpdate = (headerData) => {
+    reportHeaderData.value = headerData
+}
+
 // Computed properties
+const selectedBranch = computed(() => {
+    if (!branchId.value) return null
+    return branches.value.find(b => b.id == branchId.value) || null
+})
+
 const selectedBranchName = computed(() => {
     if (!branchId.value) return 'All Outlets'
-    const branch = branches.value.find(b => b.id == branchId.value)
-    return branch?.name || 'All Outlets'
+    return selectedBranch.value?.name || 'All Outlets'
 })
 
 const selectedSupplierName = computed(() => {
@@ -57,12 +78,49 @@ const handleResetFilters = () => {
 }
 
 
+const isFilterOptionsOpen = ref(false)
+
+const toggleFilterOptions = () => {
+  isFilterOptionsOpen.value = !isFilterOptionsOpen.value
+}
+
 </script>
 
 <template>
     <div>
+
+
+        <!-- Action Buttons -->
+        <div class="table-action action mb-4 d-flex justify-end gap-4">
+            <VBtn 
+                :prepend-icon="isFilterOptionsOpen ? 'tabler-filter-off' : 'tabler-filter'" 
+                variant="outlined"
+                @click="toggleFilterOptions"
+            >
+                {{ isFilterOptionsOpen ? 'Hide Filters' : 'Filters' }}
+            </VBtn>
+
+            <VBtn 
+                prepend-icon="tabler-refresh" 
+                variant="outlined" 
+                color="error"
+                @click="handleResetFilters"
+            >
+                Reset Filters
+            </VBtn>
+
+            <ExportTablePurchaseReport 
+                :data="purchases" 
+                :headers="exportHeaders" 
+                filename="purchase-report"
+                title="Purchase Report"
+                :header-data="reportHeaderData"
+                :summary-data="summary"
+            />
+        </div>
+
         <!-- Filter Section -->
-        <VCard class="mb-4">
+        <VCard class="mb-4" v-if="isFilterOptionsOpen">
             <VCardText>
                 <PurchaseReportFilters
                     v-model:date-from="dateFrom"
@@ -76,24 +134,7 @@ const handleResetFilters = () => {
         </VCard>
 
 
-        <!-- Action Buttons -->
-        <div class="table-action action mb-4 d-flex justify-end gap-4">
-            <VBtn 
-                prepend-icon="tabler-refresh" 
-                variant="outlined" 
-                @click="handleResetFilters"
-            >
-                Reset Filters
-            </VBtn>
-
-            <ExportTablePurchaseReport 
-                :data="purchases" 
-                :headers="exportHeaders" 
-                filename="purchase-report"
-                title="Purchase Report"
-                :summary-data="summary"
-            />
-        </div>
+        
 
 
         <!-- Purchase Report Table -->
@@ -103,8 +144,11 @@ const handleResetFilters = () => {
             :date-from="dateFrom"
             :date-to="dateTo"
             :selected-branch-name="selectedBranchName"
+            :selected-branch="selectedBranch"
+            :branches="branches"
             :selected-supplier-name="selectedSupplierName"
             :is-loading="isLoading"
+            @update:header-data="handleHeaderDataUpdate"
         />
     </div>
 </template>

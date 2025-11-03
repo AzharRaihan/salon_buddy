@@ -55,15 +55,6 @@
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
-
-const today = new Date()
-const sevenDaysAgo = new Date()
-sevenDaysAgo.setDate(today.getDate() - 7)
-
-const dateTo = ref(today.toISOString().split('T')[0])      // YYYY-MM-DD
-const dateFrom = ref(today.toISOString().split('T')[0])
-
-
 const props = defineProps({
     dateFrom: {
         type: String,
