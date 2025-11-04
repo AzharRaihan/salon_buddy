@@ -1,0 +1,72 @@
+name: Laravel + Vue.js CI/CD
+
+on:
+  push:
+    branches:
+      - main    # or your deployment branch (e.g. master)
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout Code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, bcmath, intl, pdo_mysql
+          tools: composer:v2
+
+      # 3. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # 4. Install PHP Dependencies
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      # 5. Install JS Dependencies & Build Vue App
+      - name: Install NPM Dependencies & Build
+        run: |
+          npm ci
+          npm run build
+
+      # 6. Copy built assets from public/build to root (if needed)
+      - name: Copy build folder to root
+        run: |
+          cp -r public/build/assets ./assets
+
+      # 7. Laravel Optimizations
+      - name: Optimize Laravel
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      # 8. (Optional) Deploy to Server via SSH
+      # Uncomment and set your secrets in GitHub -> Settings -> Secrets -> Actions
+      # Example assumes you deploy to /var/www/html/app
+      - name: Deploy via SSH
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          target: "/"
+
+      # 9. (Optional) Or store build as GitHub Artifact
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: laravel-vue-build
+          path: |
+            vendor
+            build
+            .env
