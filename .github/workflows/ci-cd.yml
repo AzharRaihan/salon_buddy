@@ -53,15 +53,26 @@ jobs:
       # 8. (Optional) Deploy to Server via SSH
       # Uncomment and set your secrets in GitHub -> Settings -> Secrets -> Actions
       # Example assumes you deploy to /var/www/html/app
-      - name: Deploy to cPanel Server via FTP
+      - name: Deploy to cPanel Server via FTP (Incremental)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.SERVER }}       # your FTP host
-          username: ${{ secrets.USERNAME }}   # FTP username
-          password: ${{ secrets.PASSWORD }}   # FTP password
-          local-dir: ./                           # project directory to upload
-          server-dir: /                           # target folder on server
-          dry-run: false                          # set true to test without uploading
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          local-dir: ./          # The folder to upload from
+          server-dir: /          # Remote folder
+          exclude: |
+            */.git
+            */.github/*
+            */node_modules/*
+            */tests/*
+            **/.env
+            */storage/*
+            */vendor/*
+          # Critical option:
+          dangerous-clean-slate: false
+
+
 
 
       # 9. (Optional) Or store build as GitHub Artifact
