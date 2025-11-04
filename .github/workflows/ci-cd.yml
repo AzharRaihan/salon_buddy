@@ -53,15 +53,16 @@ jobs:
       # 8. (Optional) Deploy to Server via SSH
       # Uncomment and set your secrets in GitHub -> Settings -> Secrets -> Actions
       # Example assumes you deploy to /var/www/html/app
-      - name: Deploy via SSH
-        uses: appleboy/scp-action@v0.1.4
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.7.1
         with:
-          host: ${{ secrets.SERVER }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          source: "./*"
-          target: "/"  # server root
-          overwrite: true
+          server: ${{ secrets.SERVER }}       # your FTP host
+          username: ${{ secrets.USERNAME }}   # FTP username
+          password: ${{ secrets.PASSWORD }}   # FTP password
+          local-dir: ./                           # project directory to upload
+          server-dir: /                           # target folder on server
+          dry-run: false                          # set true to test without uploading
+
 
       # 9. (Optional) Or store build as GitHub Artifact
       - name: Upload Build Artifact
