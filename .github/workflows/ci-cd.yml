@@ -56,7 +56,7 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/scp-action@v0.1.4
         with:
-          server: ${{ secrets.SERVER }}
+          host: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           target: "/"
