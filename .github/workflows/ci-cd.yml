@@ -35,7 +35,7 @@ jobs:
       # 5. Install JS Dependencies & Build Vue App
       - name: Install NPM Dependencies & Build
         run: |
-          npm ci --force
+          npm install --force
           npm run build --force
 
       # 6. Copy built assets from public/build to root (if needed)
