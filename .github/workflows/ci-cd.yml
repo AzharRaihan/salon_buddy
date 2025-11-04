@@ -59,8 +59,9 @@ jobs:
           host: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "/"     # specify files/folders to copy
-          target: "/" 
+          source: "./*"
+          target: "/"  # server root
+          overwrite: true
 
       # 9. (Optional) Or store build as GitHub Artifact
       - name: Upload Build Artifact
