@@ -53,8 +53,8 @@ jobs:
       # 8. (Optional) Deploy to Server via SSH
       # Uncomment and set your secrets in GitHub -> Settings -> Secrets -> Actions
       # Example assumes you deploy to /var/www/html/app
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.7.1
+      - name: Deploy to cPanel Server via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.SERVER }}       # your FTP host
           username: ${{ secrets.USERNAME }}   # FTP username
