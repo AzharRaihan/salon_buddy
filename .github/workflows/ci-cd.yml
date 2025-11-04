@@ -59,7 +59,8 @@ jobs:
           host: ${{ secrets.SERVER }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          target: "/"
+          local-dir: ./
+          target-dir: /
 
       # 9. (Optional) Or store build as GitHub Artifact
       - name: Upload Build Artifact
